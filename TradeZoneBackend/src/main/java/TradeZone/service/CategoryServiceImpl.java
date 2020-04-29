@@ -1,5 +1,6 @@
 package TradeZone.service;
 
+import TradeZone.data.model.service.AdvertisementServiceModel;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -65,7 +66,12 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<CategoryServiceModel> getTop(Integer count) {
         return this.repository.findTopOrderedByAdvertisementsCountDesc(count)
-                .stream().map(x -> this.mapper.map(x, CategoryServiceModel.class))
+                .stream().map(x -> {
+                    CategoryServiceModel serviceModel = this.mapper.map(x, CategoryServiceModel.class);
+                    List<AdvertisementServiceModel> advertisements = serviceModel.getAdvertisements();
+                    serviceModel.setAdvertisements(advertisements.subList(0, Math.min(advertisements.size(), 10)));
+                    return serviceModel;
+                })
                 .collect(Collectors.toList());
     }
 

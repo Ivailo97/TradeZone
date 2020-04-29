@@ -2,7 +2,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-
 import { AppComponent } from './app.component';
 import { HomeComponent } from './components/shared/home/home.component';
 import { AuthInterceptor } from './core/interceptors/auth-interceptor';
@@ -23,6 +22,7 @@ import { TopAdvertisementInfoComponent } from './components/shared/top-advertise
 import { SortByLikesPipe } from './core/helpers/sort.pipe';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { TopCategoryComponent } from './components/shared/top-category/top-category.component';
+import {MatButtonModule} from '@angular/material/button';
 
 
 @NgModule({
@@ -40,6 +40,8 @@ import { TopCategoryComponent } from './components/shared/top-category/top-categ
     AlertModule,
     MatCardModule,
     MatTabsModule,
+    MatButtonModule
+    
   ],
   declarations: [
     AppComponent,

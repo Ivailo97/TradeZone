@@ -1,14 +1,13 @@
 <div>
-    <h2 class="text-center text-primary"> Top {{category.name}}</h2>
+    <h2 class="text-center text-primary"> Top 10 Favorite {{category.name}}</h2>
     <mat-divider class="bg-dark"></mat-divider>
     <div class="row d-flex justify-content-center">
         <app-top-advertisement-info class="col-lg-4" *ngFor="let advertisement of category.advertisements | sort
          | paginate : config;" [advertisement]="advertisement">
         </app-top-advertisement-info>
-
     </div>
 
-    <div class="row d-flex justify-content-center">
+    <div class="row d-flex justify-content-center mt-5">
         <pagination-controls id="{{config.id}}" (pageChange)="changePage($event)"></pagination-controls>
     </div>
 
