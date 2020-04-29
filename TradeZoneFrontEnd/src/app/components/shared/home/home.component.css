@@ -1,0 +1,15 @@
+.home {
+    background-color: rgba(255, 255, 255, 0.479);
+    padding: 2%;
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 2%;
+    border: solid;
+    border-radius: 1rem;
+    border-color: rgb(241, 179, 6);
+    box-shadow: 0 0 1.5rem 0 rgba(0, 0, 0, 0.712);
+}
+
+.text-highlighted {
+    color: rgb(248, 184, 8);
+}

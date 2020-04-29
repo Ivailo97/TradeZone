@@ -1,0 +1,31 @@
+<div class="modal fade" id="uploadPhotosModal" tabindex="-2" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title font-weight-bold" id="exampleModalLabel">Upload photos</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+            </div>
+            <div class="modal-body text-center">
+
+                <form [formGroup]="form" enctype="multipart/form-data" id="file-form">
+                    <span class="btn btn-default btn-file">
+                        <input id="file" type="file" class="file" formControlName="file"
+                         multiple
+                         (change)="onFileChange($event)">
+                    </span>
+                </form>
+
+                <img *ngFor='let url of images' [src]="url" height="150px" width="150x" style="margin: 3px;"> <br/>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button [disabled]="form.invalid" type="button" class="btn btn-success" data-dismiss="modal" (click)="uploadPhotos()">Upload</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button data-toggle="modal" data-target="#uploadPhotosModal" (click)="resetImages()" class="btn btn-primary">Add images</button>

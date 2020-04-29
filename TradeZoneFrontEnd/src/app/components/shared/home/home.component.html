@@ -1,0 +1,19 @@
+<div *ngIf="info.token; else loggedOut">
+    <app-top-category *ngFor="let category of topCategories$ | async;let id = index" [category]="category" [config]="{ id:id, itemsPerPage: 5, currentPage: 1}">
+    </app-top-category>
+</div>
+<ng-template #loggedOut>
+    <div class="home d-md-flex flex-md-equal  my-md-3 pl-md-3">
+        <div style=" padding-left: 7%; padding-top:3%;" class="col-md-7">
+            <h2 class="featurette-heading">Here you will find <span class="text-highlighted">all types of advertisements</span></h2>
+            <p class="lead">1. Join our family.</p>
+            <p style="padding-left:5%" class="lead">2. Search in millions of advertisements.</p>
+            <p style="padding-left:10%" class="lead">3. Publish your advertisements.</p>
+            <hr>
+            <p class="lead">Dont hesitate get started now!</p>
+        </div>
+        <div class="col-md-5">
+            <img class="home-picture" src="https://wallpapercave.com/wp/wp2175828.jpg" width="350px" />
+        </div>
+    </div>
+</ng-template>

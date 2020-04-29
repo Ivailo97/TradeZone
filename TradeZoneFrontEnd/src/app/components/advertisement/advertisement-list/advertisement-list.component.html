@@ -1,0 +1,107 @@
+<div class="container">
+
+    <app-category-list (emitter)="categoryChange($event)"></app-category-list>
+
+    <div class="row mt-3">
+
+        <div class="col-2">
+
+            <label id="radio-group">Sort by:</label>
+            <mat-radio-group color="primary" aria-labelledby="radio-group" class="example-radio-group" [(ngModel)]="selectedSortCriteria" (change)="sort()">
+                <mat-radio-button class="example-radio-button" *ngFor="let criteria of sortCriterias" [value]="criteria">
+                    {{criteria |titlecase}}
+                </mat-radio-button>
+
+            </mat-radio-group>
+
+            <mat-checkbox class="example-margin" (change)="addOrderTypeInSorting()" [(ngModel)]="descending">Descending order</mat-checkbox>
+
+        </div>
+
+        <div class="col-1">
+        </div>
+
+        <div class="col-6 mt-3">
+            <form class="example">
+                <input type="text" placeholder="Search {{currentCategory | lowercase}} by tittle containing" [(ngModel)]="searchText" name="search">
+                <button type="submit" (click)="search()"><i class="fa fa-search"></i></button>
+            </form>
+        </div>
+        <div class="col-1">
+        </div>
+
+        <div class="col-2">
+            <label id="radio-group">Condition:</label>
+            <mat-radio-group color="primary" aria-labelledby="radio-group" class="example-radio-group" [(ngModel)]="selectedCondition" (change)="filterByCondition()">
+                <mat-radio-button class="example-radio-button" *ngFor="let condition of (conditions$ | async)" [value]="condition">
+                    {{condition |titlecase}}
+                </mat-radio-button>
+
+                <mat-radio-button class="example-radio-button" value="All">
+                    All
+                </mat-radio-button>
+
+            </mat-radio-group>
+        </div>
+
+    </div>
+
+    <div class="row offset-5">
+        <app-advertisement-modal-create></app-advertisement-modal-create>
+    </div>
+
+    <div class="row">
+        <app-advertisement-modal-delete [advertisementId]="advertisementToModifyId"></app-advertisement-modal-delete>
+        <app-advertisement-modal-edit [id]="advertisementToModifyId"></app-advertisement-modal-edit>
+    </div>
+
+    <app-price-range (valuesEmmiter)="priceRangeChange($event)"></app-price-range>
+
+    <h3 id="count" class="text-center mt-2">
+        results: {{(advertisements$ | async)?.length}}
+    </h3>
+
+</div>
+
+<div class="row mt-3" id="advertisements">
+
+    <app-advertisement-info *ngFor="let advertisement of advertisements$ | async | slice:startIndex:endIndex" [advertisement]="advertisement" (emitId)="changeAdvertisementToModifyId($event)">
+    </app-advertisement-info>
+
+    <div class="col" *ngIf="(advertisements$ | async)?.length === 0">
+        <h2 class="text-center">No results , maybe try new searching ?</h2>
+    </div>
+</div>
+
+<div class="row mt-3" *ngIf="advertisements$ | async as data">
+
+
+    <div class="col lg-4 offset-5">
+
+        <nav aria-label="Page navigation example">
+
+            <ul class="pagination">
+
+                <li class="page-item">
+                    <a class="page-link" href="#" (click)="prev($event)" aria-label="Previous ">
+                        <span aria-hidden="true ">&laquo;</span>
+                    </a>
+                </li>
+
+                <li class="page-item" *ngFor="let i of getArrayFromNumber(data.length); let index=index " [ngClass]="{'active': index === 0}">
+                    <a class="page-link" href="#" (click)="updatePage($event,index + 1) ">{{index + 1}}</a>
+                </li>
+
+                <li class="page-item">
+                    <a class="page-link" href="#" (click)="next($event,getArrayFromNumber(data.length).length)" aria-label="Next ">
+                        <span aria-hidden="true ">&raquo;</span>
+                    </a>
+                </li>
+
+            </ul>
+
+        </nav>
+
+    </div>
+
+</div>

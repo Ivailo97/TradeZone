@@ -1,0 +1,115 @@
+<div class="modal fade" id="modalCreate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+
+        <div class="modal-content">
+
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">Create advertisement</h4>
+                <button #closeModalBtn type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+                  </button>
+            </div>
+
+            <div class="modal-body mx-3" [formGroup]="form" enctype="multipart/form-data">
+
+                <div class="md-form mb-5 form-group">
+                    <i class="fas fa-heading prefix grey-text"></i>
+                    <input type="text" formControlName="title" class="form-control">
+                    <label>Title</label>
+
+                    <div class="alert alert-danger" *ngIf="f?.title?.touched && f?.title.errors?.required">
+                        Field is required!
+                    </div>
+                </div>
+
+                <div class="md-form mb-5 form-group">
+                    <i class="fas fa-comment-alt prefix grey-text"></i>
+                    <textarea formControlName="description" class="form-control md-textarea"></textarea>
+                    <label>Description</label>
+
+                    <div class="alert alert-danger" *ngIf="f?.description?.touched && f?.description.errors?.required">
+                        Field is required!
+                    </div>
+                </div>
+
+                <div class="md-form mb-5 form-group">
+                    <i class="fas fa-dollar-sign prefix grey-text"></i>
+                    <input type="number" class="form-control" formControlName="price">
+                    <label>Price</label>
+
+                    <div class="alert alert-danger" *ngIf="f?.price?.touched && f?.price.errors?.required">
+                        Field is required!
+                    </div>
+
+                    <div class="alert alert-danger" *ngIf="f?.price?.touched && f?.price.errors?.min">
+                        Must be a positive number!
+                    </div>
+                </div>
+
+                <div class="md-form mb-5 form-group input-group">
+                    <div class="input-group-prepend">
+                        <i class="fas fa-wrench prefix grey-text"></i>
+                    </div>
+                    <mat-form-field class="ml-5">
+                        <mat-label class="active">Condition</mat-label>
+                        <mat-select required formControlName="condition">
+                            <mat-option *ngFor="let condition of (conditions$ | async)" [value]="condition">
+                                {{condition}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
+
+                <div class="md-form mb-5 form-group input-group">
+                    <div class="input-group-prepend">
+                        <i class="fas fa-grip-horizontal prefix grey-text"></i>
+                    </div>
+                    <mat-form-field class="ml-5">
+                        <mat-label class="active"> Category</mat-label>
+                        <mat-select required formControlName="category">
+
+                            <mat-option *ngFor="let category of (categories$ | async)" [value]="category.id">
+                                {{category.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="file" class="col-sm-3 control-label">
+                       Images
+                    </label>
+                    <div class="col-sm-9">
+                        <span class="btn btn-default btn-file">
+                            <input id="file" formControlName="file" type="file" class="file"
+                             multiple
+                             (change)="onFileChange($event)">
+                        </span>
+                    </div>
+                </div>
+
+                <div *ngIf="f.file.touched && f.file.invalid" class="alert alert-danger">
+                    <div *ngIf="f.file.errors.required">File is required.</div>
+                </div>
+
+                <img *ngFor='let url of images' [src]="url" height="150" width="200px" style="margin: 3px;"> <br/>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-block" [disabled]="form.invalid" (click)="submit($event)" data-toggle="modal" data-target="#modalCreate"> Create </button>
+                </div>
+
+                <div class="alert alert-danger" *ngIf="errorMessage">
+                    {{errorMessage}}
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="text-center">
+    <a (click)="resetForm()" href="" class="btn btn-secondary btn-rounded mb-4" data-toggle="modal" data-target="#modalCreate"><i class="fas fa-plus"></i> Create</a>
+</div>
