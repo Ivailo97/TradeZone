@@ -23,6 +23,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
+import { NgxPaginationModule } from 'ngx-pagination';
 import { MatIconModule } from '@angular/material/icon';
 
 
@@ -55,6 +56,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatToolbarModule,
     MatCheckboxModule,
     AdvertisementRoutingModule,
+    NgxPaginationModule,
     MatTooltipModule,
     FormsModule,
     ReactiveFormsModule

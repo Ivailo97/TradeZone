@@ -1,11 +1,11 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AdvertisementInfoList } from '../../../core/models/advertisement-info-list';
 import { AdvertisementService } from '../../../core/services/advertisement.service';
 import { map } from 'rxjs/operators';
 import { AdvertisementModalEditComponent } from '../advertisement-modal-edit/advertisement-modal-edit.component';
 
-const elementsPerPage = 8;
+
 const initialMinValue = 0;
 const initialMaxValue = 10000;
 const defaultCategory = 'All';
@@ -27,6 +27,8 @@ export class AdvertisementListComponent implements OnInit {
 
   @ViewChild(AdvertisementModalEditComponent) editComponent: AdvertisementModalEditComponent;
 
+  config: any;
+
   descending: boolean;
   selectedCondition: string;
   conditions$: Observable<String[]>
@@ -45,6 +47,7 @@ export class AdvertisementListComponent implements OnInit {
   constructor(private advertisementService: AdvertisementService) { }
 
   ngOnInit() {
+    this.config = { id: 'list', itemsPerPage: 6, currentPage: 1 }
     this.conditions$ = this.advertisementService.getAllConditions();
     this.descending = false;
     this.selectedSortCriteria = defaultSelectedCriteria;
@@ -60,6 +63,10 @@ export class AdvertisementListComponent implements OnInit {
 
   private loadAdvertisements() {
     this.advertisements$ = this.advertisementService.getAllAdvertisementsWithPriceBetween(this.minPriceRange, this.maxPriceRange);
+  }
+
+  changePage(event) {
+    this.config.currentPage = event;
   }
 
   search() {
@@ -117,67 +124,6 @@ export class AdvertisementListComponent implements OnInit {
     if (this.selectedSortCriteria !== defaultSelectedCriteria) {
       this.sort();
     }
-  }
-
-  getArrayFromNumber(number) {
-
-    let length = Math.max(1, Math.ceil(number / elementsPerPage));
-
-    return new Array(length);
-  }
-
-  updatePage(event, numberOfPage) {
-
-    event.preventDefault();
-
-    this.currentPage = numberOfPage;
-
-    this._clearActiveClass(event);
-
-    event.target.parentNode.classList.add('active');
-
-    this._updateIndices();
-  }
-
-  prev(event) {
-    event.preventDefault();
-
-    if (this.currentPage - 1 > 0) {
-
-      this._clearActiveClass(event);
-      this._addActiveClass(event, this.currentPage - 1);
-      this.currentPage--;
-      this._updateIndices();
-    }
-  }
-
-  next(event, maxPageNumber) {
-    event.preventDefault();
-
-    if (this.currentPage + 1 <= maxPageNumber) {
-
-      this._clearActiveClass(event);
-      this._addActiveClass(event, this.currentPage + 1);
-      this.currentPage++;
-      this._updateIndices();
-    }
-  }
-
-  _clearActiveClass(event) {
-
-    for (const li of event.currentTarget.parentNode.parentNode.children) {
-      li.classList.remove('active');
-    }
-  }
-
-  _updateIndices() {
-
-    this.startIndex = (this.currentPage - 1) * elementsPerPage;
-    this.endIndex = this.startIndex + elementsPerPage;
-  }
-
-  _addActiveClass(event, index) {
-    event.currentTarget.parentNode.parentNode.children[index].classList.add('active')
   }
 
   priceRangeChange(event) {
