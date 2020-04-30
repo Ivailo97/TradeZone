@@ -1,0 +1,15 @@
+<div class="categories-heading text-center">Categories</div>
+<div class="row">
+
+    <app-category-info (change)="changeCategory($event)" [category]="defaultCategory">
+
+    </app-category-info>
+
+    <app-category-info (change)="changeCategory($event)" *ngFor="let category of categories$ | async" [category]="category">
+
+    </app-category-info>
+
+    <app-category-modal-create *ngIf="roles?.includes('ROLE_MODERATOR')">
+    </app-category-modal-create>
+
+</div>

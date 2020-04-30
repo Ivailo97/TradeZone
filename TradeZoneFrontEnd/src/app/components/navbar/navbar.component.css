@@ -1,0 +1,165 @@
+.container {
+    max-width: 960px;
+}
+
+a {
+    text-decoration: none;
+}
+
+.a-button {
+    color: rgb(46, 45, 45);
+    padding: 10px;
+    transition: ease-in-out color .15s;
+}
+
+.a-button:hover {
+    color: rgb(78, 58, 2);
+    text-decoration: none;
+}
+
+
+/*
+   * Custom translucent site header
+   */
+
+.site-header {
+    background-color: rgba(29, 236, 140, 0.774);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+}
+
+.site-header a {
+    color: rgb(0, 0, 0);
+    transition: ease-in-out color .15s;
+}
+
+.site-header a:hover {
+    color: #fff;
+    text-decoration: none;
+}
+
+.flex-equal>* {
+    -ms-flex: 1;
+    flex: 1;
+}
+
+@media (min-width: 768px) {
+    .flex-md-equal>* {
+        -ms-flex: 1;
+        flex: 1;
+    }
+}
+
+.overflow-hidden {
+    overflow: hidden;
+}
+
+.buttons-together {
+    margin: auto;
+    margin-top: 2%;
+}
+
+.btn {
+    width: 25%;
+    margin: 0 auto;
+    background-color: rgba(51, 51, 51, 0.842);
+    color: white;
+}
+
+.alreadyUser {
+    margin: 1%;
+}
+
+.no-found-template {
+    margin: 0 auto;
+    text-align: center;
+}
+
+#fouronefour {
+    margin: 0 auto;
+    width: 100%;
+    margin-bottom: 2%;
+    border: solid;
+    border-color: rgba(27, 27, 27, 0.904);
+    box-shadow: 0 0 2rem 0 rgba(0, 0, 0, 0.76);
+}
+
+.alert {
+    width: 50%;
+    margin: 0 auto;
+    text-align: center;
+    margin-top: 1%;
+}
+
+.imageContainer {
+    border: 2px solid black;
+    border-radius: 25px;
+}
+
+.infoType {
+    text-decoration: underline;
+}
+
+.text-highlighted {
+    color: rgb(248, 184, 8);
+}
+
+
+/* ------------------------------------------------------------------------------------------------------------------------ */
+
+nav {
+    margin-bottom: 2%;
+}
+
+.img {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.411);
+    /* border */
+    background: rgb(246, 217, 154);
+    box-shadow: 0 0 10rem 0 rgba(0, 0, 0, 0.712);
+}
+
+.img:before {
+    display: block;
+    content: '';
+    padding-top: 100%;
+}
+
+img {
+    display: block;
+    width: 100%;
+    height: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+@media screen and (max-width:900px) {
+    .treksPlaceholder {
+        flex: 0 1 80%;
+    }
+}
+
+.details-img {
+    width: 40%;
+    height: auto;
+    margin: 0 auto;
+    position: static;
+    top: 0;
+    left: 0;
+    transform: none;
+    border: 1px solid black;
+}
+
+.no-found-picture,
+.home-picture {
+    top: 0;
+    left: 0;
+    transform: none;
+    width: 100%;
+    position: static;
+    margin: 0 auto;
+}

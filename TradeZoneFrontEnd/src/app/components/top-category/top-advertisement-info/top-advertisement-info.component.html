@@ -1,0 +1,51 @@
+<div class="wrapper">
+    <div class="top-container">
+        <div class="top" style="background-image: url({{advertisement.imageUrl}});"></div>
+        <div class="bottom" [ngClass]="liked ? 'clicked' : ''">
+            <div class="left">
+                <div class="details">
+                    <h1>{{advertisement.title}}</h1>
+                    <p>{{advertisement.price | currency}}</p>
+                </div>
+                <div class="buy" (click)="toogleFavorite()"><i class="material-icons">favorite_border</i></div>
+            </div>
+            <div class="right">
+                <div class="done"><i class="material-icons">done</i></div>
+                <div class="details">
+                    <h1>{{advertisement.title}}</h1>
+                    <p>Liked</p>
+                </div>
+                <div class="remove" (click)="toogleFavorite()"><i class="material-icons">clear</i></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="inside">
+        <div class="icon"><i class="material-icons">info_outline</i></div>
+        <div class="contents">
+            <div class="row mt-5"></div>
+            <div class="row mt-5"></div>
+            <div class="row mt-5 ml-5">
+                <table>
+                    <tr>
+                        <th>Views</th>
+                        <th>Likes</th>
+                    </tr>
+                    <tr>
+                        <td>{{advertisement.views}}</td>
+                        <td>{{advertisement.profilesWhichLikedIt.length}}</td>
+                    </tr>
+
+                </table>
+            </div>
+
+            <div class="row mt-5"></div>
+            <div class="row mt-5"></div>
+            <div class="row mt-5 ml-5">
+                <div class="col-md-2"></div>
+                <button mat-raised-button color="warn" [routerLink]="['/advertisement/details',advertisement.id]"> Details</button>
+            </div>
+
+        </div>
+    </div>
+</div>

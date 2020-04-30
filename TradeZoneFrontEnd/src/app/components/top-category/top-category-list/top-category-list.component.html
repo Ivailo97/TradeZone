@@ -1,0 +1,2 @@
+<app-top-category *ngFor="let category of topCategories$ | async;let id = index" [category]="category" [config]="{ id:id, itemsPerPage: 3, currentPage: 1}">
+</app-top-category>

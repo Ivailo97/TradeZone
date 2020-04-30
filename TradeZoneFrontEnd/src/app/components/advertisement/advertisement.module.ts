@@ -4,13 +4,10 @@ import { AdvertisementListInfoComponent } from './advertisement-list-info/advert
 import { AdvertisementListComponent } from './advertisement-list/advertisement-list.component';
 import { AdvertisementRoutingModule } from './advertisement-routing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CategoryInfoComponent } from './category-info/category-info.component';
-import { CategoryListComponent } from './category-list/category-list.component';
 import { AdvertisementDetailsComponent } from './advertisement-details/advertisement-details.component';
 import { AdvertisementModalCreateComponent } from 'src/app/components/advertisement/advertisement-modal-create/advertisement-modal-create.component';
 import { PriceRangeComponent } from './price-range/price-range.component';
 import { Ng5SliderModule } from 'ng5-slider';
-import { CategoryModalCreateComponent } from './category-modal-create/category-modal-create.component';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -25,7 +22,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { MatIconModule } from '@angular/material/icon';
-
+import { CategoryModule } from '../category/category.module';
 
 @NgModule({
 
@@ -34,15 +31,11 @@ import { MatIconModule } from '@angular/material/icon';
     AdvertisementListComponent,
     AdvertisementDetailsComponent,
     AdvertisementModalCreateComponent,
-    CategoryInfoComponent,
-    CategoryListComponent,
     PriceRangeComponent,
-    CategoryModalCreateComponent,
     AdvertisementModalDeleteComponent,
     ImageDeleteModalComponent,
     ImageUploadModalComponent,
     AdvertisementModalEditComponent,
-
   ],
   imports: [
     MatSelectModule,
@@ -56,6 +49,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatToolbarModule,
     MatCheckboxModule,
     AdvertisementRoutingModule,
+    CategoryModule,
     NgxPaginationModule,
     MatTooltipModule,
     FormsModule,
@@ -64,7 +58,7 @@ import { MatIconModule } from '@angular/material/icon';
   exports: [
     AdvertisementListInfoComponent,
     AdvertisementModalDeleteComponent,
-    AdvertisementModalEditComponent
+    AdvertisementModalEditComponent,
   ]
 })
 export class AdvertisementModule {

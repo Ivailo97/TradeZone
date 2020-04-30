@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { HomeComponent } from './components/shared/home/home.component';
+import { HomeComponent } from './components/home/home.component';
 import { AuthGuard } from './core/guards/auth.guard';
 import { AnonymGuard } from './core/guards/anonym.guard';
 
@@ -28,7 +28,7 @@ const routes: Routes = [
   {
     path: 'auth',
     loadChildren: './components/auth/auth.module#AuthModule', canLoad: [AnonymGuard]
-  }
+  },
 ];
 
 @NgModule({
