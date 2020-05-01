@@ -2,6 +2,8 @@ package TradeZone.service;
 
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import TradeZone.data.model.entity.Advertisement;
 import TradeZone.data.model.entity.Category;
@@ -42,7 +44,6 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
     private final CategoryRepository categoryRepository;
 
-    //needed only for seeding initial category
     private final PhotoRepository photoRepository;
 
     private void seedCategories() {
@@ -64,36 +65,60 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         categoryRepository.save(category);
     }
 
-    @Override
-    public List<AdvertisementServiceModel> getAllWithPriceBetween(BigDecimal min, BigDecimal max) {
-
-        this.seedCategories();
-        return advertisementRepository.findAllByPriceBetween(min, max).stream()
-                .map(x -> modelMapper.map(x, AdvertisementServiceModel.class))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<AdvertisementServiceModel> getByTitleContainingAndPriceBetween(String title, BigDecimal min, BigDecimal max) {
-
-        return this.advertisementRepository.findAllByPriceBetweenAndTitleContaining(min, max, title).stream()
-                .map(x -> modelMapper.map(x, AdvertisementServiceModel.class))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<AdvertisementServiceModel> getAllByCategoryAndPriceBetween(String categoryName, BigDecimal min, BigDecimal max) {
-
-        return advertisementRepository.findAllByCategoryNameAndPriceBetween(categoryName, min, max).stream()
-                .map(x -> modelMapper.map(x, AdvertisementServiceModel.class))
-                .collect(Collectors.toList());
-    }
 
     @Override
     public AdvertisementServiceModel getById(Long id) {
         return advertisementRepository.findById(id)
                 .map(x -> modelMapper.map(x, AdvertisementServiceModel.class))
                 .orElseThrow();
+    }
+
+    @Override
+    public Long countOfAll() {
+        return advertisementRepository.count();
+    }
+
+    @Override
+    public Long countByCategoryAndPriceBetween(String category, BigDecimal min, BigDecimal max) {
+
+        Long result;
+
+        if (categoryRepository.existsByName(category)) {
+            result = advertisementRepository.countAdvertisementByCategoryNameAndPriceBetween(category, min, max);
+        } else {
+            result = 0L;
+        }
+
+        return result;
+    }
+
+    @Override
+    public Long countOfPriceBetween(BigDecimal min, BigDecimal max) {
+        return advertisementRepository.countAdvertisementByPriceBetween(min, max);
+    }
+
+    @Override
+    public Long countOfPriceBetweenAndCondition(BigDecimal min, BigDecimal max, String conditionName) {
+        Condition condition = Condition.valueOf(conditionName);
+        return advertisementRepository.countAdvertisementByPriceBetweenAndCondition(min, max, condition);
+    }
+
+    @Override
+    public Long countByCategoryConditionAndPriceBetween(String category, String conditionName, BigDecimal min, BigDecimal max) {
+
+        Long count;
+
+        if (categoryRepository.existsByName(category) &&
+                Arrays.stream(Condition.values()).anyMatch(x -> x.name().equals(conditionName.toUpperCase()))) {
+
+            Condition condition = Condition.valueOf(conditionName);
+            count = advertisementRepository.countAdvertisementByCategoryNameAndConditionAndPriceBetween(category, condition, min, max);
+
+        } else {
+            count = 0L;
+        }
+
+        return count;
     }
 
     @Override
@@ -143,7 +168,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
             return new ResponseMessage(FAIL);
         }
 
-        if (!advertisement.getCategory().getId().equals(category.getId())){
+        if (!advertisement.getCategory().getId().equals(category.getId())) {
             advertisement.setCategory(category);
         }
 
@@ -210,10 +235,105 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     }
 
     @Override
-    public List<AdvertisementServiceModel> getAllByCategoryTitleContainingAndPriceBetween(String categoryName, String searchText, BigDecimal min, BigDecimal max) {
+    public List<AdvertisementServiceModel> getAllByCategoryTitleContainingAndPriceBetween(String categoryName, String searchText, BigDecimal min, BigDecimal max, PageRequest page) {
 
-        return advertisementRepository.findAllByCategoryNameAndTitleContainingAndPriceBetween(categoryName, searchText, min, max).stream()
+        Page<Advertisement> advertisements;
+
+        if (categoryName.equals("All")) {
+            advertisements = advertisementRepository.findAllByPriceBetweenAndTitleContaining(min, max, searchText, page);
+        } else {
+            advertisements = advertisementRepository.findAllByCategoryNameAndTitleContainingAndPriceBetween(categoryName, searchText, min, max, page);
+        }
+
+        return advertisements
+                .stream()
                 .map(x -> modelMapper.map(x, AdvertisementServiceModel.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<AdvertisementServiceModel> getAllByCategoryPriceBetweenAndCondition(BigDecimal min, BigDecimal max, String conditionName, String category, PageRequest pageRequest) {
+
+        Condition condition = Condition.valueOf(conditionName);
+
+        Page<Advertisement> advertisements;
+
+        if (category.equals("All")) {
+            advertisements = advertisementRepository.findAllByPriceBetweenAndCondition(min, max, condition, pageRequest);
+        } else {
+            advertisements = advertisementRepository.findAllByCategoryNameAndPriceBetweenAndCondition(category, min, max, condition, pageRequest);
+        }
+
+        return advertisements
+                .stream()
+                .map(x -> modelMapper.map(x, AdvertisementServiceModel.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<AdvertisementServiceModel> getAllByCategoryAndPriceBetween(String category, BigDecimal min, BigDecimal max, PageRequest pageRequest) {
+
+        this.seedCategories();
+
+        Page<Advertisement> advertisements;
+
+        if (category.equals("All")) {
+            advertisements = advertisementRepository.findAllByPriceBetween(min, max, pageRequest);
+        } else {
+            advertisements = advertisementRepository.findAllByCategoryNameAndPriceBetween(category, min, max, pageRequest);
+        }
+
+        return advertisements
+                .stream()
+                .map(x -> modelMapper.map(x, AdvertisementServiceModel.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<AdvertisementServiceModel> getAllByCategoryTitleContainingPriceBetweenAndCondition(String category, String search, BigDecimal min, BigDecimal max, String conditionName, PageRequest pageRequest) {
+
+        Page<Advertisement> advertisements;
+
+        Condition condition = Condition.valueOf(conditionName);
+
+        if (category.equals("All")) {
+            advertisements = advertisementRepository.findAllByTitleContainingAndPriceBetweenAndCondition(search, min, max, condition, pageRequest);
+        } else {
+            advertisements = advertisementRepository.findAllByTitleContainingAndCategoryNameAndPriceBetweenAndCondition(search, category, min, max, condition, pageRequest);
+        }
+
+        return advertisements
+                .stream()
+                .map(x -> modelMapper.map(x, AdvertisementServiceModel.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Long countByCategoryTitleContainingPriceBetweenAndCondition(String category, String search, BigDecimal min, BigDecimal max, String conditionName) {
+
+        Long count;
+
+        if (category.equals("All")) {
+
+            if (conditionName.equals("All")) {
+                count = advertisementRepository.countByPriceBetweenAndTitleContaining(min, max, search);
+            } else {
+                Condition condition = Condition.valueOf(conditionName);
+                count = advertisementRepository.countByPriceBetweenAndTitleContainingAndCondition(min, max, search, condition);
+            }
+
+        } else {
+
+            if (conditionName.equals("All")) {
+
+                count = advertisementRepository.countByPriceBetweenAndTitleContainingAndCategoryName(min, max, search, category);
+            } else {
+                Condition condition = Condition.valueOf(conditionName);
+                count = advertisementRepository.countByPriceBetweenAndTitleContainingAndCategoryNameAndCondition(min,max,search,category,condition);
+            }
+
+        }
+
+        return count;
     }
 }

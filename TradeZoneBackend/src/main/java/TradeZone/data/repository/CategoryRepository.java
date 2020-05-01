@@ -21,4 +21,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             "ORDER BY cnt DESC \n" +
             "LIMIT :count", nativeQuery = true)
     List<Category> findTopOrderedByAdvertisementsCountDesc(@Param("count") Integer count);
+
+    Boolean existsByName(String categoryName);
 }

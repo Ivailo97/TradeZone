@@ -57,11 +57,12 @@
 
     <app-price-range (valuesEmmiter)="priceRangeChange($event)"></app-price-range>
 
-    <h3 id="count" class="text-center mt-2">
-        results: {{(advertisements$ | async)?.length}}
-    </h3>
-
+    <div class="row mt-3 d-flex justify-content-center">
+        <h1>{{config.totalItems}}</h1>
+    </div>
 </div>
+
+
 
 <div class="row mt-3 d-flex justify-content-center" id="advertisements">
 

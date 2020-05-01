@@ -2,6 +2,8 @@ package TradeZone.web.controller;
 
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,11 +39,89 @@ public class AdvertisementController {
     private final PhotoService photoService;
     private final ModelMapper mapper;
 
-    @GetMapping("/all")
+    @GetMapping("/all/{category}")
     public List<AdvertisementListViewModel> showAds(@RequestParam BigDecimal min,
-                                                    @RequestParam BigDecimal max) {
+                                                    @RequestParam BigDecimal max,
+                                                    @RequestParam Integer page,
+                                                    @RequestParam String sortBy,
+                                                    @RequestParam String order,
+                                                    @RequestParam String condition,
+                                                    @PathVariable String category) {
 
-        return mapServiceAdvertisementsToView(advertisementService.getAllWithPriceBetween(min, max));
+        PageRequest pageRequest = PageRequest.of(page - 1, 6);
+
+        if (!sortBy.equals("none") && !order.equals("none")) {
+
+            Sort sort = Sort.by(sortBy);
+            if (order.equals("ascending")) {
+                sort = sort.ascending();
+            } else {
+                sort = sort.descending();
+            }
+            pageRequest = PageRequest.of(page - 1, 6, sort);
+        }
+
+        List<AdvertisementServiceModel> advertisementServiceModels;
+
+        if (!condition.equals("All")) {
+            advertisementServiceModels = advertisementService.getAllByCategoryPriceBetweenAndCondition(min, max, condition, category, pageRequest);
+        } else {
+            advertisementServiceModels = advertisementService.getAllByCategoryAndPriceBetween(category, min, max, pageRequest);
+        }
+
+        return mapServiceAdvertisementsToView(advertisementServiceModels);
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> count() {
+        Long count = advertisementService.countOfAll();
+        return ResponseEntity.ok(count);
+    }
+
+    @GetMapping("/count-price-between")
+    public ResponseEntity<Long> count(@RequestParam BigDecimal min, @RequestParam BigDecimal max) {
+        Long count = advertisementService.countOfPriceBetween(min, max);
+        return ResponseEntity.ok(count);
+    }
+
+    @GetMapping("/count-price-between-condition")
+    public ResponseEntity<Long> count(@RequestParam BigDecimal min,
+                                      @RequestParam BigDecimal max,
+                                      @RequestParam String condition) {
+
+        Long count;
+        if (!condition.equals("All")) {
+            count = advertisementService.countOfPriceBetweenAndCondition(min, max, condition);
+        } else {
+            count = advertisementService.countOfAll();
+        }
+        return ResponseEntity.ok(count);
+    }
+
+    @GetMapping("/count-price-between-condition-search-category")
+    public ResponseEntity<Long> count(@RequestParam BigDecimal min,
+                                      @RequestParam BigDecimal max,
+                                      @RequestParam String condition,
+                                      @RequestParam String search,
+                                      @RequestParam String category) {
+
+        return ResponseEntity.ok(advertisementService.countByCategoryTitleContainingPriceBetweenAndCondition(category, search, min, max, condition));
+    }
+
+    @GetMapping("/count-category")
+    public ResponseEntity<Long> count(@RequestParam String category,
+                                      @RequestParam BigDecimal min,
+                                      @RequestParam BigDecimal max,
+                                      @RequestParam String condition) {
+        Long count;
+
+        if (condition.equals("All")) {
+            count = advertisementService.countByCategoryAndPriceBetween(category, min, max);
+        } else {
+            count = advertisementService.countByCategoryConditionAndPriceBetween(category, condition, min, max);
+        }
+
+        return ResponseEntity.ok(count);
     }
 
     @PostMapping("/create")
@@ -90,33 +170,38 @@ public class AdvertisementController {
         return new ResponseEntity<>(status);
     }
 
-    @GetMapping("/filter")
-    public List<AdvertisementListViewModel> filterAds(@RequestParam String title,
-                                                      @RequestParam BigDecimal min,
-                                                      @RequestParam BigDecimal max) {
-
-        return mapServiceAdvertisementsToView(advertisementService.getByTitleContainingAndPriceBetween(title, min, max));
-    }
-
-    @GetMapping("/{cat}")
-    public List<AdvertisementListViewModel> filterByCategory(@PathVariable(name = "cat") String cat,
-                                                             @RequestParam BigDecimal min,
-                                                             @RequestParam BigDecimal max) {
-
-        if (cat.equals("All")) {
-            return mapServiceAdvertisementsToView(advertisementService.getAllWithPriceBetween(min, max));
-        }
-
-        return mapServiceAdvertisementsToView(advertisementService.getAllByCategoryAndPriceBetween(cat, min, max));
-    }
-
     @GetMapping("/category-and-text")
     public List<AdvertisementListViewModel> filterByCategoryAndTitle(@RequestParam String search,
                                                                      @RequestParam String category,
                                                                      @RequestParam BigDecimal min,
-                                                                     @RequestParam BigDecimal max) {
+                                                                     @RequestParam BigDecimal max,
+                                                                     @RequestParam Integer page,
+                                                                     @RequestParam String sortBy,
+                                                                     @RequestParam String order,
+                                                                     @RequestParam String condition) {
 
-        return mapServiceAdvertisementsToView(advertisementService.getAllByCategoryTitleContainingAndPriceBetween(category, search, min, max));
+        PageRequest pageRequest = PageRequest.of(page - 1, 6);
+
+        if (!sortBy.equals("none") && !order.equals("none")) {
+
+            Sort sort = Sort.by(sortBy);
+            if (order.equals("ascending")) {
+                sort = sort.ascending();
+            } else {
+                sort = sort.descending();
+            }
+            pageRequest = PageRequest.of(page - 1, 6, sort);
+        }
+
+        List<AdvertisementServiceModel> advertisementServiceModels;
+
+        if (!condition.equals("All")) {
+            advertisementServiceModels = advertisementService.getAllByCategoryTitleContainingPriceBetweenAndCondition(category, search, min, max, condition, pageRequest);
+        } else {
+            advertisementServiceModels = advertisementService.getAllByCategoryTitleContainingAndPriceBetween(category, search, min, max, pageRequest);
+        }
+
+        return mapServiceAdvertisementsToView(advertisementServiceModels);
     }
 
     @GetMapping("/details/{id}")
