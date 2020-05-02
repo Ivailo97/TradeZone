@@ -19,8 +19,6 @@ const httpOptions = {
 
 export class AdvertisementService {
 
-
-
   private baseURL = 'http://localhost:8080/api';
 
   private _refreshNeeded$ = new Subject<void>();
@@ -31,24 +29,16 @@ export class AdvertisementService {
     return this._refreshNeeded$;
   }
 
-  getAllAdvertisementsWithPriceBetween(min, max, page, sortProperty, sortOrder, condition, category): Observable<AdvertisementInfoList[]> {
-    return this.http.get<AdvertisementInfoList[]>(`${this.baseURL}/all/${category}?min=${min}&max=${max}&page=${page}&sortBy=${sortProperty}&order=${sortOrder}&condition=${condition}`);
+  getAllAdvertisementsWithPriceBetween(params, category: string): Observable<AdvertisementInfoList[]> {
+    return this.http.get<AdvertisementInfoList[]>(`${this.baseURL}/all/${category}`, { params: params });
   }
 
-  getAdvertisementsByTitleAndPriceBetween(title: string, min: number, max: number): Observable<AdvertisementInfoList[]> {
-    return this.http.get<AdvertisementInfoList[]>(`${this.baseURL}/filter?title=${title}&min=${min}&max=${max}`);
-  }
-
-  getAllByCategoryAndPriceBetween(category, min, max) {
-    return this.http.get<AdvertisementInfoList[]>(`${this.baseURL}/${category}?min=${min}&max=${max}`);
-  }
-
-  getAdvertisement(id) {
+  getAdvertisement(id: number): Observable<AdvertisementDetails> {
     return this.http.get<AdvertisementDetails>(`${this.baseURL}/details/${id}`);
   }
 
-  getAdvertisementsByTitleContainingCategoryPriceBetweenAndCondition(title, category, min, max, page, sortProperty, sortOrder, condition): Observable<AdvertisementInfoList[]> {
-    return this.http.get<AdvertisementInfoList[]>(`${this.baseURL}/category-and-text?search=${title}&category=${category}&min=${min}&max=${max}&page=${page}&sortBy=${sortProperty}&order=${sortOrder}&condition=${condition}`);
+  getAdvertisementsByTitleContainingCategoryPriceBetweenAndCondition(params: any): Observable<AdvertisementInfoList[]> {
+    return this.http.get<AdvertisementInfoList[]>(`${this.baseURL}/category-and-text`, { params: params });
   }
 
   createAdvertisement(advertisement: AdvertisementBindingModel): Observable<string> {
@@ -124,22 +114,18 @@ export class AdvertisementService {
   }
 
   getTotalCount(): Observable<number> {
-    return this.http.get<number>(`${this.baseURL}/count`)
+    return this.http.get<number>(`${this.baseURL}/count`);
   }
 
-  getCountByPriceBetween(min, max): Observable<number> {
-    return this.http.get<number>(`${this.baseURL}/count-price-between?min=${min}$max=${max}`)
+  getCountByPriceBetweenAndCondition(params: any): Observable<number> {
+    return this.http.get<number>(`${this.baseURL}/count-price-between-condition`, { params: params });
   }
 
-  getCountByPriceBetweenAndCondition(min, max, condition): Observable<number> {
-    return this.http.get<number>(`${this.baseURL}/count-price-between-condition?min=${min}&max=${max}&condition=${condition}`)
+  getCountByCategoryPriceBetweenAndCondition(params: any): Observable<number> {
+    return this.http.get<number>(`${this.baseURL}/count-category`, { params: params });
   }
 
-  getCountByCategoryPriceBetweenAndCondition(currentCategory: string, min: number, max: number, condition: string): Observable<number> {
-    return this.http.get<number>(`${this.baseURL}/count-category?category=${currentCategory}&min=${min}&max=${max}&condition=${condition}`);
-  }
-
-  getCountBeforeSearch(min: number, max: number, condition: string, category: string, search: string): Observable<number> {
-    return this.http.get<number>(`${this.baseURL}/count-price-between-condition-search-category?category=${category}&min=${min}&max=${max}&condition=${condition}&search=${search}`);
+  getCountBeforeSearch(params: any): Observable<number> {
+    return this.http.get<number>(`${this.baseURL}/count-price-between-condition-search-category`, { params: params });
   }
 }

@@ -1,8 +1,8 @@
 package TradeZone.service;
 
-import TradeZone.data.model.rest.AdvertisementCreateModel;
-import TradeZone.data.model.rest.AdvertisementEditedModel;
+import TradeZone.data.model.rest.*;
 import TradeZone.data.model.rest.message.response.ResponseMessage;
+import TradeZone.data.model.rest.search.*;
 import TradeZone.data.model.service.AdvertisementServiceModel;
 import org.springframework.data.domain.PageRequest;
 
@@ -15,13 +15,7 @@ public interface AdvertisementService {
 
     Long countOfAll();
 
-    Long countByCategoryAndPriceBetween(String category, BigDecimal min, BigDecimal max);
-
-    Long countOfPriceBetween(BigDecimal min, BigDecimal max);
-
-    Long countOfPriceBetweenAndCondition(BigDecimal min, BigDecimal max, String condition);
-
-    Long countByCategoryConditionAndPriceBetween(String category, String condition, BigDecimal min, BigDecimal max);
+    Long countOfPriceBetween(BaseSearch baseSearch);
 
     ResponseMessage create(AdvertisementCreateModel restModel);
 
@@ -33,13 +27,13 @@ public interface AdvertisementService {
 
     ResponseMessage detachPhoto(String username, Long id, Long photoId);
 
-    List<AdvertisementServiceModel> getAllByCategoryTitleContainingAndPriceBetween(String categoryName, String searchText, BigDecimal min, BigDecimal max, PageRequest pageable);
+    Long countByCategoryTitleContainingPriceBetweenAndCondition(SearchRequest search);
 
-    List<AdvertisementServiceModel> getAllByCategoryPriceBetweenAndCondition(BigDecimal min, BigDecimal max, String condition, String category, PageRequest pageRequest);
+    List<AdvertisementServiceModel> getAllByAlmostFullSearch(AlmostFullSearchRequest search);
 
-    List<AdvertisementServiceModel> getAllByCategoryAndPriceBetween(String category, BigDecimal min, BigDecimal max, PageRequest pageRequest);
+    Long countByPriceBetweenAndCondition(ConditionSearch search);
 
-    List<AdvertisementServiceModel> getAllByCategoryTitleContainingPriceBetweenAndCondition(String category, String search, BigDecimal min, BigDecimal max, String condition, PageRequest pageRequest);
+    Long countByCategory(CategorySearchRequest search);
 
-    Long countByCategoryTitleContainingPriceBetweenAndCondition(String category, String search, BigDecimal min, BigDecimal max, String condition);
+    List<AdvertisementServiceModel> getAllByFullSearch(FullSearchRequest search);
 }

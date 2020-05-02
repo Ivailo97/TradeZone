@@ -40,11 +40,7 @@ export class AdvertisementListComponent implements OnInit {
 
   ngOnInit() {
     this.config = { id: 'list', itemsPerPage: 6, currentPage: 1 }
-    this.advertisementService.getTotalCount().subscribe(
-      data => {
-        this.config.totalItems = data;
-      }
-    )
+    this.advertisementService.getTotalCount().subscribe(data => { this.config.totalItems = data; })
     this.conditions$ = this.advertisementService.getAllConditions();
     this.descending = false;
     this.selectedSortCriteria = defaultSelectedCriteria;
@@ -71,8 +67,19 @@ export class AdvertisementListComponent implements OnInit {
 
       this.refreshPaginationCountBeforeSearch();
 
+      const params = {
+        search: this.searchText,
+        min: this.minPriceRange,
+        max: this.maxPriceRange,
+        condition: this.selectedCondition,
+        category: this.currentCategory,
+        page: this.config.currentPage,
+        order: sortOrder,
+        sortBy: this.selectedSortCriteria
+      }
+
       this.advertisements$ = this.advertisementService
-        .getAdvertisementsByTitleContainingCategoryPriceBetweenAndCondition(this.searchText, this.currentCategory, this.minPriceRange, this.maxPriceRange, this.config.currentPage, this.selectedSortCriteria, sortOrder, this.selectedCondition);
+        .getAdvertisementsByTitleContainingCategoryPriceBetweenAndCondition(params);
 
     } else {
 
@@ -85,7 +92,7 @@ export class AdvertisementListComponent implements OnInit {
     if (data !== undefined && data !== '' && data !== null) {
       this.currentCategory = data.trim();
       this.config.currentPage = 1;
-      this.filterByCondition();
+      this.search();
     }
   }
 
@@ -93,10 +100,6 @@ export class AdvertisementListComponent implements OnInit {
     if (this.selectedSortCriteria !== defaultSelectedCriteria) {
       this.changePage(this.config.currentPage)
     }
-  }
-
-  filterByCondition() {
-    this.search();
   }
 
   addOrderTypeInSorting() {
@@ -119,7 +122,13 @@ export class AdvertisementListComponent implements OnInit {
 
     if (this.currentCategory === defaultCategory) {
 
-      this.advertisementService.getCountByPriceBetweenAndCondition(this.minPriceRange, this.maxPriceRange, this.selectedCondition)
+      const params = {
+        min: this.minPriceRange,
+        max: this.maxPriceRange,
+        condition: this.selectedCondition
+      }
+
+      this.advertisementService.getCountByPriceBetweenAndCondition(params)
         .subscribe(
           data => {
             this.config.totalItems = data;
@@ -128,7 +137,14 @@ export class AdvertisementListComponent implements OnInit {
 
     } else {
 
-      this.advertisementService.getCountByCategoryPriceBetweenAndCondition(this.currentCategory, this.minPriceRange, this.maxPriceRange, this.selectedCondition)
+      const params = {
+        min: this.minPriceRange,
+        max: this.maxPriceRange,
+        condition: this.selectedCondition,
+        category: this.currentCategory
+      }
+
+      this.advertisementService.getCountByCategoryPriceBetweenAndCondition(params)
         .subscribe(
           data => {
             this.config.totalItems = data;
@@ -139,17 +155,33 @@ export class AdvertisementListComponent implements OnInit {
 
   private refreshPaginationCountBeforeSearch() {
 
+    const params = {
+      min: this.minPriceRange,
+      max: this.maxPriceRange,
+      condition: this.selectedCondition,
+      category: this.currentCategory,
+      search: this.searchText
+    }
 
-    this.advertisementService.getCountBeforeSearch(this.minPriceRange, this.maxPriceRange, this.selectedCondition, this.currentCategory, this.searchText)
+    this.advertisementService.getCountBeforeSearch(params)
       .subscribe(
         data => {
           this.config.totalItems = data;
         }
       )
-
   }
 
   private loadAdvertisements(sortBy, order, condition, category) {
-    this.advertisements$ = this.advertisementService.getAllAdvertisementsWithPriceBetween(this.minPriceRange, this.maxPriceRange, this.config.currentPage, sortBy, order, condition, category);
+
+    const params = {
+      min: this.minPriceRange,
+      max: this.maxPriceRange,
+      page: this.config.currentPage,
+      sortBy,
+      order,
+      condition
+    }
+
+    this.advertisements$ = this.advertisementService.getAllAdvertisementsWithPriceBetween(params, category);
   }
 }
