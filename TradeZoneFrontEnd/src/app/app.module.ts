@@ -19,6 +19,7 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { LoaderComponent } from './components/loader/loader.component';
 import { CategoryModule } from './components/category/category.module';
 import { TopCategoryModule } from './components/top-category/top-category.module';
+import { ErrorComponent } from './components/error/error.component';
 
 @NgModule({
 
@@ -41,7 +42,8 @@ import { TopCategoryModule } from './components/top-category/top-category.module
     HomeComponent,
     FooterComponent,
     NavbarComponent,
-    LoaderComponent
+    LoaderComponent,
+    ErrorComponent
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     LoaderService, { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true }],

@@ -4,6 +4,7 @@ import TradeZone.data.model.service.AdvertisementServiceModel;
 import TradeZone.data.model.view.AdvertisementListViewModel;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,8 +22,10 @@ public class MappingServiceImpl implements MappingService {
     }
 
     @Override
-    public List<AdvertisementListViewModel> mapServiceAdvertisementsToView(List<AdvertisementServiceModel> models) {
+    public List<AdvertisementListViewModel> mapServiceAdvertisementsToView(Page<AdvertisementServiceModel> models) {
+
         return models.stream().map(a -> {
+
             AdvertisementListViewModel model = mapper.map(a, AdvertisementListViewModel.class);
 
             if (a.getPhotos().size() != 0) {

@@ -32,7 +32,7 @@
 
         <div class="col-2">
             <label id="radio-group">Condition:</label>
-            <mat-radio-group color="primary" aria-labelledby="radio-group" class="example-radio-group" [(ngModel)]="selectedCondition" (change)="filterByCondition()">
+            <mat-radio-group color="primary" aria-labelledby="radio-group" class="example-radio-group" [(ngModel)]="selectedCondition" (change)="search()">
                 <mat-radio-button class="example-radio-button" *ngFor="let condition of (conditions$ | async)" [value]="condition">
                     {{condition |titlecase}}
                 </mat-radio-button>

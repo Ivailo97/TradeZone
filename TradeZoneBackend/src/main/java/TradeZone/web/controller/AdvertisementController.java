@@ -1,5 +1,6 @@
 package TradeZone.web.controller;
 
+import TradeZone.data.error.exception.EntityNotFoundException;
 import TradeZone.data.model.rest.*;
 import TradeZone.data.model.rest.search.*;
 import TradeZone.service.MappingService;
@@ -76,7 +77,7 @@ public class AdvertisementController {
     }
 
     @GetMapping("/edit/{id}")
-    public ResponseEntity<AdvertisementToEditViewModel> edit(@PathVariable Long id) {
+    public ResponseEntity<AdvertisementToEditViewModel> edit(@PathVariable Long id) throws EntityNotFoundException {
         AdvertisementServiceModel serviceModel = advertisementService.getById(id);
         AdvertisementToEditViewModel viewModel = mappingService.getMapper().map(serviceModel, AdvertisementToEditViewModel.class);
         viewModel.setCreator(serviceModel.getCreator().getUser().getUsername());
@@ -113,7 +114,7 @@ public class AdvertisementController {
     }
 
     @GetMapping("/details/{id}")
-    public ResponseEntity<AdvertisementDetailsViewModel> details(@PathVariable long id) {
+    public ResponseEntity<AdvertisementDetailsViewModel> details(@PathVariable Long id) throws EntityNotFoundException {
         AdvertisementServiceModel serviceModel = advertisementService.getById(id);
         AdvertisementDetailsViewModel viewModel = mappingService.getMapper().map(serviceModel, AdvertisementDetailsViewModel.class);
         viewModel.setCreator(serviceModel.getCreator().getUser().getUsername());

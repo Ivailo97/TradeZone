@@ -1,21 +1,19 @@
 package TradeZone.service;
 
+import TradeZone.data.error.exception.EntityNotFoundException;
 import TradeZone.data.model.rest.*;
 import TradeZone.data.model.rest.message.response.ResponseMessage;
 import TradeZone.data.model.rest.search.*;
 import TradeZone.data.model.service.AdvertisementServiceModel;
-import org.springframework.data.domain.PageRequest;
-
-import java.math.BigDecimal;
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface AdvertisementService {
 
-    AdvertisementServiceModel getById(Long id);
+    Page<AdvertisementServiceModel> getAllByAlmostFullSearch(AlmostFullSearchRequest search);
 
-    Long countOfAll();
+    Page<AdvertisementServiceModel> getAllByFullSearch(FullSearchRequest search);
 
-    Long countOfPriceBetween(BaseSearch baseSearch);
+    AdvertisementServiceModel getById(Long id) throws EntityNotFoundException;
 
     ResponseMessage create(AdvertisementCreateModel restModel);
 
@@ -27,13 +25,13 @@ public interface AdvertisementService {
 
     ResponseMessage detachPhoto(String username, Long id, Long photoId);
 
-    Long countByCategoryTitleContainingPriceBetweenAndCondition(SearchRequest search);
+    Long countOfAll();
 
-    List<AdvertisementServiceModel> getAllByAlmostFullSearch(AlmostFullSearchRequest search);
+    Long countOfPriceBetween(BaseSearch baseSearch);
+
+    Long countByCategoryTitleContainingPriceBetweenAndCondition(SearchRequest search);
 
     Long countByPriceBetweenAndCondition(ConditionSearch search);
 
     Long countByCategory(CategorySearchRequest search);
-
-    List<AdvertisementServiceModel> getAllByFullSearch(FullSearchRequest search);
 }

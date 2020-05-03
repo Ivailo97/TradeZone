@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
 import { AuthGuard } from './core/guards/auth.guard';
 import { AnonymGuard } from './core/guards/anonym.guard';
+import { ErrorComponent } from './components/error/error.component';
 
 const routes: Routes = [
 
@@ -29,6 +30,10 @@ const routes: Routes = [
     path: 'auth',
     loadChildren: './components/auth/auth.module#AuthModule', canLoad: [AnonymGuard]
   },
+  {
+    path: 'error/:message',
+    component: ErrorComponent
+  }
 ];
 
 @NgModule({

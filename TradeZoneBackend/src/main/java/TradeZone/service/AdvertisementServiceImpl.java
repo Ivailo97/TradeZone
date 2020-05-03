@@ -1,12 +1,11 @@
 package TradeZone.service;
 
+import TradeZone.data.error.exception.EntityNotFoundException;
 import TradeZone.data.model.rest.*;
 import TradeZone.data.model.rest.search.*;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import TradeZone.data.model.entity.Advertisement;
 import TradeZone.data.model.entity.Category;
@@ -23,7 +22,6 @@ import TradeZone.data.repository.UserProfileRepository;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +29,8 @@ import java.util.stream.Collectors;
 public class AdvertisementServiceImpl implements AdvertisementService {
 
     private static final String FAIL = "FAIL";
+
+    private static final String NOT_FOUND = "Advertisement with id %d not found";
 
     private static final String SUCCESS = "SUCCESS";
 
@@ -49,10 +49,10 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     private final PhotoRepository photoRepository;
 
     @Override
-    public AdvertisementServiceModel getById(Long id) {
+    public AdvertisementServiceModel getById(Long id) throws EntityNotFoundException {
         return advertisementRepository.findById(id)
                 .map(x -> modelMapper.map(x, AdvertisementServiceModel.class))
-                .orElseThrow();
+                .orElseThrow(() -> new EntityNotFoundException(String.format(NOT_FOUND, id)));
     }
 
     @Override
@@ -251,7 +251,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     }
 
     @Override
-    public List<AdvertisementServiceModel> getAllByFullSearch(FullSearchRequest request) {
+    public Page<AdvertisementServiceModel> getAllByFullSearch(FullSearchRequest request) {
 
         Integer page = request.getPage();
         String sortBy = request.getSortBy();
@@ -261,7 +261,6 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         BigDecimal min = request.getMin();
         BigDecimal max = request.getMax();
         String search = request.getSearch();
-
 
         PageRequest pageRequest = PageRequest.of(page - 1, 6);
 
@@ -276,19 +275,19 @@ public class AdvertisementServiceImpl implements AdvertisementService {
             pageRequest = PageRequest.of(page - 1, 6, sort);
         }
 
-        List<AdvertisementServiceModel> advertisementServiceModels;
+        Page<AdvertisementServiceModel> advertisements;
 
         if (!condition.equals("All")) {
-            advertisementServiceModels = getAllByCategoryTitleContainingPriceBetweenAndCondition(category, search, min, max, condition, pageRequest);
+            advertisements = getAllByCategoryTitleContainingPriceBetweenAndCondition(category, search, min, max, condition, pageRequest);
         } else {
-            advertisementServiceModels = getAllByCategoryTitleContainingAndPriceBetween(category, search, min, max, pageRequest);
+            advertisements = getAllByCategoryTitleContainingAndPriceBetween(category, search, min, max, pageRequest);
         }
 
-        return advertisementServiceModels;
+        return advertisements;
     }
 
     @Override
-    public List<AdvertisementServiceModel> getAllByAlmostFullSearch(AlmostFullSearchRequest searchRequest) {
+    public Page<AdvertisementServiceModel> getAllByAlmostFullSearch(AlmostFullSearchRequest searchRequest) {
 
         PageRequest pageRequest = PageRequest.of(searchRequest.getPage() - 1, 6);
 
@@ -311,7 +310,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
             pageRequest = PageRequest.of(page - 1, 6, sort);
         }
 
-        List<AdvertisementServiceModel> advertisementServiceModels;
+        Page<AdvertisementServiceModel> advertisementServiceModels;
 
         if (!condition.equals("All")) {
             advertisementServiceModels = getAllByCategoryPriceBetweenAndCondition(min, max, condition, category, pageRequest);
@@ -322,7 +321,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         return advertisementServiceModels;
     }
 
-    private List<AdvertisementServiceModel> getAllByCategoryTitleContainingPriceBetweenAndCondition(String category, String search, BigDecimal min, BigDecimal max, String conditionName, PageRequest pageRequest) {
+    private Page<AdvertisementServiceModel> getAllByCategoryTitleContainingPriceBetweenAndCondition(String category, String search, BigDecimal min, BigDecimal max, String conditionName, PageRequest pageRequest) {
 
         Page<Advertisement> advertisements;
 
@@ -334,13 +333,12 @@ public class AdvertisementServiceImpl implements AdvertisementService {
             advertisements = advertisementRepository.findAllByTitleContainingAndCategoryNameAndPriceBetweenAndCondition(search, category, min, max, condition, pageRequest);
         }
 
-        return advertisements
-                .stream()
+        return new PageImpl<>(advertisements.stream()
                 .map(x -> modelMapper.map(x, AdvertisementServiceModel.class))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
-    private List<AdvertisementServiceModel> getAllByCategoryAndPriceBetween(String category, BigDecimal min, BigDecimal max, PageRequest pageRequest) {
+    private Page<AdvertisementServiceModel> getAllByCategoryAndPriceBetween(String category, BigDecimal min, BigDecimal max, PageRequest pageRequest) {
 
         this.seedCategories();
 
@@ -352,13 +350,12 @@ public class AdvertisementServiceImpl implements AdvertisementService {
             advertisements = advertisementRepository.findAllByCategoryNameAndPriceBetween(category, min, max, pageRequest);
         }
 
-        return advertisements
-                .stream()
+        return new PageImpl<>(advertisements.stream()
                 .map(x -> modelMapper.map(x, AdvertisementServiceModel.class))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
-    private List<AdvertisementServiceModel> getAllByCategoryPriceBetweenAndCondition(BigDecimal min, BigDecimal max, String conditionName, String category, PageRequest pageRequest) {
+    private Page<AdvertisementServiceModel> getAllByCategoryPriceBetweenAndCondition(BigDecimal min, BigDecimal max, String conditionName, String category, PageRequest pageRequest) {
 
         Condition condition = Condition.valueOf(conditionName);
 
@@ -370,13 +367,12 @@ public class AdvertisementServiceImpl implements AdvertisementService {
             advertisements = advertisementRepository.findAllByCategoryNameAndPriceBetweenAndCondition(category, min, max, condition, pageRequest);
         }
 
-        return advertisements
-                .stream()
+        return new PageImpl<>(advertisements.stream()
                 .map(x -> modelMapper.map(x, AdvertisementServiceModel.class))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
-    private List<AdvertisementServiceModel> getAllByCategoryTitleContainingAndPriceBetween(String categoryName, String searchText, BigDecimal min, BigDecimal max, PageRequest page) {
+    private Page<AdvertisementServiceModel> getAllByCategoryTitleContainingAndPriceBetween(String categoryName, String searchText, BigDecimal min, BigDecimal max, PageRequest page) {
 
         Page<Advertisement> advertisements;
 
@@ -386,10 +382,9 @@ public class AdvertisementServiceImpl implements AdvertisementService {
             advertisements = advertisementRepository.findAllByCategoryNameAndTitleContainingAndPriceBetween(categoryName, searchText, min, max, page);
         }
 
-        return advertisements
-                .stream()
+        return new PageImpl<>(advertisements.stream()
                 .map(x -> modelMapper.map(x, AdvertisementServiceModel.class))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
     private Long countByCategoryConditionAndPriceBetween(String category, String conditionName, BigDecimal min, BigDecimal max) {

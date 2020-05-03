@@ -1,7 +1,6 @@
 import { RouterModule, Routes } from '@angular/router';
 import { AdvertisementListComponent } from './advertisement-list/advertisement-list.component';
 import { AdvertisementDetailsComponent } from './advertisement-details/advertisement-details.component';
-import { SingleAdvertisementResolver } from 'src/app/core/services/resolvers/single-advertisement.service';
 
 const routes: Routes = [
   {
@@ -17,8 +16,7 @@ const routes: Routes = [
 
   {
     path: 'details/:id',
-    component: AdvertisementDetailsComponent,
-    resolve: { 'singleAdvertisement': SingleAdvertisementResolver }
+    component: AdvertisementDetailsComponent
   },
 ];
 
