@@ -30,7 +30,11 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
     private static final String FAIL = "FAIL";
 
-    private static final String NOT_FOUND = "Advertisement with id %d not found";
+    private static final String ADV_NOT_FOUND = "Advertisement with id %d not found";
+
+    private static final String PROFILE_NOT_FOUND = "Profile with username %s not found";
+
+    private static final String IMAGE_NOT_FOUND = "Photo with id %d not found";
 
     private static final String SUCCESS = "SUCCESS";
 
@@ -52,12 +56,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     public AdvertisementServiceModel getById(Long id) throws EntityNotFoundException {
         return advertisementRepository.findById(id)
                 .map(x -> modelMapper.map(x, AdvertisementServiceModel.class))
-                .orElseThrow(() -> new EntityNotFoundException(String.format(NOT_FOUND, id)));
-    }
-
-    @Override
-    public Long countOfAll() {
-        return advertisementRepository.count();
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ADV_NOT_FOUND, id)));
     }
 
     @Override
@@ -146,36 +145,41 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     }
 
     @Override
-    public ResponseMessage increaseViews(Long id, Long updatedViews) {
+    public void updateViews(Long id, ViewsUpdate update) throws EntityNotFoundException {
 
-        Advertisement advertisement = advertisementRepository.findById(id).orElse(null);
+        Advertisement advertisement = advertisementRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(ADV_NOT_FOUND));
 
-        if (advertisement == null) {
-            return new ResponseMessage(FAIL);
+        UserProfile profile = userProfileRepository.findByUserUsername(update.getUsername())
+                .orElseThrow(() -> new EntityNotFoundException(String.format(PROFILE_NOT_FOUND, update.getUsername())));
+
+        if (profile.getViewed().stream().anyMatch(x -> x.getId().equals(id))){
+            return;
         }
 
-        advertisement.setViews(updatedViews);
-
+        advertisement.setViews(update.getViews());
         advertisementRepository.save(advertisement);
 
-        return new ResponseMessage(SUCCESS);
+        profile.getViewed().add(advertisement);
+        userProfileRepository.save(profile);
     }
 
     @Override
-    public ResponseMessage detachPhoto(String username, Long id, Long photoId) {
+    public void detachPhoto(String username, Long id, Long photoId) throws EntityNotFoundException {
 
-        Advertisement advertisement = advertisementRepository.findById(id).orElse(null);
+        Advertisement advertisement = advertisementRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(ADV_NOT_FOUND));
 
-        if (advertisement == null || advertisement.getPhotos().stream().noneMatch(x -> x.getId().equals(photoId)) ||
+        if (advertisement.getPhotos().stream().noneMatch(x -> x.getId().equals(photoId)) ||
                 !advertisement.getCreator().getUser().getUsername().equals(username)) {
-            return new ResponseMessage(FAIL);
+
+            throw new EntityNotFoundException(IMAGE_NOT_FOUND);
         }
 
-        advertisement.getPhotos().remove(advertisement.getPhotos().stream().filter(x -> x.getId().equals(photoId)).findFirst().get());
+        advertisement.getPhotos().remove(advertisement.getPhotos().stream()
+                .filter(x -> x.getId().equals(photoId)).findFirst().get());
 
         advertisementRepository.save(advertisement);
-
-        return new ResponseMessage(SUCCESS);
     }
 
     @Override

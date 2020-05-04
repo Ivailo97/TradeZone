@@ -20,8 +20,7 @@ export class ImageDeleteModalComponent implements OnInit {
     private tokenStorage: TokenStorageService,
     private alertService: AlertService) { }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void { }
 
   deletePhoto() {
 

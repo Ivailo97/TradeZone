@@ -48,6 +48,14 @@ public class UserProfile extends BaseEntity {
     )
     private List<Advertisement> favorites;
 
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "profiles_viewed",
+            joinColumns = @JoinColumn(name = "profile_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "viewed_advertisement_id", referencedColumnName = "id")
+    )
+    private List<Advertisement> viewed;
+
     @OneToMany(mappedBy = "creator")
     private List<Advertisement> createdAdvertisements;
 

@@ -23,10 +23,16 @@ export class AdvertisementService {
 
   private _refreshNeeded$ = new Subject<void>();
 
+  private _detailsRefreshNeeded$ = new Subject<void>();
+
   constructor(private http: HttpClient, private profileService: ProfileService) { }
 
   get refreshNeeded$() {
     return this._refreshNeeded$;
+  }
+
+  get detailsRefreshNeeded$() {
+    return this._detailsRefreshNeeded$;
   }
 
   getAllAdvertisementsWithPriceBetween(params, category: string): Observable<AdvertisementInfoList[]> {
@@ -50,9 +56,9 @@ export class AdvertisementService {
       );
   }
 
-  updateViews(id: number, updatedViews) {
+  updateViews(id: number, views: number, username: string) {
 
-    this.http.patch(`${this.baseURL}/increase-views/${id}`, { views: updatedViews })
+    this.http.patch(`${this.baseURL}/increase-views/${id}`, { views, username })
       .subscribe(
         (val) => {
           console.log("PATCH call successful value returned in body", val);
@@ -85,6 +91,7 @@ export class AdvertisementService {
       .pipe(
         tap(() => {
           this._refreshNeeded$.next();
+          this._detailsRefreshNeeded$.next();
         })
       );
   }
@@ -111,10 +118,6 @@ export class AdvertisementService {
 
   getAdvertisementToEdit(id: number): Observable<AdvertisementToEditModel> {
     return this.http.get<AdvertisementToEditModel>(`${this.baseURL}/edit/${id}`);
-  }
-
-  getTotalCount(): Observable<number> {
-    return this.http.get<number>(`${this.baseURL}/count`);
   }
 
   getCountByPriceBetweenAndCondition(params: any): Observable<number> {

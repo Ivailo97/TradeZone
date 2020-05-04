@@ -21,11 +21,9 @@ public interface AdvertisementService {
 
     ResponseMessage delete(String principalName, String requestSender, Long id);
 
-    ResponseMessage increaseViews(Long id, Long updatedViews);
+    void updateViews(Long id, ViewsUpdate views) throws EntityNotFoundException;
 
-    ResponseMessage detachPhoto(String username, Long id, Long photoId);
-
-    Long countOfAll();
+    void detachPhoto(String username, Long id, Long photoId) throws EntityNotFoundException;
 
     Long countOfPriceBetween(BaseSearch baseSearch);
 

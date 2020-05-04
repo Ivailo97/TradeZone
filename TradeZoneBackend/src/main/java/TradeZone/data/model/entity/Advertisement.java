@@ -26,13 +26,16 @@ public class Advertisement extends BaseEntity {
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "advertisement_photo",
-            joinColumns = @JoinColumn(name = "advertisement_id",referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "photo_id",referencedColumnName = "id")
-           )
+            joinColumns = @JoinColumn(name = "advertisement_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "photo_id", referencedColumnName = "id")
+    )
     private List<Photo> photos;
 
     @ManyToMany(mappedBy = "favorites", fetch = FetchType.EAGER)
     private List<UserProfile> profilesWhichLikedIt;
+
+    @ManyToMany(mappedBy = "viewed", fetch = FetchType.LAZY)
+    private List<UserProfile> profilesWhichViewedIt;
 
     @Column(columnDefinition = "decimal")
     private BigDecimal price;

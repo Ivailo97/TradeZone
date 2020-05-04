@@ -22,7 +22,6 @@ import TradeZone.service.PhotoService;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200", maxAge = 3600, allowedHeaders = "*")
@@ -38,11 +37,6 @@ public class AdvertisementController {
     @GetMapping("/all/{category}")
     public ResponseEntity<List<AdvertisementListViewModel>> showAds(AlmostFullSearchRequest searchRequest) {
         return ResponseEntity.ok(mappingService.mapServiceAdvertisementsToView(advertisementService.getAllByAlmostFullSearch(searchRequest)));
-    }
-
-    @GetMapping("/count")
-    public ResponseEntity<Long> totalCount() {
-        return ResponseEntity.ok(advertisementService.countOfAll());
     }
 
     @GetMapping("/count-price-between")
@@ -128,24 +122,15 @@ public class AdvertisementController {
     }
 
     @PatchMapping("/increase-views/{id}")
-    public ResponseEntity<?> updateViews(@PathVariable Long id, @RequestBody Map<String, Object> updatedProperties) {
-        ResponseMessage responseMessage = advertisementService.increaseViews(id, Long.parseLong(String.valueOf(updatedProperties.get("views"))));
-        return ResponseEntity.ok(responseMessage.getMessage());
+    public ResponseEntity<?> updateViews(@PathVariable Long id, @RequestBody ViewsUpdate update) throws EntityNotFoundException {
+        advertisementService.updateViews(id, update);
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @DeleteMapping("/delete-image/{advertisementId}/{username}/{photoId}")
-    public ResponseEntity<?> deletePhoto(@PathVariable Long advertisementId, @PathVariable String username, @PathVariable Long photoId) {
-
-        ResponseMessage responseMessage = advertisementService.detachPhoto(username, advertisementId, photoId);
-
-        if (responseMessage.getMessage().contains("SUCCESS")) {
-            responseMessage = photoService.delete(photoId);
-        }
-
-        HttpStatus status = responseMessage.getMessage().contains("FAIL") ?
-                HttpStatus.BAD_REQUEST : HttpStatus.ACCEPTED;
-
-        return new ResponseEntity<>(status);
+    public ResponseEntity<?> deletePhoto(@PathVariable Long advertisementId, @PathVariable String username, @PathVariable Long photoId) throws EntityNotFoundException {
+        advertisementService.detachPhoto(username, advertisementId, photoId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PatchMapping("/upload-images/{advertisementId}/{username}")

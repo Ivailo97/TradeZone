@@ -25,7 +25,7 @@ export class AdvertisementDetailsComponent implements OnInit {
   photoToDeleteId: number;
 
   hasNoImages: boolean;
-  
+
   constructor(private route: ActivatedRoute,
     private router: Router,
     private advertisementService: AdvertisementService,
@@ -33,12 +33,7 @@ export class AdvertisementDetailsComponent implements OnInit {
 
   ngOnInit() {
     this.reloadAdvertisement(this.route.snapshot.params.id);
-    this.photoToDeleteId = invalidPhotoId;
-    this.defaultImageUrl = noImage;
-    this.isOwnedByUser = this.tokenStorageService.getUsername() === this.advertisement.creator;
-    this.hasNoImages = this.advertisement.images.length === 0;
-    this.advertisementService.refreshNeeded$.subscribe(() => this.reloadAdvertisement(this.advertisement.id))
-    this.advertisementService.updateViews(this.route.snapshot.params.id, this.advertisement.views + 1);
+    this.advertisementService.detailsRefreshNeeded$.subscribe(() => this.reloadAdvertisement(this.advertisement.id))
   }
 
   reloadAdvertisement(id: number) {
@@ -47,6 +42,10 @@ export class AdvertisementDetailsComponent implements OnInit {
         data => {
           this.advertisement = data;
           this.hasNoImages = this.advertisement.images.length === 0;
+          this.photoToDeleteId = invalidPhotoId;
+          this.defaultImageUrl = noImage;
+          this.isOwnedByUser = this.tokenStorageService.getUsername() === this.advertisement.creator;
+          this.advertisementService.updateViews(this.route.snapshot.params.id, this.advertisement.views + 1, this.tokenStorageService.getUsername());
         },
         error => {
           this.router.navigate(['/error/', error.error.message])

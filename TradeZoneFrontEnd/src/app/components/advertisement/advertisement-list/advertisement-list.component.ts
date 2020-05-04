@@ -6,8 +6,7 @@ import { AdvertisementModalEditComponent } from '../advertisement-modal-edit/adv
 
 const initialMinValue = 0;
 const initialMaxValue = 10000;
-const defaultCategory = 'All';
-const defaultCondition = 'All';
+const defaultState = 'All';
 const defaultSelectedCriteria = 'none';
 const defaultSortCriterias = ['price', 'views', 'title'];
 
@@ -40,18 +39,17 @@ export class AdvertisementListComponent implements OnInit {
 
   ngOnInit() {
     this.config = { id: 'list', itemsPerPage: 6, currentPage: 1 }
-    this.advertisementService.getTotalCount().subscribe(data => { this.config.totalItems = data; })
     this.conditions$ = this.advertisementService.getAllConditions();
     this.descending = false;
     this.selectedSortCriteria = defaultSelectedCriteria;
-    this.selectedCondition = defaultCondition;
+    this.selectedCondition = defaultState;
     this.sortCriterias = defaultSortCriterias;
-    this.currentCategory = defaultCategory;
+    this.currentCategory = defaultState;
     this.minPriceRange = initialMinValue;
     this.maxPriceRange = initialMaxValue;
     this.advertisementToModifyId = null;
-    this.advertisementService.refreshNeeded$.subscribe(() => this.loadAdvertisements(this.selectedSortCriteria, "none", this.selectedCondition, this.currentCategory))
-    this.loadAdvertisements(this.selectedSortCriteria, "none", this.selectedCondition, this.currentCategory);
+    this.advertisementService.refreshNeeded$.subscribe(() => this.search());
+    this.search();
   }
 
   changePage(event) {
@@ -82,13 +80,22 @@ export class AdvertisementListComponent implements OnInit {
         .getAdvertisementsByTitleContainingCategoryPriceBetweenAndCondition(params);
 
     } else {
-
       this.refreshPaginationCount();
-      this.loadAdvertisements(this.selectedSortCriteria, sortOrder, this.selectedCondition, this.currentCategory);
+
+      const params = {
+        min: this.minPriceRange,
+        max: this.maxPriceRange,
+        page: this.config.currentPage,
+        sortBy: this.selectedSortCriteria,
+        order: sortOrder,
+        condition: this.selectedCondition
+      }
+
+      this.advertisements$ = this.advertisementService.getAllAdvertisementsWithPriceBetween(params, this.currentCategory);
     }
   }
 
-  categoryChange(data) {
+  changeCategory(data) {
     if (data !== undefined && data !== '' && data !== null) {
       this.currentCategory = data.trim();
       this.config.currentPage = 1;
@@ -102,13 +109,13 @@ export class AdvertisementListComponent implements OnInit {
     }
   }
 
-  addOrderTypeInSorting() {
+  order() {
     if (this.selectedSortCriteria !== defaultSelectedCriteria) {
       this.sort();
     }
   }
 
-  priceRangeChange(event) {
+  changePriceRange(event) {
     this.minPriceRange = event[0];
     this.maxPriceRange = event[1];
   }
@@ -120,7 +127,7 @@ export class AdvertisementListComponent implements OnInit {
 
   private refreshPaginationCount() {
 
-    if (this.currentCategory === defaultCategory) {
+    if (this.currentCategory === defaultState) {
 
       const params = {
         min: this.minPriceRange,
@@ -164,24 +171,6 @@ export class AdvertisementListComponent implements OnInit {
     }
 
     this.advertisementService.getCountBeforeSearch(params)
-      .subscribe(
-        data => {
-          this.config.totalItems = data;
-        }
-      )
-  }
-
-  private loadAdvertisements(sortBy, order, condition, category) {
-
-    const params = {
-      min: this.minPriceRange,
-      max: this.maxPriceRange,
-      page: this.config.currentPage,
-      sortBy,
-      order,
-      condition
-    }
-
-    this.advertisements$ = this.advertisementService.getAllAdvertisementsWithPriceBetween(params, category);
+      .subscribe(data => { this.config.totalItems = data; })
   }
 }

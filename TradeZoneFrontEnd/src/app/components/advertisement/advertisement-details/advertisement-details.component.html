@@ -1,7 +1,7 @@
 <div class="row mt-3">
     <div id="carouselExampleIndicators" class="carousel slide w-75" data-ride="carousel">
         <ol class="carousel-indicators">
-            <li *ngFor="let img of advertisement.images; let i = index" data-target="#carouselExampleIndicators" [attr.data-slide-to]="i" [ngClass]="i === 0 ? 'active' : ''"> </li>
+            <li *ngFor="let img of advertisement?.images; let i = index" data-target="#carouselExampleIndicators" [attr.data-slide-to]="i" [ngClass]="i === 0 ? 'active' : ''"> </li>
         </ol>
         <div *ngIf="isOwnedByUser;else withoutButton" class="carousel-inner text-center">
             <div *ngIf="hasNoImages" class="image-container">
@@ -9,9 +9,9 @@
                     <img class="d-block w-100 carousel-image" style="width: 500px; " data-src="holder.js/800x400?auto=yes&amp;bg=777&amp;fg=555&amp;text=First slide" alt="addImage" src="{{defaultImageUrl}} " data-holder-rendered="true">
                 </div>
             </div>
-            <app-image-delete-modal [advertisementId]="advertisement.id" [photoId]="photoToDeleteId"></app-image-delete-modal>
+            <app-image-delete-modal [advertisementId]="advertisement?.id" [photoId]="photoToDeleteId"></app-image-delete-modal>
 
-            <div *ngFor="let img of advertisement.images; let i = index" [ngClass]="i == 0 ? 'carousel-item active' : 'carousel-item'">
+            <div *ngFor="let img of advertisement?.images; let i = index" [ngClass]="i == 0 ? 'carousel-item active' : 'carousel-item'">
                 <div class="image-container">
                     <img class="d-block w-100 carousel-image" data-src="holder.js/800x400?auto=yes&amp;bg=777&amp;fg=555&amp;text=First slide" alt="addImage" src="{{img.url}}" data-holder-rendered="true">
                     <div class="overlay"></div>
@@ -27,7 +27,7 @@
                     </div>
                 </div>
                 <div class="image-container ">
-                    <div *ngFor="let img of advertisement.images; let i=index " [ngClass]="i==0 ? 'carousel-item active' : 'carousel-item' ">
+                    <div *ngFor="let img of advertisement?.images; let i=index " [ngClass]="i==0 ? 'carousel-item active' : 'carousel-item' ">
                         <img class="d-block w-100 carousel-image" style="width: 500px; " data-src="holder.js/800x400?auto=yes&amp;bg=777&amp;fg=555&amp;text=First slide " alt="addImage " src="{{img.url}} " data-holder-rendered="true ">
                     </div>
                 </div>
@@ -46,16 +46,16 @@
     <div class="col ">
         <div class="jumbotron ">
             <div class="col ">
-                <span class="badge orange "><i class="fab fa-btc fa-2x " aria-hidden="true "></i> <h3>Price: {{advertisement.price}}</h3> </span>
+                <span class="badge orange "><i class="fab fa-btc fa-2x " aria-hidden="true "></i> <h3>Price: {{advertisement?.price}}</h3> </span>
             </div>
             <hr class="my-4 ">
             <div class="col mt-3 ">
                 <div>
-                    <span class="badge badge-pill purple "><i class="fas fa-users fa-2x " aria-hidden="true "></i> Views: {{advertisement.views}}</span>
+                    <span class="badge badge-pill purple "><i class="fas fa-users fa-2x " aria-hidden="true "></i> Views: {{advertisement?.views}}</span>
                 </div>
             </div>
             <div *ngIf="isOwnedByUser" class="row">
-                <app-image-upload-modal [advertisementId]="advertisement.id"></app-image-upload-modal>
+                <app-image-upload-modal [advertisementId]="advertisement?.id"></app-image-upload-modal>
             </div>
         </div>
     </div>
@@ -64,7 +64,7 @@
 <div class="row mt-3 ">
     <div class="col offset-2 ">
         <div class="description-holder ">
-            <p class="text-center ">{{advertisement.description}}</p>
+            <p class="text-center ">{{advertisement?.description}}</p>
         </div>
     </div>
 </div>
