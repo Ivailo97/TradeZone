@@ -10,8 +10,6 @@ import org.springframework.data.domain.Page;
 
 public interface AdvertisementService {
 
-    Page<AdvertisementServiceModel> getAllByAlmostFullSearch(AlmostFullSearchRequest search);
-
     Page<AdvertisementServiceModel> getAllByFullSearch(FullSearchRequest search);
 
     AdvertisementServiceModel getById(Long id) throws EntityNotFoundException;
@@ -24,11 +22,7 @@ public interface AdvertisementService {
 
     void updateViews(Long id, ViewsUpdate views) throws EntityNotFoundException;
 
-    void detachPhoto(DeleteAdvImageRequest deleteRequest) throws EntityNotFoundException;
+    void deletePhoto(DeleteAdvImageRequest deleteRequest) throws EntityNotFoundException;
 
-    Long countByCategoryTitleContainingPriceBetweenAndCondition(SearchRequest search);
-
-    Long countByPriceBetweenAndCondition(ConditionSearch search);
-
-    Long countByCategory(CategorySearchRequest search);
+    Long getCountBySearch(SearchRequest search);
 }

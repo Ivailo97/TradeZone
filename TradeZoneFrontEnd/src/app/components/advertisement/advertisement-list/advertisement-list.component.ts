@@ -61,39 +61,20 @@ export class AdvertisementListComponent implements OnInit {
 
     const sortOrder = this.descending ? 'descending' : 'ascending';
 
-    if (this.searchText !== '' && this.searchText !== undefined) {
+    this.refreshPaginationCountBeforeSearch();
 
-      this.refreshPaginationCountBeforeSearch();
-
-      const params = {
-        search: this.searchText,
-        min: this.minPriceRange,
-        max: this.maxPriceRange,
-        condition: this.selectedCondition,
-        category: this.currentCategory,
-        page: this.config.currentPage,
-        order: sortOrder,
-        sortBy: this.selectedSortCriteria
-      }
-
-      this.advertisements$ = this.advertisementService
-        .getAdvertisementsByTitleContainingCategoryPriceBetweenAndCondition(params);
-
-    } else {
-      this.refreshPaginationCount();
-
-      const params = {
-        min: this.minPriceRange,
-        max: this.maxPriceRange,
-        page: this.config.currentPage,
-        sortBy: this.selectedSortCriteria,
-        order: sortOrder,
-        condition: this.selectedCondition,
-        category: this.currentCategory
-      }
-
-      this.advertisements$ = this.advertisementService.getAllAdvertisementsWithPriceBetween(params);
+    const params = {
+      search: this.searchText,
+      min: this.minPriceRange,
+      max: this.maxPriceRange,
+      condition: this.selectedCondition,
+      category: this.currentCategory,
+      page: this.config.currentPage,
+      order: sortOrder,
+      sortBy: this.selectedSortCriteria
     }
+
+    this.advertisements$ = this.advertisementService.getByFullSearch(params);
   }
 
   changeCategory(data) {
@@ -126,41 +107,6 @@ export class AdvertisementListComponent implements OnInit {
     this.editComponent.refreshAdvertisement();
   }
 
-  private refreshPaginationCount() {
-
-    if (this.currentCategory === defaultState) {
-
-      const params = {
-        min: this.minPriceRange,
-        max: this.maxPriceRange,
-        condition: this.selectedCondition
-      }
-
-      this.advertisementService.getCountByPriceBetweenAndCondition(params)
-        .subscribe(
-          data => {
-            this.config.totalItems = data;
-          }
-        )
-
-    } else {
-
-      const params = {
-        min: this.minPriceRange,
-        max: this.maxPriceRange,
-        condition: this.selectedCondition,
-        category: this.currentCategory
-      }
-
-      this.advertisementService.getCountByCategoryPriceBetweenAndCondition(params)
-        .subscribe(
-          data => {
-            this.config.totalItems = data;
-          }
-        )
-    }
-  }
-
   private refreshPaginationCountBeforeSearch() {
 
     const params = {
@@ -171,7 +117,7 @@ export class AdvertisementListComponent implements OnInit {
       search: this.searchText
     }
 
-    this.advertisementService.getCountBeforeSearch(params)
+    this.advertisementService.getCountBySearch(params)
       .subscribe(data => { this.config.totalItems = data; })
   }
 }

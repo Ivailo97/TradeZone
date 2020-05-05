@@ -36,29 +36,14 @@ public class AdvertisementController {
     private final PhotoService photoService;
     private final MappingService mappingService;
 
-    @GetMapping("/all")
-    public ResponseEntity<List<AdvertisementListViewModel>> showAds(AlmostFullSearchRequest searchRequest) {
-        return ResponseEntity.ok(mappingService.mapServiceAdvertisementsToView(advertisementService.getAllByAlmostFullSearch(searchRequest)));
-    }
-
-    @GetMapping("/category-and-text")
+    @GetMapping("/search")
     public ResponseEntity<List<AdvertisementListViewModel>> filterByCategoryAndTitle(FullSearchRequest search) {
         return ResponseEntity.ok(mappingService.mapServiceAdvertisementsToView(advertisementService.getAllByFullSearch(search)));
     }
 
-    @GetMapping("/count-price-condition")
-    public ResponseEntity<Long> countByPriceInRangeAndCondition(ConditionSearch search) {
-        return ResponseEntity.ok(advertisementService.countByPriceBetweenAndCondition(search));
-    }
-
-    @GetMapping("/count-full-search")
+    @GetMapping("/count")
     public ResponseEntity<Long> countByAll(SearchRequest params) {
-        return ResponseEntity.ok(advertisementService.countByCategoryTitleContainingPriceBetweenAndCondition(params));
-    }
-
-    @GetMapping("/count-category")
-    public ResponseEntity<Long> count(CategorySearchRequest search) {
-        return ResponseEntity.ok(advertisementService.countByCategory(search));
+        return ResponseEntity.ok(advertisementService.getCountBySearch(params));
     }
 
     @PostMapping("/create")
@@ -116,7 +101,7 @@ public class AdvertisementController {
     public ResponseEntity<?> deletePhoto(DeleteAdvImageRequest deleteRequest)
             throws EntityNotFoundException {
 
-        advertisementService.detachPhoto(deleteRequest);
+        advertisementService.deletePhoto(deleteRequest);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

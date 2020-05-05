@@ -35,16 +35,12 @@ export class AdvertisementService {
     return this._detailsRefreshNeeded$;
   }
 
-  getAllAdvertisementsWithPriceBetween(params): Observable<AdvertisementInfoList[]> {
-    return this.http.get<AdvertisementInfoList[]>(`${this.baseURL}/all`, { params: params });
-  }
-
   getAdvertisement(id: number): Observable<AdvertisementDetails> {
     return this.http.get<AdvertisementDetails>(`${this.baseURL}/details/${id}`);
   }
 
-  getAdvertisementsByTitleContainingCategoryPriceBetweenAndCondition(params: any): Observable<AdvertisementInfoList[]> {
-    return this.http.get<AdvertisementInfoList[]>(`${this.baseURL}/category-and-text`, { params: params });
+  getByFullSearch(params: any): Observable<AdvertisementInfoList[]> {
+    return this.http.get<AdvertisementInfoList[]>(`${this.baseURL}/search`, { params: params });
   }
 
   createAdvertisement(advertisement: AdvertisementBindingModel): Observable<string> {
@@ -121,15 +117,7 @@ export class AdvertisementService {
     return this.http.get<AdvertisementToEditModel>(`${this.baseURL}/edit/${id}`);
   }
 
-  getCountByPriceBetweenAndCondition(params: any): Observable<number> {
-    return this.http.get<number>(`${this.baseURL}/count-price-condition`, { params: params });
-  }
-
-  getCountByCategoryPriceBetweenAndCondition(params: any): Observable<number> {
-    return this.http.get<number>(`${this.baseURL}/count-category`, { params: params });
-  }
-
-  getCountBeforeSearch(params: any): Observable<number> {
-    return this.http.get<number>(`${this.baseURL}/count-full-search`, { params: params });
+  getCountBySearch(params: any): Observable<number> {
+    return this.http.get<number>(`${this.baseURL}/count`, { params: params });
   }
 }
