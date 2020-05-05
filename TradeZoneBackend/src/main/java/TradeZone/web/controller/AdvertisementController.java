@@ -1,6 +1,8 @@
 package TradeZone.web.controller;
 
+import TradeZone.data.error.exception.AdvertisementNotValidException;
 import TradeZone.data.error.exception.EntityNotFoundException;
+import TradeZone.data.error.exception.NotAllowedException;
 import TradeZone.data.model.rest.*;
 import TradeZone.data.model.rest.search.*;
 import TradeZone.service.MappingService;
@@ -34,22 +36,22 @@ public class AdvertisementController {
     private final PhotoService photoService;
     private final MappingService mappingService;
 
-    @GetMapping("/all/{category}")
+    @GetMapping("/all")
     public ResponseEntity<List<AdvertisementListViewModel>> showAds(AlmostFullSearchRequest searchRequest) {
         return ResponseEntity.ok(mappingService.mapServiceAdvertisementsToView(advertisementService.getAllByAlmostFullSearch(searchRequest)));
     }
 
-    @GetMapping("/count-price-between")
-    public ResponseEntity<Long> countByPriceInRange(BaseSearch baseSearch) {
-        return ResponseEntity.ok(advertisementService.countOfPriceBetween(baseSearch));
+    @GetMapping("/category-and-text")
+    public ResponseEntity<List<AdvertisementListViewModel>> filterByCategoryAndTitle(FullSearchRequest search) {
+        return ResponseEntity.ok(mappingService.mapServiceAdvertisementsToView(advertisementService.getAllByFullSearch(search)));
     }
 
-    @GetMapping("/count-price-between-condition")
+    @GetMapping("/count-price-condition")
     public ResponseEntity<Long> countByPriceInRangeAndCondition(ConditionSearch search) {
         return ResponseEntity.ok(advertisementService.countByPriceBetweenAndCondition(search));
     }
 
-    @GetMapping("/count-price-between-condition-search-category")
+    @GetMapping("/count-full-search")
     public ResponseEntity<Long> countByAll(SearchRequest params) {
         return ResponseEntity.ok(advertisementService.countByCategoryTitleContainingPriceBetweenAndCondition(params));
     }
@@ -60,14 +62,10 @@ public class AdvertisementController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody AdvertisementCreateModel restModel) {
-
-        ResponseMessage responseMessage = advertisementService.create(restModel);
-
-        HttpStatus status = responseMessage.getMessage().contains("FAIL") ?
-                HttpStatus.BAD_REQUEST : HttpStatus.CREATED;
-
-        return new ResponseEntity<>(status);
+    public ResponseEntity<?> create(@RequestBody AdvertisementCreateModel restModel)
+            throws EntityNotFoundException, AdvertisementNotValidException {
+        advertisementService.create(restModel);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/edit/{id}")
@@ -79,32 +77,19 @@ public class AdvertisementController {
     }
 
     @PutMapping("/edit")
-    public ResponseEntity<?> editConfirm(@RequestBody AdvertisementEditedModel editedModel) {
+    public ResponseEntity<?> editConfirm(@RequestBody AdvertisementEditedModel editedModel)
+            throws EntityNotFoundException, NotAllowedException {
 
-        ResponseMessage responseMessage = advertisementService.edit(editedModel);
-
-        HttpStatus status = responseMessage.getMessage().contains("FAIL") ?
-                HttpStatus.BAD_REQUEST : HttpStatus.ACCEPTED;
-
-        return new ResponseEntity<>(status);
+        advertisementService.edit(editedModel);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{username}/{id}")
-    public ResponseEntity<?> delete(Principal principal, @PathVariable String username, @PathVariable Long id) {
-
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> delete(Principal principal, DeleteAdvRequest deleteRequest)
+            throws EntityNotFoundException, NotAllowedException {
         String principalName = principal.getName();
-
-        ResponseMessage responseMessage = advertisementService.delete(principalName, username, id);
-
-        HttpStatus status = responseMessage.getMessage().contains("FAIL") ?
-                HttpStatus.BAD_REQUEST : HttpStatus.ACCEPTED;
-
-        return new ResponseEntity<>(status);
-    }
-
-    @GetMapping("/category-and-text")
-    public ResponseEntity<List<AdvertisementListViewModel>> filterByCategoryAndTitle(FullSearchRequest search) {
-        return ResponseEntity.ok(mappingService.mapServiceAdvertisementsToView(advertisementService.getAllByFullSearch(search)));
+        advertisementService.delete(principalName, deleteRequest);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/details/{id}")
@@ -127,16 +112,18 @@ public class AdvertisementController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete-image/{advertisementId}/{username}/{photoId}")
-    public ResponseEntity<?> deletePhoto(@PathVariable Long advertisementId, @PathVariable String username, @PathVariable Long photoId) throws EntityNotFoundException {
-        advertisementService.detachPhoto(username, advertisementId, photoId);
+    @DeleteMapping("/delete-image")
+    public ResponseEntity<?> deletePhoto(DeleteAdvImageRequest deleteRequest)
+            throws EntityNotFoundException {
+
+        advertisementService.detachPhoto(deleteRequest);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PatchMapping("/upload-images/{advertisementId}/{username}")
-    public ResponseEntity<?> uploadPhotos(@PathVariable Long advertisementId, @PathVariable String username, @RequestBody ImagesToUploadModel images) {
+    @PatchMapping("/upload-images")
+    public ResponseEntity<?> uploadPhotos(@RequestBody ImagesToUploadModel images) {
 
-        ResponseMessage responseMessage = photoService.uploadAdvertisementPhotos(advertisementId, username, images);
+        ResponseMessage responseMessage = photoService.uploadAdvertisementPhotos(images);
 
         HttpStatus status = responseMessage.getMessage().contains("FAIL") ?
                 HttpStatus.BAD_REQUEST : HttpStatus.ACCEPTED;

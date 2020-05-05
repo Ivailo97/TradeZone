@@ -1,6 +1,8 @@
 package TradeZone.service;
 
+import TradeZone.data.error.exception.AdvertisementNotValidException;
 import TradeZone.data.error.exception.EntityNotFoundException;
+import TradeZone.data.error.exception.NotAllowedException;
 import TradeZone.data.model.rest.*;
 import TradeZone.data.model.rest.search.*;
 import lombok.AllArgsConstructor;
@@ -12,7 +14,6 @@ import TradeZone.data.model.entity.Category;
 import TradeZone.data.model.entity.Photo;
 import TradeZone.data.model.entity.UserProfile;
 import TradeZone.data.model.enums.Condition;
-import TradeZone.data.model.rest.message.response.ResponseMessage;
 import TradeZone.data.model.service.AdvertisementServiceModel;
 import TradeZone.data.model.service.validation.AdvertisementValidationService;
 import TradeZone.data.repository.AdvertisementRepository;
@@ -28,15 +29,17 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class AdvertisementServiceImpl implements AdvertisementService {
 
-    private static final String FAIL = "FAIL";
+    private static final String NOT_ALLOWED = "You are not allowed to perform this action";
+
+    private static final String INVALID_MODEL = "Invalid data passed";
 
     private static final String ADV_NOT_FOUND = "Advertisement with id %d not found";
+
+    private static final String CAT_NOT_FOUND = "Category with id %d not found";
 
     private static final String PROFILE_NOT_FOUND = "Profile with username %s not found";
 
     private static final String IMAGE_NOT_FOUND = "Photo with id %d not found";
-
-    private static final String SUCCESS = "SUCCESS";
 
     private final AdvertisementRepository advertisementRepository;
 
@@ -60,33 +63,20 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     }
 
     @Override
-    public Long countOfPriceBetween(BaseSearch baseSearch) {
-        return advertisementRepository.countAdvertisementByPriceBetween(baseSearch.getMin(), baseSearch.getMax());
-    }
+    public void create(AdvertisementCreateModel restModel) throws AdvertisementNotValidException, EntityNotFoundException {
 
-    @Override
-    public ResponseMessage create(AdvertisementCreateModel restModel) {
-
-        AdvertisementServiceModel advertisement = modelMapper.map(restModel, AdvertisementServiceModel.class);
-        advertisement.setViews(0L);
-
-        if (!validationService.isValid(advertisement)) {
-            return new ResponseMessage(FAIL);
+        if (!validationService.isValid(restModel)) {
+            throw new AdvertisementNotValidException(INVALID_MODEL);
         }
 
-        Category category = categoryRepository.findById(restModel.getCategory()).orElse(null);
+        Category category = categoryRepository.findById(restModel.getCategory())
+                .orElseThrow(() -> new EntityNotFoundException(String.format(CAT_NOT_FOUND, restModel.getCategory())));
 
-        if (category == null) {
-            return new ResponseMessage(FAIL);
-        }
+        UserProfile userProfile = userProfileRepository.findByUserUsername(restModel.getCreator())
+                .orElseThrow(() -> new EntityNotFoundException(String.format(PROFILE_NOT_FOUND, restModel.getCreator())));
 
-        UserProfile userProfile = userProfileRepository.findByUserUsername(restModel.getCreator()).orElse(null);
-
-        if (userProfile == null) {
-            return new ResponseMessage(FAIL);
-        }
-
-        Advertisement entity = modelMapper.map(advertisement, Advertisement.class);
+        Advertisement entity = modelMapper.map(restModel, Advertisement.class);
+        entity.setViews(0L);
         entity.setCategory(category);
         entity.setCreator(userProfile);
         entity.setPhotos(Arrays.stream(restModel.getImages()).map(photoService::create)
@@ -94,21 +84,23 @@ public class AdvertisementServiceImpl implements AdvertisementService {
                 .collect(Collectors.toList()));
 
         advertisementRepository.save(entity);
-
-        return new ResponseMessage(SUCCESS);
     }
 
     @Override
-    public ResponseMessage edit(AdvertisementEditedModel restModel) {
+    public void edit(AdvertisementEditedModel restModel) {
 
-        Advertisement advertisement = advertisementRepository.findById(restModel.getId()).orElse(null);
+        if (!validationService.isValid(restModel)) {
+            throw new AdvertisementNotValidException(INVALID_MODEL);
+        }
 
-        Category category = categoryRepository.findById(restModel.getCategory()).orElse(null);
+        Advertisement advertisement = advertisementRepository.findById(restModel.getId())
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ADV_NOT_FOUND, restModel.getId())));
 
-        if (advertisement == null
-                || !advertisement.getCreator().getUser().getUsername().equals(restModel.getEditor())
-                || category == null) {
-            return new ResponseMessage(FAIL);
+        Category category = categoryRepository.findById(restModel.getCategory())
+                .orElseThrow(() -> new EntityNotFoundException(String.format(CAT_NOT_FOUND, restModel.getCategory())));
+
+        if (!advertisement.getCreator().getUser().getUsername().equals(restModel.getCreator())) {
+            throw new NotAllowedException(NOT_ALLOWED);
         }
 
         if (!advertisement.getCategory().getId().equals(category.getId())) {
@@ -121,27 +113,28 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         advertisement.setCondition(Condition.valueOf(restModel.getCondition()));
 
         advertisementRepository.save(advertisement);
-        return new ResponseMessage(SUCCESS);
     }
 
     @Override
-    public ResponseMessage delete(String principalName, String requestSender, Long id) {
+    public void delete(String principalName, DeleteAdvRequest deleteRequest) throws EntityNotFoundException {
 
-        Advertisement advertisement = advertisementRepository.findById(id).orElse(null);
+        Advertisement advertisement = advertisementRepository.findById(deleteRequest.getAdvertisementId())
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ADV_NOT_FOUND, deleteRequest.getAdvertisementId())));
 
-        if (advertisement == null || !principalName.equals(requestSender)
+        if (!principalName.equals(deleteRequest.getUsername())
                 || !advertisement.getCreator().getUser().getUsername().equals(principalName)) {
-            return new ResponseMessage(FAIL);
+
+            throw new NotAllowedException(NOT_ALLOWED);
         }
 
         advertisement.getCreator().getCreatedAdvertisements().remove(advertisement);
         advertisement.getProfilesWhichLikedIt().forEach(p -> p.getFavorites().remove(advertisement));
+        advertisement.getProfilesWhichViewedIt().forEach(p -> p.getViewed().remove(advertisement));
+
         photoService.deleteAll(advertisement.getPhotos().stream().map(Photo::getId).collect(Collectors.toList()));
 
         advertisementRepository.save(advertisement);
         advertisementRepository.delete(advertisement);
-
-        return new ResponseMessage(SUCCESS);
     }
 
     @Override
@@ -153,7 +146,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         UserProfile profile = userProfileRepository.findByUserUsername(update.getUsername())
                 .orElseThrow(() -> new EntityNotFoundException(String.format(PROFILE_NOT_FOUND, update.getUsername())));
 
-        if (profile.getViewed().stream().anyMatch(x -> x.getId().equals(id))){
+        if (profile.getViewed().stream().anyMatch(x -> x.getId().equals(id))) {
             return;
         }
 
@@ -165,19 +158,19 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     }
 
     @Override
-    public void detachPhoto(String username, Long id, Long photoId) throws EntityNotFoundException {
+    public void detachPhoto(DeleteAdvImageRequest request) throws EntityNotFoundException {
 
-        Advertisement advertisement = advertisementRepository.findById(id)
+        Advertisement advertisement = advertisementRepository.findById(request.getAdvertisementId())
                 .orElseThrow(() -> new EntityNotFoundException(ADV_NOT_FOUND));
 
-        if (advertisement.getPhotos().stream().noneMatch(x -> x.getId().equals(photoId)) ||
-                !advertisement.getCreator().getUser().getUsername().equals(username)) {
+        if (advertisement.getPhotos().stream().noneMatch(x -> x.getId().equals(request.getPhotoId())) ||
+                !advertisement.getCreator().getUser().getUsername().equals(request.getUsername())) {
 
             throw new EntityNotFoundException(IMAGE_NOT_FOUND);
         }
 
         advertisement.getPhotos().remove(advertisement.getPhotos().stream()
-                .filter(x -> x.getId().equals(photoId)).findFirst().get());
+                .filter(x -> x.getId().equals(request.getPhotoId())).findFirst().get());
 
         advertisementRepository.save(advertisement);
     }
@@ -220,13 +213,11 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     public Long countByPriceBetweenAndCondition(ConditionSearch search) {
 
         String condition = search.getCondition();
-        BigDecimal min = search.getMin();
-        BigDecimal max = search.getMax();
 
         Long count;
 
         if (!condition.equals("All")) {
-            count = countOfPriceBetweenAndCondition(min, max, condition);
+            count = countOfPriceBetweenAndCondition(search);
         } else {
             count = countOfPriceBetween(search);
         }
@@ -244,11 +235,10 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
         Long count;
 
-
         if (condition.equals("All")) {
             count = countByCategoryAndPriceBetween(category, min, max);
         } else {
-            count = countByCategoryConditionAndPriceBetween(category, condition, min, max);
+            count = countByCategoryConditionAndPriceBetween(search);
         }
 
         return count;
@@ -261,10 +251,6 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         String sortBy = request.getSortBy();
         String order = request.getOrder();
         String condition = request.getCondition();
-        String category = request.getCategory();
-        BigDecimal min = request.getMin();
-        BigDecimal max = request.getMax();
-        String search = request.getSearch();
 
         PageRequest pageRequest = PageRequest.of(page - 1, 6);
 
@@ -282,9 +268,9 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         Page<AdvertisementServiceModel> advertisements;
 
         if (!condition.equals("All")) {
-            advertisements = getAllByCategoryTitleContainingPriceBetweenAndCondition(category, search, min, max, condition, pageRequest);
+            advertisements = getAllByCategoryTitleContainingPriceBetweenAndCondition(request, pageRequest);
         } else {
-            advertisements = getAllByCategoryTitleContainingAndPriceBetween(category, search, min, max, pageRequest);
+            advertisements = getAllByCategoryTitleContainingAndPriceBetween(request, pageRequest);
         }
 
         return advertisements;
@@ -317,7 +303,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         Page<AdvertisementServiceModel> advertisementServiceModels;
 
         if (!condition.equals("All")) {
-            advertisementServiceModels = getAllByCategoryPriceBetweenAndCondition(min, max, condition, category, pageRequest);
+            advertisementServiceModels = getAllByCategoryPriceBetweenAndCondition(searchRequest, pageRequest);
         } else {
             advertisementServiceModels = getAllByCategoryAndPriceBetween(category, min, max, pageRequest);
         }
@@ -325,7 +311,14 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         return advertisementServiceModels;
     }
 
-    private Page<AdvertisementServiceModel> getAllByCategoryTitleContainingPriceBetweenAndCondition(String category, String search, BigDecimal min, BigDecimal max, String conditionName, PageRequest pageRequest) {
+    private Page<AdvertisementServiceModel> getAllByCategoryTitleContainingPriceBetweenAndCondition(SearchRequest searchRequest, PageRequest pageRequest) {
+
+        String conditionName = searchRequest.getCondition();
+        String category = searchRequest.getCategory();
+        String search = searchRequest.getSearch();
+        BigDecimal min = searchRequest.getMin();
+        BigDecimal max = searchRequest.getMax();
+
 
         Page<Advertisement> advertisements;
 
@@ -359,7 +352,13 @@ public class AdvertisementServiceImpl implements AdvertisementService {
                 .collect(Collectors.toList()));
     }
 
-    private Page<AdvertisementServiceModel> getAllByCategoryPriceBetweenAndCondition(BigDecimal min, BigDecimal max, String conditionName, String category, PageRequest pageRequest) {
+    private Page<AdvertisementServiceModel> getAllByCategoryPriceBetweenAndCondition(CategorySearchRequest searchRequest, PageRequest pageRequest) {
+
+        String conditionName = searchRequest.getCondition();
+        String category = searchRequest.getCategory();
+        BigDecimal min = searchRequest.getMin();
+        BigDecimal max = searchRequest.getMax();
+
 
         Condition condition = Condition.valueOf(conditionName);
 
@@ -376,7 +375,12 @@ public class AdvertisementServiceImpl implements AdvertisementService {
                 .collect(Collectors.toList()));
     }
 
-    private Page<AdvertisementServiceModel> getAllByCategoryTitleContainingAndPriceBetween(String categoryName, String searchText, BigDecimal min, BigDecimal max, PageRequest page) {
+    private Page<AdvertisementServiceModel> getAllByCategoryTitleContainingAndPriceBetween(SearchRequest request, PageRequest page) {
+
+        String categoryName = request.getCategory();
+        BigDecimal min = request.getMin();
+        BigDecimal max = request.getMax();
+        String searchText = request.getSearch();
 
         Page<Advertisement> advertisements;
 
@@ -391,7 +395,12 @@ public class AdvertisementServiceImpl implements AdvertisementService {
                 .collect(Collectors.toList()));
     }
 
-    private Long countByCategoryConditionAndPriceBetween(String category, String conditionName, BigDecimal min, BigDecimal max) {
+    private Long countByCategoryConditionAndPriceBetween(CategorySearchRequest request) {
+
+        String category = request.getCategory();
+        String conditionName = request.getCondition();
+        BigDecimal min = request.getMin();
+        BigDecimal max = request.getMax();
 
         Long count;
 
@@ -408,7 +417,11 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         return count;
     }
 
-    private Long countOfPriceBetweenAndCondition(BigDecimal min, BigDecimal max, String conditionName) {
+    private Long countOfPriceBetweenAndCondition(ConditionSearch search) {
+
+        String conditionName = search.getCondition();
+        BigDecimal min = search.getMin();
+        BigDecimal max = search.getMax();
         Condition condition = Condition.valueOf(conditionName);
         return advertisementRepository.countAdvertisementByPriceBetweenAndCondition(min, max, condition);
     }
@@ -424,6 +437,10 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         }
 
         return result;
+    }
+
+    private Long countOfPriceBetween(BaseSearch baseSearch) {
+        return advertisementRepository.countAdvertisementByPriceBetween(baseSearch.getMin(), baseSearch.getMax());
     }
 
     private void seedCategories() {

@@ -6,9 +6,7 @@ import TradeZone.data.model.enums.RoleName;
 
 @Getter
 @Setter
-public class RoleServiceModel {
-
-    private Long id;
+public class RoleServiceModel extends BaseServiceModel {
 
     private RoleName roleName;
 }

@@ -5,7 +5,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ImagesToUploadModel extends DeleteAdvRequest {
+public class DeleteAdvRequest {
 
-    private String[] images;
+    private Long advertisementId;
+
+    private String username;
 }

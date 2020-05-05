@@ -24,13 +24,19 @@ export class ImageDeleteModalComponent implements OnInit {
 
   deletePhoto() {
 
-    if(this.photoId !== invalidPhotoId){
-      this.advertisementService.deletePhoto(this.photoId, this.advertisementId, this.tokenStorage.getUsername()).subscribe(
+    const params = {
+      photoId: this.photoId,
+      advertisementId: this.advertisementId,
+      username: this.tokenStorage.getUsername()
+    }
+
+    if (this.photoId !== invalidPhotoId) {
+      this.advertisementService.deletePhoto(params).subscribe(
         success => {
           this.alertService.success('Image deleted!', { autoClose: true })
         },
         fail => {
-          this.alertService.error('Error: something went wrong!', { autoClose: true });
+          this.alertService.error(fail.error.message, { autoClose: true });
         }
       );
     }

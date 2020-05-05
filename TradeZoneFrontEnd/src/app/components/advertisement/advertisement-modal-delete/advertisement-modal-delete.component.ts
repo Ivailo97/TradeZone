@@ -21,12 +21,17 @@ export class AdvertisementModalDeleteComponent implements OnInit {
 
   deleteAdvertisement() {
 
-    this.advertisementService.delete(this.advertisementId, this.tokenStorageService.getUsername()).subscribe(
+    const params = {
+      advertisementId: this.advertisementId,
+      username: this.tokenStorageService.getUsername()
+    }
+
+    this.advertisementService.delete(params).subscribe(
       success => {
         this.alertService.success('Successfully deleted!', { autoClose: true })
       },
       error => {
-        this.alertService.error('Already deleted!');
+        this.alertService.error(error.error.message, { autoClose: true });
       }
     );;
   }

@@ -35,8 +35,8 @@ export class AdvertisementService {
     return this._detailsRefreshNeeded$;
   }
 
-  getAllAdvertisementsWithPriceBetween(params, category: string): Observable<AdvertisementInfoList[]> {
-    return this.http.get<AdvertisementInfoList[]>(`${this.baseURL}/all/${category}`, { params: params });
+  getAllAdvertisementsWithPriceBetween(params): Observable<AdvertisementInfoList[]> {
+    return this.http.get<AdvertisementInfoList[]>(`${this.baseURL}/all`, { params: params });
   }
 
   getAdvertisement(id: number): Observable<AdvertisementDetails> {
@@ -77,8 +77,8 @@ export class AdvertisementService {
     return this.http.get<CategorySelectModel[]>(`${this.baseURL}/category/select`);
   }
 
-  delete(id: number, user: string): Observable<string> {
-    return this.http.delete<string>(`${this.baseURL}/delete/${user}/${id}`)
+  delete(params: any): Observable<string> {
+    return this.http.delete<string>(`${this.baseURL}/delete`, { params })
       .pipe(
         tap(() => {
           this._refreshNeeded$.next();
@@ -86,8 +86,8 @@ export class AdvertisementService {
       );;
   }
 
-  deletePhoto(photoId: number, advertisementId: number, user: string): Observable<string> {
-    return this.http.delete<string>(`${this.baseURL}/delete-image/${advertisementId}/${user}/${photoId}`)
+  deletePhoto(params: any): Observable<string> {
+    return this.http.delete<string>(`${this.baseURL}/delete-image`, { params })
       .pipe(
         tap(() => {
           this._refreshNeeded$.next();
@@ -96,11 +96,12 @@ export class AdvertisementService {
       );
   }
 
-  uploadPhotos(advertisementId: number, images: string[], user: string): Observable<string> {
-    return this.http.patch<string>(`${this.baseURL}/upload-images/${advertisementId}/${user}`, { images })
+  uploadPhotos(params: any): Observable<string> {
+    return this.http.patch<string>(`${this.baseURL}/upload-images`, params)
       .pipe(
         tap(() => {
           this._refreshNeeded$.next();
+          this._detailsRefreshNeeded$.next();
         })
       );;
   }
@@ -121,7 +122,7 @@ export class AdvertisementService {
   }
 
   getCountByPriceBetweenAndCondition(params: any): Observable<number> {
-    return this.http.get<number>(`${this.baseURL}/count-price-between-condition`, { params: params });
+    return this.http.get<number>(`${this.baseURL}/count-price-condition`, { params: params });
   }
 
   getCountByCategoryPriceBetweenAndCondition(params: any): Observable<number> {
@@ -129,6 +130,6 @@ export class AdvertisementService {
   }
 
   getCountBeforeSearch(params: any): Observable<number> {
-    return this.http.get<number>(`${this.baseURL}/count-price-between-condition-search-category`, { params: params });
+    return this.http.get<number>(`${this.baseURL}/count-full-search`, { params: params });
   }
 }

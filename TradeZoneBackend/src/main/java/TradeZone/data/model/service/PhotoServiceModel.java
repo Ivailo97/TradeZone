@@ -5,9 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PhotoServiceModel {
-
-    private Long id;
+public class PhotoServiceModel extends BaseServiceModel {
 
     private String idInCloud;
 

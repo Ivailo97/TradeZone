@@ -13,7 +13,7 @@ public interface PhotoService {
 
     PhotoServiceModel create(MultipartFile file);
 
-    ResponseMessage uploadAdvertisementPhotos(Long advertisementId, String username, ImagesToUploadModel images);
+    ResponseMessage uploadAdvertisementPhotos(ImagesToUploadModel images);
 
     ResponseMessage delete(Long id);
 

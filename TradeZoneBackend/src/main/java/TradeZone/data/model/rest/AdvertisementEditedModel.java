@@ -7,19 +7,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-public class AdvertisementEditedModel {
+public class AdvertisementEditedModel extends AdvertisementBaseModel {
 
     private Long id;
-
-    private String title;
-
-    private String description;
-
-    private BigDecimal price;
-
-    private String condition;
-
-    private Long category;
-
-    private String editor;
 }

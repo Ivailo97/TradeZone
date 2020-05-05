@@ -1,7 +1,9 @@
 package TradeZone.web.controller;
 
 import TradeZone.data.error.ApiError;
+import TradeZone.data.error.exception.AdvertisementNotValidException;
 import TradeZone.data.error.exception.EntityNotFoundException;
+import TradeZone.data.error.exception.NotAllowedException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -34,6 +36,22 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleEntityNotFound(EntityNotFoundException ex) {
 
         ApiError apiError = new ApiError(NOT_FOUND);
+        apiError.setMessage(ex.getMessage());
+        return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(NotAllowedException.class)
+    protected ResponseEntity<Object> handleNotAllowed(NotAllowedException ex) {
+
+        ApiError apiError = new ApiError(BAD_REQUEST);
+        apiError.setMessage(ex.getMessage());
+        return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(AdvertisementNotValidException.class)
+    protected ResponseEntity<Object> handleAdvertisementNotValid(AdvertisementNotValidException ex) {
+
+        ApiError apiError = new ApiError(BAD_REQUEST);
         apiError.setMessage(ex.getMessage());
         return buildResponseEntity(apiError);
     }

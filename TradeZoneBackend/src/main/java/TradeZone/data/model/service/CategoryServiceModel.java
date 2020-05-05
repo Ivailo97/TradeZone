@@ -7,9 +7,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class CategoryServiceModel {
-
-    private Long id;
+public class CategoryServiceModel extends BaseServiceModel {
 
     private ProfileServiceModel creator;
 

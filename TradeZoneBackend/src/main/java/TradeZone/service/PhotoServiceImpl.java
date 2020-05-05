@@ -61,15 +61,15 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public ResponseMessage uploadAdvertisementPhotos(Long advertisementId, String username, ImagesToUploadModel model) {
+    public ResponseMessage uploadAdvertisementPhotos(ImagesToUploadModel model) {
 
         if (Arrays.stream(model.getImages()).anyMatch(x -> !validationService.isValid(x))) {
             return new ResponseMessage(FAIL);
         }
 
-        Advertisement advertisement = advertisementRepository.findById(advertisementId).orElse(null);
+        Advertisement advertisement = advertisementRepository.findById(model.getAdvertisementId()).orElse(null);
 
-        if (advertisement == null || !advertisement.getCreator().getUser().getUsername().equals(username)) {
+        if (advertisement == null || !advertisement.getCreator().getUser().getUsername().equals(model.getUsername())) {
             return new ResponseMessage(FAIL);
         }
 

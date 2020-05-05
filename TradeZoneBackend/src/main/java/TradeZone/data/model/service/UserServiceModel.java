@@ -7,9 +7,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-public class UserServiceModel {
-
-    private Long id;
+public class UserServiceModel extends BaseServiceModel {
 
     private String username;
 

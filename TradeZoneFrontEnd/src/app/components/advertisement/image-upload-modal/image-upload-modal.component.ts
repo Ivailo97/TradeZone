@@ -27,15 +27,22 @@ export class ImageUploadModalComponent implements OnInit {
   }
 
   uploadPhotos() {
-    this.advertisementService.uploadPhotos(this.advertisementId,this.images, this.tokenStorage.getUsername())
-    .subscribe(
-      success => {
-        this.alertService.success('Images uploaded successfully!', { autoClose: true })
-      },
-      fail => {
-        this.alertService.error('Error: something went wrong!', { autoClose: true });
-      }
-    );
+
+    const params = {
+      advertisementId: this.advertisementId,
+      images: this.images,
+      username: this.tokenStorage.getUsername()
+    }
+
+    this.advertisementService.uploadPhotos(params)
+      .subscribe(
+        success => {
+          this.alertService.success('Images uploaded successfully!', { autoClose: true })
+        },
+        fail => {
+          this.alertService.error('Error: something went wrong!', { autoClose: true });
+        }
+      );
   }
 
   onFileChange(event) {

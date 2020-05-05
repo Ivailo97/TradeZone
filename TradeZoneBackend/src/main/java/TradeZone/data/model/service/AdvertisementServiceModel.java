@@ -9,25 +9,25 @@ import java.util.List;
 
 @Getter
 @Setter
-public class AdvertisementServiceModel {
+public class AdvertisementServiceModel extends BaseServiceModel {
 
-    private Long id;
-
-    private ProfileServiceModel creator;
-
-    private List<ProfileServiceModel> profilesWhichLikedIt;
+    private Long views;
 
     private String title;
 
-    private String description;
-
     private BigDecimal price;
 
-    private List<PhotoServiceModel> photos;
+    private String description;
 
     private Condition condition;
 
+    private ProfileServiceModel creator;
+
     private CategoryServiceModel category;
 
-    private Long views;
+    private List<PhotoServiceModel> photos;
+
+    private List<ProfileServiceModel> profilesWhichViewedIt;
+
+    private List<ProfileServiceModel> profilesWhichLikedIt;
 }

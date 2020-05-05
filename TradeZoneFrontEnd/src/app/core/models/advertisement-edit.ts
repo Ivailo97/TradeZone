@@ -6,15 +6,15 @@ export class AdvertisementEditedModel {
     price: number;
     condition: string;
     category: number;
-    editor: string;
+    creator: string;
 
-    constructor(id, title, description, price, condition, category, editor) {
+    constructor(id, title, description, price, condition, category, creator) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.price = price;
         this.condition = condition;
         this.category = category;
-        this.editor = editor;
+        this.creator = creator;
     }
 }

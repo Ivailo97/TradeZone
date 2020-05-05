@@ -88,10 +88,11 @@ export class AdvertisementListComponent implements OnInit {
         page: this.config.currentPage,
         sortBy: this.selectedSortCriteria,
         order: sortOrder,
-        condition: this.selectedCondition
+        condition: this.selectedCondition,
+        category: this.currentCategory
       }
 
-      this.advertisements$ = this.advertisementService.getAllAdvertisementsWithPriceBetween(params, this.currentCategory);
+      this.advertisements$ = this.advertisementService.getAllAdvertisementsWithPriceBetween(params);
     }
   }
 
