@@ -4,6 +4,7 @@ import TradeZone.data.error.ApiError;
 import TradeZone.data.error.exception.AdvertisementNotValidException;
 import TradeZone.data.error.exception.EntityNotFoundException;
 import TradeZone.data.error.exception.NotAllowedException;
+import TradeZone.data.error.exception.SearchNotValidException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -56,6 +57,13 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(apiError);
     }
 
+    @ExceptionHandler(SearchNotValidException.class)
+    protected ResponseEntity<Object> handleSearchNotValid(SearchNotValidException ex) {
+
+        ApiError apiError = new ApiError(BAD_REQUEST);
+        apiError.setMessage(ex.getMessage());
+        return buildResponseEntity(apiError);
+    }
 
     private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {
         return new ResponseEntity<>(apiError, apiError.getStatus());

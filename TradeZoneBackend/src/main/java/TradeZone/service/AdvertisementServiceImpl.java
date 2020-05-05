@@ -2,9 +2,12 @@ package TradeZone.service;
 
 import TradeZone.data.error.exception.AdvertisementNotValidException;
 import TradeZone.data.error.exception.EntityNotFoundException;
+import TradeZone.data.error.exception.SearchNotValidException;
 import TradeZone.data.error.exception.NotAllowedException;
 import TradeZone.data.model.rest.*;
 import TradeZone.data.model.rest.search.*;
+import TradeZone.data.model.service.validation.FullSearchRequestValidationService;
+import TradeZone.data.model.service.validation.SearchRequestValidationService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.*;
@@ -30,24 +33,22 @@ import java.util.stream.Collectors;
 public class AdvertisementServiceImpl implements AdvertisementService {
 
     private static final String NOT_ALLOWED = "You are not allowed to perform this action";
-
     private static final String INVALID_MODEL = "Invalid data passed";
-
+    private static final String INVALID_SEARCH = "Invalid search data";
     private static final String ADV_NOT_FOUND = "Advertisement with id %d not found";
-
     private static final String CAT_NOT_FOUND = "Category with id %d not found";
-
     private static final String PROFILE_NOT_FOUND = "Profile with username %s not found";
-
     private static final String IMAGE_NOT_FOUND = "Photo with id %d not found";
-
     private static final String UNDEFINED = "undefined";
-
     private static final String DEFAULT = "All";
 
     private final AdvertisementRepository advertisementRepository;
 
     private final AdvertisementValidationService validationService;
+
+    private final FullSearchRequestValidationService fullSearchValidationService;
+
+    private final SearchRequestValidationService searchValidationService;
 
     private final PhotoService photoService;
 
@@ -60,14 +61,14 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     private final PhotoRepository photoRepository;
 
     @Override
-    public AdvertisementServiceModel getById(Long id) throws EntityNotFoundException {
+    public AdvertisementServiceModel getById(Long id) {
         return advertisementRepository.findById(id)
                 .map(x -> modelMapper.map(x, AdvertisementServiceModel.class))
                 .orElseThrow(() -> new EntityNotFoundException(String.format(ADV_NOT_FOUND, id)));
     }
 
     @Override
-    public void create(AdvertisementCreateModel restModel) throws AdvertisementNotValidException, EntityNotFoundException {
+    public void create(AdvertisementCreateModel restModel) {
 
         if (!validationService.isValid(restModel)) {
             throw new AdvertisementNotValidException(INVALID_MODEL);
@@ -120,7 +121,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     }
 
     @Override
-    public void delete(String principalName, DeleteAdvRequest deleteRequest) throws EntityNotFoundException {
+    public void delete(String principalName, DeleteAdvRequest deleteRequest) {
 
         Advertisement advertisement = advertisementRepository.findById(deleteRequest.getAdvertisementId())
                 .orElseThrow(() -> new EntityNotFoundException(String.format(ADV_NOT_FOUND, deleteRequest.getAdvertisementId())));
@@ -142,7 +143,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     }
 
     @Override
-    public void updateViews(Long id, ViewsUpdate update) throws EntityNotFoundException {
+    public void updateViews(Long id, ViewsUpdate update) {
 
         Advertisement advertisement = advertisementRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ADV_NOT_FOUND));
@@ -162,7 +163,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     }
 
     @Override
-    public void deletePhoto(DeleteAdvImageRequest request) throws EntityNotFoundException {
+    public void deletePhoto(DeleteAdvImageRequest request) {
 
         Advertisement advertisement = advertisementRepository.findById(request.getAdvertisementId())
                 .orElseThrow(() -> new EntityNotFoundException(ADV_NOT_FOUND));
@@ -181,6 +182,10 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
     @Override
     public Long getCountBySearch(SearchRequest searchRequest) {
+
+        if (!searchValidationService.isValid(searchRequest)) {
+            throw new SearchNotValidException(INVALID_SEARCH);
+        }
 
         String category = searchRequest.getCategory();
         String conditionName = searchRequest.getCondition();
@@ -228,6 +233,10 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     @Override
     public Page<AdvertisementServiceModel> getAllByFullSearch(FullSearchRequest request) {
 
+        if (!fullSearchValidationService.isValid(request)) {
+            throw new SearchNotValidException(INVALID_SEARCH);
+        }
+
         Integer page = request.getPage();
         String sortBy = request.getSortBy();
         String order = request.getOrder();
@@ -258,25 +267,6 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         }
 
         return advertisements;
-    }
-
-    private PageRequest buildPageRequest(Integer pageNumber, String sortBy, String order) {
-
-        PageRequest pageRequest = PageRequest.of(pageNumber - 1, 6);
-
-
-        if (!sortBy.equals("none") && !order.equals("none")) {
-
-            Sort sort = Sort.by(sortBy);
-            if (order.equals("ascending")) {
-                sort = sort.ascending();
-            } else {
-                sort = sort.descending();
-            }
-            pageRequest = PageRequest.of(pageNumber - 1, 6, sort);
-        }
-
-        return pageRequest;
     }
 
     private Page<AdvertisementServiceModel> getAllByCategoryTitleContainingPriceBetweenAndCondition(SearchRequest searchRequest, PageRequest pageRequest) {
@@ -361,6 +351,24 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         return new PageImpl<>(advertisements.stream()
                 .map(x -> modelMapper.map(x, AdvertisementServiceModel.class))
                 .collect(Collectors.toList()));
+    }
+
+    private PageRequest buildPageRequest(Integer pageNumber, String sortBy, String order) {
+
+        PageRequest pageRequest = PageRequest.of(pageNumber - 1, 6);
+
+        if (!sortBy.equals("none") && !order.equals("none")) {
+
+            Sort sort = Sort.by(sortBy);
+            if (order.equals("ascending")) {
+                sort = sort.ascending();
+            } else {
+                sort = sort.descending();
+            }
+            pageRequest = PageRequest.of(pageNumber - 1, 6, sort);
+        }
+
+        return pageRequest;
     }
 
     private void seedCategories() {

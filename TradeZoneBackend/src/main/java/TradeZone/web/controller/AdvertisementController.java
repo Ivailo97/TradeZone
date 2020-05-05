@@ -1,8 +1,5 @@
 package TradeZone.web.controller;
 
-import TradeZone.data.error.exception.AdvertisementNotValidException;
-import TradeZone.data.error.exception.EntityNotFoundException;
-import TradeZone.data.error.exception.NotAllowedException;
 import TradeZone.data.model.rest.*;
 import TradeZone.data.model.rest.search.*;
 import TradeZone.service.MappingService;
@@ -21,6 +18,7 @@ import TradeZone.data.model.view.PhotoViewModel;
 import TradeZone.service.AdvertisementService;
 import TradeZone.service.PhotoService;
 
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
@@ -47,14 +45,13 @@ public class AdvertisementController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody AdvertisementCreateModel restModel)
-            throws EntityNotFoundException, AdvertisementNotValidException {
+    public ResponseEntity<?> create(@RequestBody AdvertisementCreateModel restModel) {
         advertisementService.create(restModel);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/edit/{id}")
-    public ResponseEntity<AdvertisementToEditViewModel> edit(@PathVariable Long id) throws EntityNotFoundException {
+    public ResponseEntity<AdvertisementToEditViewModel> edit(@PathVariable Long id) {
         AdvertisementServiceModel serviceModel = advertisementService.getById(id);
         AdvertisementToEditViewModel viewModel = mappingService.getMapper().map(serviceModel, AdvertisementToEditViewModel.class);
         viewModel.setCreator(serviceModel.getCreator().getUser().getUsername());
@@ -62,23 +59,20 @@ public class AdvertisementController {
     }
 
     @PutMapping("/edit")
-    public ResponseEntity<?> editConfirm(@RequestBody AdvertisementEditedModel editedModel)
-            throws EntityNotFoundException, NotAllowedException {
-
+    public ResponseEntity<?> editConfirm(@RequestBody AdvertisementEditedModel editedModel) {
         advertisementService.edit(editedModel);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<?> delete(Principal principal, DeleteAdvRequest deleteRequest)
-            throws EntityNotFoundException, NotAllowedException {
+    public ResponseEntity<?> delete(Principal principal, DeleteAdvRequest deleteRequest) {
         String principalName = principal.getName();
         advertisementService.delete(principalName, deleteRequest);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/details/{id}")
-    public ResponseEntity<AdvertisementDetailsViewModel> details(@PathVariable Long id) throws EntityNotFoundException {
+    public ResponseEntity<AdvertisementDetailsViewModel> details(@PathVariable Long id) {
         AdvertisementServiceModel serviceModel = advertisementService.getById(id);
         AdvertisementDetailsViewModel viewModel = mappingService.getMapper().map(serviceModel, AdvertisementDetailsViewModel.class);
         viewModel.setCreator(serviceModel.getCreator().getUser().getUsername());
@@ -92,27 +86,22 @@ public class AdvertisementController {
     }
 
     @PatchMapping("/increase-views/{id}")
-    public ResponseEntity<?> updateViews(@PathVariable Long id, @RequestBody ViewsUpdate update) throws EntityNotFoundException {
+    public ResponseEntity<?> updateViews(@PathVariable Long id, @RequestBody ViewsUpdate update) {
         advertisementService.updateViews(id, update);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @DeleteMapping("/delete-image")
-    public ResponseEntity<?> deletePhoto(DeleteAdvImageRequest deleteRequest)
-            throws EntityNotFoundException {
-
+    public ResponseEntity<?> deletePhoto(DeleteAdvImageRequest deleteRequest) {
         advertisementService.deletePhoto(deleteRequest);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PatchMapping("/upload-images")
     public ResponseEntity<?> uploadPhotos(@RequestBody ImagesToUploadModel images) {
-
         ResponseMessage responseMessage = photoService.uploadAdvertisementPhotos(images);
-
         HttpStatus status = responseMessage.getMessage().contains("FAIL") ?
                 HttpStatus.BAD_REQUEST : HttpStatus.ACCEPTED;
-
         return new ResponseEntity<>(status);
     }
 }
