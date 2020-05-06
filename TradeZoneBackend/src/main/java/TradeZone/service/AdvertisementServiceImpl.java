@@ -1,13 +1,9 @@
 package TradeZone.service;
 
-import TradeZone.data.error.exception.AdvertisementNotValidException;
-import TradeZone.data.error.exception.EntityNotFoundException;
-import TradeZone.data.error.exception.SearchNotValidException;
-import TradeZone.data.error.exception.NotAllowedException;
+import TradeZone.data.error.exception.*;
 import TradeZone.data.model.rest.*;
 import TradeZone.data.model.rest.search.*;
-import TradeZone.data.model.service.validation.FullSearchRequestValidationService;
-import TradeZone.data.model.service.validation.SearchRequestValidationService;
+import TradeZone.data.model.service.validation.*;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.*;
@@ -18,7 +14,6 @@ import TradeZone.data.model.entity.Photo;
 import TradeZone.data.model.entity.UserProfile;
 import TradeZone.data.model.enums.Condition;
 import TradeZone.data.model.service.AdvertisementServiceModel;
-import TradeZone.data.model.service.validation.AdvertisementValidationService;
 import TradeZone.data.repository.AdvertisementRepository;
 import TradeZone.data.repository.CategoryRepository;
 import TradeZone.data.repository.PhotoRepository;
@@ -39,6 +34,8 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     private static final String CAT_NOT_FOUND = "Category with id %d not found";
     private static final String PROFILE_NOT_FOUND = "Profile with username %s not found";
     private static final String IMAGE_NOT_FOUND = "Photo with id %d not found";
+    private static final String INVALID_DELETE_REQUEST = "Invalid delete request";
+    private static final String INVALID_VIEWS_UPDATE = "Invalid views update";
     private static final String UNDEFINED = "undefined";
     private static final String DEFAULT = "All";
 
@@ -49,6 +46,12 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     private final FullSearchRequestValidationService fullSearchValidationService;
 
     private final SearchRequestValidationService searchValidationService;
+
+    private final DeleteAdvRequestValidationService deleteAdvRequestValidationService;
+
+    private final DeleteAdvImageRequestValidationService deleteAdvImageRequestValidationService;
+
+    private final ViewsUpdateValidationService viewsUpdateValidationService;
 
     private final PhotoService photoService;
 
@@ -123,6 +126,10 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     @Override
     public void delete(String principalName, DeleteAdvRequest deleteRequest) {
 
+        if (!deleteAdvRequestValidationService.isValid(deleteRequest)) {
+            throw new DeleteRequestNotValidException(INVALID_DELETE_REQUEST);
+        }
+
         Advertisement advertisement = advertisementRepository.findById(deleteRequest.getAdvertisementId())
                 .orElseThrow(() -> new EntityNotFoundException(String.format(ADV_NOT_FOUND, deleteRequest.getAdvertisementId())));
 
@@ -145,6 +152,10 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     @Override
     public void updateViews(Long id, ViewsUpdate update) {
 
+        if (!viewsUpdateValidationService.isValid(update)) {
+            throw new ViewsUpdateNotValidException(INVALID_VIEWS_UPDATE);
+        }
+
         Advertisement advertisement = advertisementRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ADV_NOT_FOUND));
 
@@ -164,6 +175,10 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
     @Override
     public void deletePhoto(DeleteAdvImageRequest request) {
+
+        if (!deleteAdvImageRequestValidationService.isValid(request)) {
+            throw new DeleteRequestNotValidException(INVALID_DELETE_REQUEST);
+        }
 
         Advertisement advertisement = advertisementRepository.findById(request.getAdvertisementId())
                 .orElseThrow(() -> new EntityNotFoundException(ADV_NOT_FOUND));
