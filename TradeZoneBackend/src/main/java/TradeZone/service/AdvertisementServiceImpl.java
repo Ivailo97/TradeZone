@@ -71,7 +71,98 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     }
 
     @Override
+    public Page<AdvertisementServiceModel> getAllByFullSearch(FullSearchRequest request) {
+
+        if (!fullSearchValidationService.isValid(request)) {
+            throw new SearchNotValidException(INVALID_SEARCH);
+        }
+
+        Integer page = request.getPage();
+        String sortBy = request.getSortBy();
+        String order = request.getOrder();
+        String condition = request.getCondition();
+        PageRequest pageRequest = buildPageRequest(page, sortBy, order);
+
+        Page<AdvertisementServiceModel> advertisements;
+
+        if (request.getSearch().equals(UNDEFINED)) {
+
+            BigDecimal min = request.getMin();
+            BigDecimal max = request.getMax();
+            String category = request.getCategory();
+
+            if (!condition.equals(DEFAULT)) {
+                advertisements = getAllByCategoryPriceBetweenAndCondition(request, pageRequest);
+            } else {
+                advertisements = getAllByCategoryAndPriceBetween(category, min, max, pageRequest);
+            }
+
+        } else {
+
+            if (!condition.equals(DEFAULT)) {
+                advertisements = getAllByCategoryTitleContainingPriceBetweenAndCondition(request, pageRequest);
+            } else {
+                advertisements = getAllByCategoryTitleContainingAndPriceBetween(request, pageRequest);
+            }
+        }
+
+        return advertisements;
+    }
+
+    @Override
+    public Long getCountBySearch(SearchRequest searchRequest) {
+
+        if (!searchValidationService.isValid(searchRequest)) {
+            throw new SearchNotValidException(INVALID_SEARCH);
+        }
+
+        String category = searchRequest.getCategory();
+        String conditionName = searchRequest.getCondition();
+        String search = searchRequest.getSearch();
+        BigDecimal min = searchRequest.getMin();
+        BigDecimal max = searchRequest.getMax();
+
+        Long count;
+
+        if (category.equals(DEFAULT)) {
+            if (conditionName.equals(DEFAULT)) {
+                if (search.equals(UNDEFINED)) {
+                    count = advertisementRepository.countAdvertisementByPriceBetween(min, max);
+                } else {
+                    count = advertisementRepository.countByPriceBetweenAndTitleContaining(min, max, search);
+                }
+            } else {
+                Condition condition = Condition.valueOf(conditionName);
+                if (search.equals(UNDEFINED)) {
+                    count = advertisementRepository.countAdvertisementByPriceBetweenAndCondition(min, max, condition);
+                } else {
+                    count = advertisementRepository.countByPriceBetweenAndTitleContainingAndCondition(min, max, search, condition);
+                }
+            }
+        } else {
+            if (conditionName.equals(DEFAULT)) {
+                if (search.equals(UNDEFINED)) {
+                    count = advertisementRepository.countAdvertisementByCategoryNameAndPriceBetween(category, min, max);
+                } else {
+                    count = advertisementRepository.countByPriceBetweenAndTitleContainingAndCategoryName(min, max, search, category);
+                }
+            } else {
+                Condition condition = Condition.valueOf(conditionName);
+                if (search.equals(UNDEFINED)) {
+                    count = advertisementRepository.countAdvertisementByCategoryNameAndConditionAndPriceBetween(category, condition, min, max);
+                } else {
+                    count = advertisementRepository.countByPriceBetweenAndTitleContainingAndCategoryNameAndCondition(min, max, search, category, condition);
+                }
+            }
+        }
+
+        return count;
+    }
+
+    @Override
     public void create(AdvertisementCreateModel restModel) {
+
+        this.seedCategories();
 
         if (!validationService.isValid(restModel)) {
             throw new AdvertisementNotValidException(INVALID_MODEL);
@@ -195,95 +286,6 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         advertisementRepository.save(advertisement);
     }
 
-    @Override
-    public Long getCountBySearch(SearchRequest searchRequest) {
-
-        if (!searchValidationService.isValid(searchRequest)) {
-            throw new SearchNotValidException(INVALID_SEARCH);
-        }
-
-        String category = searchRequest.getCategory();
-        String conditionName = searchRequest.getCondition();
-        String search = searchRequest.getSearch();
-        BigDecimal min = searchRequest.getMin();
-        BigDecimal max = searchRequest.getMax();
-
-        Long count;
-
-        if (category.equals(DEFAULT)) {
-            if (conditionName.equals(DEFAULT)) {
-                if (search.equals(UNDEFINED)) {
-                    count = advertisementRepository.countAdvertisementByPriceBetween(min, max);
-                } else {
-                    count = advertisementRepository.countByPriceBetweenAndTitleContaining(min, max, search);
-                }
-            } else {
-                Condition condition = Condition.valueOf(conditionName);
-                if (search.equals(UNDEFINED)) {
-                    count = advertisementRepository.countAdvertisementByPriceBetweenAndCondition(min, max, condition);
-                } else {
-                    count = advertisementRepository.countByPriceBetweenAndTitleContainingAndCondition(min, max, search, condition);
-                }
-            }
-        } else {
-            if (conditionName.equals(DEFAULT)) {
-                if (search.equals(UNDEFINED)) {
-                    count = advertisementRepository.countAdvertisementByCategoryNameAndPriceBetween(category, min, max);
-                } else {
-                    count = advertisementRepository.countByPriceBetweenAndTitleContainingAndCategoryName(min, max, search, category);
-                }
-            } else {
-                Condition condition = Condition.valueOf(conditionName);
-                if (search.equals(UNDEFINED)) {
-                    count = advertisementRepository.countAdvertisementByCategoryNameAndConditionAndPriceBetween(category, condition, min, max);
-                } else {
-                    count = advertisementRepository.countByPriceBetweenAndTitleContainingAndCategoryNameAndCondition(min, max, search, category, condition);
-                }
-            }
-        }
-
-        return count;
-    }
-
-    @Override
-    public Page<AdvertisementServiceModel> getAllByFullSearch(FullSearchRequest request) {
-
-        if (!fullSearchValidationService.isValid(request)) {
-            throw new SearchNotValidException(INVALID_SEARCH);
-        }
-
-        Integer page = request.getPage();
-        String sortBy = request.getSortBy();
-        String order = request.getOrder();
-        String condition = request.getCondition();
-        PageRequest pageRequest = buildPageRequest(page, sortBy, order);
-
-        Page<AdvertisementServiceModel> advertisements;
-
-        if (request.getSearch().equals(UNDEFINED)) {
-
-            BigDecimal min = request.getMin();
-            BigDecimal max = request.getMax();
-            String category = request.getCategory();
-
-            if (!condition.equals(DEFAULT)) {
-                advertisements = getAllByCategoryPriceBetweenAndCondition(request, pageRequest);
-            } else {
-                advertisements = getAllByCategoryAndPriceBetween(category, min, max, pageRequest);
-            }
-
-        } else {
-
-            if (!condition.equals(DEFAULT)) {
-                advertisements = getAllByCategoryTitleContainingPriceBetweenAndCondition(request, pageRequest);
-            } else {
-                advertisements = getAllByCategoryTitleContainingAndPriceBetween(request, pageRequest);
-            }
-        }
-
-        return advertisements;
-    }
-
     private Page<AdvertisementServiceModel> getAllByCategoryTitleContainingPriceBetweenAndCondition(SearchRequest searchRequest, PageRequest pageRequest) {
 
         String conditionName = searchRequest.getCondition();
@@ -291,7 +293,6 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         String search = searchRequest.getSearch();
         BigDecimal min = searchRequest.getMin();
         BigDecimal max = searchRequest.getMax();
-
 
         Page<Advertisement> advertisements;
 
@@ -309,8 +310,6 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     }
 
     private Page<AdvertisementServiceModel> getAllByCategoryAndPriceBetween(String category, BigDecimal min, BigDecimal max, PageRequest pageRequest) {
-
-        this.seedCategories();
 
         Page<Advertisement> advertisements;
 
@@ -331,7 +330,6 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         String category = searchRequest.getCategory();
         BigDecimal min = searchRequest.getMin();
         BigDecimal max = searchRequest.getMax();
-
 
         Condition condition = Condition.valueOf(conditionName);
 
