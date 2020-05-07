@@ -21,6 +21,8 @@ public class AdvertisementDetailsViewModel {
 
     private String condition;
 
+    private String delivery;
+
     private Long views;
 
     private String creator;

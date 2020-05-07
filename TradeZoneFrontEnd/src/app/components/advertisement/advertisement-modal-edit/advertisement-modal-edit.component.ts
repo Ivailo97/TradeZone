@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges, SimpleChange, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { AdvertisementService } from 'src/app/core/services/advertisement.service';
 import { TokenStorageService } from 'src/app/core/services/token-storage.service';
@@ -21,6 +21,7 @@ export class AdvertisementModalEditComponent implements OnInit, OnChanges {
   advertisementToEdit$: Observable<AdvertisementToEditModel>;
   advertisement: AdvertisementEditedModel;
   conditions$: Observable<String[]>;
+  deliveries$: Observable<String[]>;
   categories$: Observable<CategorySelectModel[]>
 
   constructor(
@@ -41,15 +42,17 @@ export class AdvertisementModalEditComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+    this.deliveries$ = this.advertisementService.getAllDeliveries();
     this.conditions$ = this.advertisementService.getAllConditions();
     this.categories$ = this.advertisementService.getAllCategories();
 
     this.form = this.formBuilder.group({
-      title: ['', Validators.required],
+      title: ['', [Validators.required, Validators.pattern(/^[A-ZА-Я][A-ZА-Яа-яa-z\s\d]{4,19}$/)]],
       description: ['', Validators.required],
-      price: ['', [Validators.required, Validators.min(0.1)]],
+      price: ['', [Validators.required, Validators.min(0.1), Validators.max(10000)]],
       category: ['', Validators.required],
-      condition: ['', Validators.required]
+      condition: ['', Validators.required],
+      delivery: ['', Validators.required],
     })
   }
 
@@ -61,6 +64,7 @@ export class AdvertisementModalEditComponent implements OnInit, OnChanges {
       this.f.description.value,
       this.f.price.value,
       this.f.condition.value,
+      this.f.delivery.value,
       this.f.category.value,
       this.tokenService.getUsername()
     )

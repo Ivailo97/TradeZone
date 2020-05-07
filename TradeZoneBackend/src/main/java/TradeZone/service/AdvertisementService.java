@@ -13,9 +13,9 @@ public interface AdvertisementService {
 
     Long getCountBySearch(SearchRequest search);
 
-    void create(AdvertisementCreateModel restModel);
+    AdvertisementServiceModel create(AdvertisementCreateModel restModel);
 
-    void edit(AdvertisementEditedModel restModel);
+    AdvertisementServiceModel edit(AdvertisementEditedModel restModel);
 
     void delete(String principalName, DeleteAdvRequest deleteRequest);
 

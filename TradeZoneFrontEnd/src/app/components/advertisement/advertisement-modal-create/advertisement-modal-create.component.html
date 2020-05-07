@@ -20,6 +20,11 @@
                     <div class="alert alert-danger" *ngIf="f?.title?.touched && f?.title.errors?.required">
                         Field is required!
                     </div>
+
+                    <div class="alert alert-danger" *ngIf="f?.title.errors?.pattern">
+                        Field must be between 5 and 20 letters starting with capital letter!
+                    </div>
+
                 </div>
 
                 <div class="md-form mb-5 form-group">
@@ -44,6 +49,10 @@
                     <div class="alert alert-danger" *ngIf="f?.price?.touched && f?.price.errors?.min">
                         Must be a positive number!
                     </div>
+
+                    <div class="alert alert-danger" *ngIf="f?.price?.touched && f?.price.errors?.max">
+                        Must be cheaper than 10,000$!
+                    </div>
                 </div>
 
                 <div class="md-form mb-5 form-group input-group">
@@ -60,6 +69,19 @@
                     </mat-form-field>
                 </div>
 
+                <div class="md-form mb-5 form-group input-group">
+                    <div class="input-group-prepend">
+                        <i class="fas fa-grip-horizontal prefix grey-text"></i>
+                    </div>
+                    <mat-form-field class="ml-5">
+                        <mat-label class="active">Delivery</mat-label>
+                        <mat-select required formControlName="delivery">
+                            <mat-option *ngFor="let delivery of (deliveries$ | async)" [value]="delivery">
+                                {{delivery}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
 
                 <div class="md-form mb-5 form-group input-group">
                     <div class="input-group-prepend">

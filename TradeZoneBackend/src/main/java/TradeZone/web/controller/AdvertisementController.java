@@ -1,5 +1,6 @@
 package TradeZone.web.controller;
 
+import TradeZone.data.model.enums.DeliveryType;
 import TradeZone.data.model.rest.*;
 import TradeZone.data.model.rest.search.*;
 import TradeZone.service.MappingService;
@@ -18,7 +19,6 @@ import TradeZone.data.model.view.PhotoViewModel;
 import TradeZone.service.AdvertisementService;
 import TradeZone.service.PhotoService;
 
-import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
@@ -83,6 +83,11 @@ public class AdvertisementController {
     @GetMapping("/conditions/all")
     public ResponseEntity<String[]> conditions() {
         return ResponseEntity.ok(Arrays.stream(Condition.values()).map(Enum::name).toArray(String[]::new));
+    }
+
+    @GetMapping("/deliveries/all")
+    public ResponseEntity<String[]> deliveries() {
+        return ResponseEntity.ok(Arrays.stream(DeliveryType.values()).map(Enum::name).toArray(String[]::new));
     }
 
     @PatchMapping("/increase-views/{id}")

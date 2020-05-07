@@ -6,9 +6,10 @@ export class AdvertisementBindingModel {
     price: number;
     condition: string;
     category: number;
+    delivery: string
     creator: string;
 
-    constructor(title, description, images, price, condition, category, creator) {
+    constructor(title, description, images, price, condition, category, delivery, creator) {
 
         this.title = title;
         this.description = description;
@@ -16,6 +17,7 @@ export class AdvertisementBindingModel {
         this.price = price;
         this.condition = condition;
         this.category = category;
+        this.delivery = delivery;
         this.creator = creator;
     }
 }

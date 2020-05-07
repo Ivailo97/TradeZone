@@ -1,5 +1,6 @@
 package TradeZone.data.model.entity;
 
+import TradeZone.data.model.enums.DeliveryType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import TradeZone.data.model.enums.Condition;
@@ -47,6 +48,10 @@ public class Advertisement extends BaseEntity {
     @Column(name = "state")
     @Enumerated(EnumType.STRING)
     private Condition condition;
+
+    @Column(name = "delivery_type")
+    @Enumerated(EnumType.STRING)
+    private DeliveryType delivery;
 
     @Column(name = "views")
     private Long views;

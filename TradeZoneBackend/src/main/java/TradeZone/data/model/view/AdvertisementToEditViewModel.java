@@ -17,6 +17,8 @@ public class AdvertisementToEditViewModel {
 
     private String condition;
 
+    private String delivery;
+
     private Long categoryId;
 
     private String creator;

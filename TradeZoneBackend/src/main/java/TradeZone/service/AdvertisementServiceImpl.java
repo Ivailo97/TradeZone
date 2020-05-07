@@ -1,6 +1,7 @@
 package TradeZone.service;
 
 import TradeZone.data.error.exception.*;
+import TradeZone.data.model.enums.DeliveryType;
 import TradeZone.data.model.rest.*;
 import TradeZone.data.model.rest.search.*;
 import TradeZone.data.model.service.validation.*;
@@ -160,7 +161,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     }
 
     @Override
-    public void create(AdvertisementCreateModel restModel) {
+    public AdvertisementServiceModel create(AdvertisementCreateModel restModel) {
 
         this.seedCategories();
 
@@ -182,11 +183,13 @@ public class AdvertisementServiceImpl implements AdvertisementService {
                 .map(x -> modelMapper.map(x, Photo.class))
                 .collect(Collectors.toList()));
 
-        advertisementRepository.save(entity);
+        entity = advertisementRepository.save(entity);
+
+        return modelMapper.map(entity, AdvertisementServiceModel.class);
     }
 
     @Override
-    public void edit(AdvertisementEditedModel restModel) {
+    public AdvertisementServiceModel edit(AdvertisementEditedModel restModel) {
 
         if (!validationService.isValid(restModel)) {
             throw new AdvertisementNotValidException(INVALID_MODEL);
@@ -210,8 +213,11 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         advertisement.setDescription(restModel.getDescription());
         advertisement.setPrice(restModel.getPrice());
         advertisement.setCondition(Condition.valueOf(restModel.getCondition()));
+        advertisement.setDelivery(DeliveryType.valueOf(restModel.getDelivery()));
 
-        advertisementRepository.save(advertisement);
+        advertisement = advertisementRepository.save(advertisement);
+
+        return modelMapper.map(advertisement, AdvertisementServiceModel.class);
     }
 
     @Override

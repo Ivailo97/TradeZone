@@ -29,7 +29,11 @@ export class ProfileService {
 
   addFavoriteAdvertisement(advertisementId: number): Observable<string> {
     const requestBody = { username: this.tokenStorageService.getUsername(), advertisementId };
-    return this.http.post<string>(`${baseURL}/add-favorite`, requestBody);
+    return this.http.post<string>(`${baseURL}/add-favorite`, requestBody).pipe(
+      tap(() => {
+        this._refreshNeeded$.next();
+      })
+    );;;;;
   }
 
   removeFavoriteAdvertisement(advertisementId: number): Observable<string> {

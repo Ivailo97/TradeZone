@@ -1,5 +1,6 @@
 package TradeZone.data.model.service;
 
+import TradeZone.data.model.enums.DeliveryType;
 import lombok.Getter;
 import lombok.Setter;
 import TradeZone.data.model.enums.Condition;
@@ -20,6 +21,8 @@ public class AdvertisementServiceModel extends BaseServiceModel {
     private String description;
 
     private Condition condition;
+
+    private DeliveryType delivery;
 
     private ProfileServiceModel creator;
 

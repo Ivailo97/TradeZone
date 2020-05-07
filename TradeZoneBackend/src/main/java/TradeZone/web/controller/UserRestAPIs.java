@@ -79,7 +79,6 @@ public class UserRestAPIs {
 
         String username = String.valueOf(requestBody.get("username"));
         Long addId = Long.parseLong(String.valueOf(requestBody.get("advertisementId")));
-
         ResponseMessage responseMessage = profileService.addFavorite(username, addId);
         HttpStatus status = responseMessage.getMessage().contains("FAIL") ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
         return new ResponseEntity<>(status);

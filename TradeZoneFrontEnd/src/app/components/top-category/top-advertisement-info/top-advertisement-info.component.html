@@ -3,8 +3,8 @@
         <div class="top" style="background-image: url({{advertisement.imageUrl}});"></div>
         <div class="bottom" [ngClass]="liked ? 'clicked' : ''">
             <div class="left">
-                <div class="details">
-                    <h1>{{advertisement.title}}</h1>
+                <div class="details text-center">
+                    <h3>{{advertisement.title}}</h3>
                     <p>{{advertisement.price | currency}}</p>
                 </div>
                 <div class="buy" (click)="toogleFavorite()"><i class="material-icons">favorite_border</i></div>
@@ -12,7 +12,9 @@
             <div class="right">
                 <div class="done"><i class="material-icons">done</i></div>
                 <div class="details">
-                    <h1>{{advertisement.title}}</h1>
+                    <div class="row">
+                        <h3>{{advertisement.title}}</h3>
+                    </div>
                     <p>Liked</p>
                 </div>
                 <div class="remove" (click)="toogleFavorite()"><i class="material-icons">clear</i></div>

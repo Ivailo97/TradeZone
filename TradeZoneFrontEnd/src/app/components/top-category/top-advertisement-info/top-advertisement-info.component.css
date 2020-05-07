@@ -48,7 +48,8 @@ body {
     transform: translateX(-50%);
 }
 
-.wrapper .top-container .bottom h1 {
+.wrapper .top-container .bottom h3 {
+    font-weight: bold;
     margin: 0;
     padding: 0;
 }

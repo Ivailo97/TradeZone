@@ -18,25 +18,28 @@ export class AdvertisementModalCreateComponent implements OnInit {
   advertisement: AdvertisementBindingModel;
   errorMessage;
   conditions$: Observable<String[]>;
+  deliveries$: Observable<String[]>;
   categories$: Observable<CategorySelectModel[]>
 
   constructor(
     private formBuilder: FormBuilder,
     private advertisementService: AdvertisementService,
-    private tokenService:TokenStorageService) {
+    private tokenService: TokenStorageService) {
   }
 
   ngOnInit() {
 
     this.conditions$ = this.advertisementService.getAllConditions();
+    this.deliveries$ = this.advertisementService.getAllDeliveries();
     this.categories$ = this.advertisementService.getAllCategories();
 
     this.form = this.formBuilder.group({
-      title: ['', Validators.required],
+      title: ['', [Validators.required, Validators.pattern(/^[A-ZА-Я][A-ZА-Яа-яa-z\s\d]{4,19}$/)]],
       description: ['', Validators.required],
-      price: ['', [Validators.required, Validators.min(0.1)]],
+      price: ['', [Validators.required, Validators.min(0.1), Validators.max(10000)]],
       file: ['', Validators.required],
       category: ['', Validators.required],
+      delivery: ['', Validators.required],
       fileSource: ['', Validators.required],
       condition: ['', Validators.required]
     })
@@ -51,6 +54,7 @@ export class AdvertisementModalCreateComponent implements OnInit {
       this.f.price.value,
       this.f.condition.value,
       this.f.category.value,
+      this.f.delivery.value,
       this.tokenService.getUsername()
     )
 

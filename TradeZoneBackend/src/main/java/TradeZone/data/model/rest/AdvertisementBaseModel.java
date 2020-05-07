@@ -17,6 +17,8 @@ public class AdvertisementBaseModel {
 
     private String condition;
 
+    private String delivery;
+
     private Long category;
 
     private String creator;

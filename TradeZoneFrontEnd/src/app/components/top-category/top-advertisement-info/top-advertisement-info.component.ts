@@ -6,7 +6,6 @@ import { AlertService } from '../../alert';
 
 const defaultImageURL = 'https://res.cloudinary.com/knight-cloud/image/upload/v1586614999/xtxuiw3kqqy5wxq6ufla.png';
 
-
 @Component({
   selector: 'app-top-advertisement-info',
   templateUrl: './top-advertisement-info.component.html',
@@ -18,7 +17,9 @@ export class TopAdvertisementInfoComponent implements OnInit {
 
   liked: boolean;
 
-  constructor(private tokenStorageService: TokenStorageService, private alertService: AlertService, private profileService: ProfileService) { }
+  constructor(private tokenStorageService: TokenStorageService,
+    private alertService: AlertService,
+    private profileService: ProfileService) { }
 
   ngOnInit(): void {
     this.advertisement.imageUrl = this.advertisement.imageUrl ? this.advertisement.imageUrl : defaultImageURL;
@@ -39,7 +40,7 @@ export class TopAdvertisementInfoComponent implements OnInit {
           this.alertService.success('Successfully removed from favorites!', { autoClose: true })
         },
         error => {
-          this.alertService.error('Already removed!');
+          this.alertService.error('Already removed!', { autoClose: true });
         }
       );
       //like
