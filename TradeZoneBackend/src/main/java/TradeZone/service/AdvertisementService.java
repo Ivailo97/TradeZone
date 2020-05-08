@@ -17,9 +17,9 @@ public interface AdvertisementService {
 
     AdvertisementServiceModel edit(AdvertisementEditedModel restModel);
 
-    void delete(String principalName, DeleteAdvRequest deleteRequest);
+    AdvertisementServiceModel delete(String principalName, DeleteAdvRequest deleteRequest);
 
-    void updateViews(Long id, ViewsUpdate views);
+    AdvertisementServiceModel updateViews(Long id, ViewsUpdate views);
 
-    void deletePhoto(DeleteAdvImageRequest deleteRequest);
+    AdvertisementServiceModel deletePhoto(DeleteAdvImageRequest deleteRequest);
 }

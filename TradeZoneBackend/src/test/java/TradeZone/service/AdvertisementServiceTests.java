@@ -1,19 +1,14 @@
 package TradeZone.service;
 
-import TradeZone.data.error.exception.AdvertisementNotValidException;
-import TradeZone.data.error.exception.EntityNotFoundException;
-import TradeZone.data.error.exception.NotAllowedException;
-import TradeZone.data.error.exception.SearchNotValidException;
+import TradeZone.data.error.exception.*;
 import TradeZone.data.model.entity.*;
-import TradeZone.data.model.rest.AdvertisementCreateModel;
-import TradeZone.data.model.rest.AdvertisementEditedModel;
+import TradeZone.data.model.rest.*;
+import TradeZone.data.model.rest.message.response.ResponseMessage;
 import TradeZone.data.model.rest.search.FullSearchRequest;
 import TradeZone.data.model.rest.search.SearchRequest;
 import TradeZone.data.model.service.AdvertisementServiceModel;
 import TradeZone.data.model.service.PhotoServiceModel;
-import TradeZone.data.model.service.validation.AdvertisementValidationService;
-import TradeZone.data.model.service.validation.FullSearchRequestValidationService;
-import TradeZone.data.model.service.validation.SearchRequestValidationService;
+import TradeZone.service.validation.*;
 import TradeZone.data.repository.AdvertisementRepository;
 import TradeZone.data.repository.CategoryRepository;
 import TradeZone.data.repository.PhotoRepository;
@@ -30,7 +25,7 @@ import org.springframework.data.domain.Page;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 //White box testing
@@ -45,6 +40,15 @@ public class AdvertisementServiceTests {
 
     @Mock
     FullSearchRequestValidationService fullSearchRequestValidationService;
+
+    @Mock
+    DeleteAdvImageRequestValidationService deleteAdvImageRequestValidationService;
+
+    @Mock
+    DeleteAdvRequestValidationService deleteAdvRequestValidationService;
+
+    @Mock
+    ViewsUpdateValidationService viewsUpdateValidationService;
 
     @Mock
     PhotoServiceImpl photoService;
@@ -515,18 +519,18 @@ public class AdvertisementServiceTests {
         AdvertisementServiceModel result = advertisementService.edit(editedModel);
 
         assertEquals(editedModel.getTitle(), result.getTitle());
-        assertEquals(editedModel.getId(),result.getId());
-        assertEquals(editedModel.getCategory(),result.getCategory().getId());
-        assertEquals(editedModel.getCondition(),result.getCondition().name());
-        assertEquals(editedModel.getCreator(),result.getCreator().getUser().getUsername());
-        assertEquals(editedModel.getDescription(),result.getDescription());
-        assertEquals(editedModel.getPrice(),result.getPrice());
-        assertEquals(editedModel.getDelivery(),result.getDelivery().name());
+        assertEquals(editedModel.getId(), result.getId());
+        assertEquals(editedModel.getCategory(), result.getCategory().getId());
+        assertEquals(editedModel.getCondition(), result.getCondition().name());
+        assertEquals(editedModel.getCreator(), result.getCreator().getUser().getUsername());
+        assertEquals(editedModel.getDescription(), result.getDescription());
+        assertEquals(editedModel.getPrice(), result.getPrice());
+        assertEquals(editedModel.getDelivery(), result.getDelivery().name());
         verify(advertisementRepository).save(any());
     }
 
     @Test(expected = AdvertisementNotValidException.class)
-    public void edit_shouldThrow_whenInvalidArgument(){
+    public void edit_shouldThrow_whenInvalidArgument() {
 
         when(advertisementValidationService.isValid(any())).thenReturn(false);
 
@@ -534,7 +538,7 @@ public class AdvertisementServiceTests {
     }
 
     @Test(expected = EntityNotFoundException.class)
-    public void edit_shouldThrow_whenInvalidId(){
+    public void edit_shouldThrow_whenInvalidId() {
 
         when(advertisementRepository.findById(any())).thenReturn(Optional.empty());
 
@@ -542,7 +546,7 @@ public class AdvertisementServiceTests {
     }
 
     @Test(expected = EntityNotFoundException.class)
-    public void edit_shouldThrow_whenInvalidCategoryId(){
+    public void edit_shouldThrow_whenInvalidCategoryId() {
 
         when(advertisementRepository.findById(any())).thenReturn(Optional.of(new Advertisement()));
 
@@ -552,7 +556,7 @@ public class AdvertisementServiceTests {
     }
 
     @Test(expected = NotAllowedException.class)
-    public void edit_shouldThrow_whenEditorNotCreator(){
+    public void edit_shouldThrow_whenEditorNotCreator() {
 
         Advertisement advertisementFromDB = new Advertisement();
         UserProfile creator = new UserProfile();
@@ -569,5 +573,305 @@ public class AdvertisementServiceTests {
         editedModel.setCreator("another");
 
         advertisementService.edit(new AdvertisementEditedModel());
+    }
+
+    @Test
+    public void delete_shouldWorkCorrect_whenValidRequest() {
+
+        //creating user profile with one created advertisement
+        String loggedUser = "user";
+        Advertisement advertisementFromDB = new Advertisement();
+        User user = new User();
+        user.setUsername(loggedUser);
+        UserProfile creatorProfile = new UserProfile(user);
+        creatorProfile.getCreatedAdvertisements().add(advertisementFromDB);
+        advertisementFromDB.setCreator(creatorProfile);
+
+        //creating user profile which liked the advertisement the first user created
+        User user1 = new User();
+        user1.setUsername("liker");
+        UserProfile userProfile1 = new UserProfile(user1);
+
+        //adding the advertisement to favorite and viewed collection of the profile
+        userProfile1.getViewed().add(advertisementFromDB);
+        userProfile1.getFavorites().add(advertisementFromDB);
+
+        //creating the delete request
+        DeleteAdvRequest deleteRequest = new DeleteAdvRequest();
+        deleteRequest.setAdvertisementId(1L);
+        deleteRequest.setUsername(loggedUser);
+
+        when(deleteAdvRequestValidationService.isValid(any())).thenReturn(true);
+
+        when(advertisementRepository.findById(any())).thenReturn(Optional.of(advertisementFromDB));
+
+        doNothing().when(photoService).deleteAll(any());
+
+        //Act
+        AdvertisementServiceModel actual = advertisementService.delete(loggedUser, deleteRequest);
+
+        //Assert
+        verify(photoService).deleteAll(any());
+        verify(advertisementRepository).save(any());
+        verify(advertisementRepository).delete(any());
+        assertNull(actual.getProfilesWhichLikedIt());
+        assertNull(actual.getProfilesWhichViewedIt());
+        assertEquals(0, creatorProfile.getFavorites().size());
+        assertEquals(0, creatorProfile.getViewed().size());
+        assertEquals(0, creatorProfile.getCreatedAdvertisements().size());
+    }
+
+    @Test(expected = DeleteRequestNotValidException.class)
+    public void delete_shouldThrow_whenInvalidRequest() {
+
+        when(deleteAdvRequestValidationService.isValid(any())).thenReturn(false);
+
+        advertisementService.delete("user", new DeleteAdvRequest());
+    }
+
+    @Test(expected = EntityNotFoundException.class)
+    public void delete_shouldThrow_whenInvalidAdvertisementIdInRequest() {
+
+        when(deleteAdvRequestValidationService.isValid(any())).thenReturn(true);
+
+        DeleteAdvRequest deleteRequest = new DeleteAdvRequest();
+        deleteRequest.setUsername("user");
+        deleteRequest.setAdvertisementId(1L);
+
+        when(advertisementRepository.findById(any())).thenReturn(Optional.empty());
+
+        advertisementService.delete("user", deleteRequest);
+    }
+
+    @Test(expected = NotAllowedException.class)
+    public void delete_shouldThrow_whenUserNotCreator() {
+
+        String loggedUser = "user";
+        Advertisement advertisementFromDB = new Advertisement();
+        User user = new User();
+        user.setUsername(loggedUser);
+        UserProfile creatorProfile = new UserProfile(user);
+        creatorProfile.getCreatedAdvertisements().add(advertisementFromDB);
+        advertisementFromDB.setCreator(creatorProfile);
+
+        when(deleteAdvRequestValidationService.isValid(any())).thenReturn(true);
+
+        DeleteAdvRequest deleteRequest = new DeleteAdvRequest();
+        deleteRequest.setUsername("notCreator");
+        deleteRequest.setAdvertisementId(1L);
+
+        when(advertisementRepository.findById(any())).thenReturn(Optional.of(advertisementFromDB));
+
+        advertisementService.delete(loggedUser, deleteRequest);
+    }
+
+    @Test(expected = NotAllowedException.class)
+    public void delete_shouldThrow_whenUserNotLoggedUser() {
+
+        String loggedUser = "user";
+        Advertisement advertisementFromDB = new Advertisement();
+        User user = new User();
+        user.setUsername(loggedUser);
+        UserProfile creatorProfile = new UserProfile(user);
+        creatorProfile.getCreatedAdvertisements().add(advertisementFromDB);
+        advertisementFromDB.setCreator(creatorProfile);
+
+        when(deleteAdvRequestValidationService.isValid(any())).thenReturn(true);
+
+        DeleteAdvRequest deleteRequest = new DeleteAdvRequest();
+        deleteRequest.setUsername(loggedUser);
+        deleteRequest.setAdvertisementId(1L);
+
+        when(advertisementRepository.findById(any())).thenReturn(Optional.of(advertisementFromDB));
+
+        advertisementService.delete("another", deleteRequest);
+    }
+
+    @Test
+    public void updateViews_shouldWorkCorrectly_whenFirstView() {
+
+        when(viewsUpdateValidationService.isValid(any())).thenReturn(true);
+
+        Advertisement advertisement = new Advertisement();
+        advertisement.setId(1L);
+        advertisement.setViews(0L);
+
+        User user = new User();
+        user.setUsername("ivo");
+        UserProfile userProfile = new UserProfile(user);
+
+        when(advertisementRepository.findById(any())).thenReturn(Optional.of(advertisement));
+
+        when(userProfileRepository.findByUserUsername(any())).thenReturn(Optional.of(userProfile));
+
+        when(userProfileRepository.save(any())).thenReturn(null);
+        when(advertisementRepository.save(any())).thenReturn(null);
+
+        ViewsUpdate viewsUpdate = new ViewsUpdate(user.getUsername(), 1L);
+
+        AdvertisementServiceModel actual = advertisementService.updateViews(1L, viewsUpdate);
+
+        long actualViews = actual.getViews();
+        assertEquals(1L, actualViews);
+        assertEquals(1, userProfile.getViewed().size());
+        long expectedId = userProfile.getViewed().get(0).getId();
+        assertEquals(1L, expectedId);
+        verify(userProfileRepository).save(any());
+        verify(advertisementRepository).save(any());
+    }
+
+    @Test(expected = ViewsUpdateNotValidException.class)
+    public void updateViews_shouldThrow_whenInvalidUpdate() {
+
+        when(viewsUpdateValidationService.isValid(any())).thenReturn(false);
+
+        advertisementService.updateViews(1L, new ViewsUpdate());
+    }
+
+    @Test
+    public void updateViews_shouldNotUpdate_whenAlreadyViewedByTheProfile() {
+
+        when(viewsUpdateValidationService.isValid(any())).thenReturn(true);
+
+        Advertisement advertisement = new Advertisement();
+        advertisement.setId(1L);
+        advertisement.setViews(0L);
+
+        User user = new User();
+        user.setUsername("ivo");
+        UserProfile userProfile = new UserProfile(user);
+        userProfile.getViewed().add(advertisement);
+
+        when(advertisementRepository.findById(any())).thenReturn(Optional.of(advertisement));
+
+        when(userProfileRepository.findByUserUsername(any())).thenReturn(Optional.of(userProfile));
+
+        ViewsUpdate viewsUpdate = new ViewsUpdate(user.getUsername(), 1L);
+
+        AdvertisementServiceModel actual = advertisementService.updateViews(1L, viewsUpdate);
+
+        long actualViews = actual.getViews();
+        assertEquals(0L, actualViews);
+        assertEquals(1, userProfile.getViewed().size());
+        long expectedId = userProfile.getViewed().get(0).getId();
+        assertEquals(1L, expectedId);
+    }
+
+    @Test(expected = EntityNotFoundException.class)
+    public void updateViews_shouldThrow_whenInvalidAdvertisementId() {
+
+        when(viewsUpdateValidationService.isValid(any())).thenReturn(true);
+
+        when(advertisementRepository.findById(any())).thenReturn(Optional.empty());
+
+        advertisementService.updateViews(1L, new ViewsUpdate());
+    }
+
+    @Test(expected = EntityNotFoundException.class)
+    public void updateViews_shouldThrow_whenInvalidProfileUsername() {
+
+        when(viewsUpdateValidationService.isValid(any())).thenReturn(true);
+
+        when(advertisementRepository.findById(any())).thenReturn(Optional.of(advertisement));
+
+        when(userProfileRepository.findByUserUsername(any())).thenReturn(Optional.empty());
+
+        advertisementService.updateViews(1L, new ViewsUpdate());
+    }
+
+    @Test
+    public void deletePhoto_shouldDetachAndThenDeletePhoto_whenValidRequest() {
+
+        String creator = "user";
+
+        when(deleteAdvImageRequestValidationService.isValid(any())).thenReturn(true);
+
+        when(advertisementRepository.findById(any())).thenReturn(Optional.of(advertisement));
+
+        when(photoService.delete(any())).thenReturn(new ResponseMessage(""));
+
+        when(advertisementRepository.save(any())).thenReturn(null);
+
+        DeleteAdvImageRequest request = new DeleteAdvImageRequest();
+        request.setPhotoId(1L);
+        request.setAdvertisementId(1L);
+        request.setUsername(creator);
+
+        Photo photo = new Photo();
+        photo.setId(1L);
+        advertisement.getPhotos().add(photo);
+        User user = new User();
+        user.setUsername(creator);
+        advertisement.setCreator(new UserProfile(user));
+
+        AdvertisementServiceModel actual = advertisementService.deletePhoto(request);
+
+        verify(photoService).delete(any());
+        verify(advertisementRepository).save(any());
+        assertEquals(0, actual.getPhotos().size());
+    }
+
+    @Test(expected = DeleteRequestNotValidException.class)
+    public void deletePhoto_shouldThrow_whenInvalidRequest() {
+
+        when(deleteAdvImageRequestValidationService.isValid(any())).thenReturn(false);
+
+        advertisementService.deletePhoto(new DeleteAdvImageRequest());
+    }
+
+    @Test(expected = EntityNotFoundException.class)
+    public void deletePhoto_shouldThrow_whenInvalidAdvertisementId() {
+
+        when(deleteAdvImageRequestValidationService.isValid(any())).thenReturn(true);
+
+        when(advertisementRepository.findById(any())).thenReturn(Optional.empty());
+
+        advertisementService.deletePhoto(new DeleteAdvImageRequest());
+    }
+
+    @Test(expected = EntityNotFoundException.class)
+    public void deletePhoto_shouldThrow_whenInvalidImageId() {
+
+        when(deleteAdvImageRequestValidationService.isValid(any())).thenReturn(true);
+
+        when(advertisementRepository.findById(any())).thenReturn(Optional.of(advertisement));
+
+        String creator = "user";
+        DeleteAdvImageRequest request = new DeleteAdvImageRequest();
+        request.setPhotoId(1L);
+        request.setAdvertisementId(1L);
+        request.setUsername(creator);
+
+        Photo photo = new Photo();
+        photo.setId(2L);
+        advertisement.getPhotos().add(photo);
+        User user = new User();
+        user.setUsername(creator);
+        advertisement.setCreator(new UserProfile(user));
+
+        advertisementService.deletePhoto(request);
+    }
+
+    @Test(expected = NotAllowedException.class)
+    public void deletePhoto_shouldThrow_whenInvalid() {
+
+        when(deleteAdvImageRequestValidationService.isValid(any())).thenReturn(true);
+
+        when(advertisementRepository.findById(any())).thenReturn(Optional.of(advertisement));
+
+        String creator = "user";
+        DeleteAdvImageRequest request = new DeleteAdvImageRequest();
+        request.setPhotoId(1L);
+        request.setAdvertisementId(1L);
+        request.setUsername("notCreator");
+
+        Photo photo = new Photo();
+        photo.setId(1L);
+        advertisement.getPhotos().add(photo);
+        User user = new User();
+        user.setUsername(creator);
+        advertisement.setCreator(new UserProfile(user));
+
+        advertisementService.deletePhoto(request);
     }
 }

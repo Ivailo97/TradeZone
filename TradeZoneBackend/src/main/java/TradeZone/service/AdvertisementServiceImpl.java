@@ -4,7 +4,7 @@ import TradeZone.data.error.exception.*;
 import TradeZone.data.model.enums.DeliveryType;
 import TradeZone.data.model.rest.*;
 import TradeZone.data.model.rest.search.*;
-import TradeZone.data.model.service.validation.*;
+import TradeZone.service.validation.*;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.*;
@@ -34,10 +34,15 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     private static final String ADV_NOT_FOUND = "Advertisement with id %d not found";
     private static final String CAT_NOT_FOUND = "Category with id %d not found";
     private static final String PROFILE_NOT_FOUND = "Profile with username %s not found";
-    private static final String IMAGE_NOT_FOUND = "Photo with id %d not found";
+    private static final String ADV_IMG_NOT_PRESENT = "Photo not belong to the advertisement";
     private static final String INVALID_DELETE_REQUEST = "Invalid delete request";
     private static final String INVALID_VIEWS_UPDATE = "Invalid views update";
     private static final String UNDEFINED = "undefined";
+    private static final String NONE_SORT = "none";
+    private static final String ASCENDING_ORDER = "ascending";
+    private static final String DEFAULT_CATEGORY = "Vehicles";
+    private static final String DEFAULT_CATEGORY_ID_CLOUD = "wkgo2xepwqooozuf5lha";
+    private static final String DEFAULT_CATEGORY_PHOTO_CLOUD_URL = "https://res.cloudinary.com/knight-cloud/image/upload/v1586525177/wkgo2xepwqooozuf5lha.png";
     private static final String DEFAULT = "All";
 
     private final AdvertisementRepository advertisementRepository;
@@ -221,7 +226,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     }
 
     @Override
-    public void delete(String principalName, DeleteAdvRequest deleteRequest) {
+    public AdvertisementServiceModel delete(String principalName, DeleteAdvRequest deleteRequest) {
 
         if (!deleteAdvRequestValidationService.isValid(deleteRequest)) {
             throw new DeleteRequestNotValidException(INVALID_DELETE_REQUEST);
@@ -240,14 +245,19 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         advertisement.getProfilesWhichLikedIt().forEach(p -> p.getFavorites().remove(advertisement));
         advertisement.getProfilesWhichViewedIt().forEach(p -> p.getViewed().remove(advertisement));
 
+        advertisement.setProfilesWhichLikedIt(null);
+        advertisement.setProfilesWhichViewedIt(null);
+
         photoService.deleteAll(advertisement.getPhotos().stream().map(Photo::getId).collect(Collectors.toList()));
 
         advertisementRepository.save(advertisement);
         advertisementRepository.delete(advertisement);
+
+        return modelMapper.map(advertisement, AdvertisementServiceModel.class);
     }
 
     @Override
-    public void updateViews(Long id, ViewsUpdate update) {
+    public AdvertisementServiceModel updateViews(Long id, ViewsUpdate update) {
 
         if (!viewsUpdateValidationService.isValid(update)) {
             throw new ViewsUpdateNotValidException(INVALID_VIEWS_UPDATE);
@@ -259,19 +269,20 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         UserProfile profile = userProfileRepository.findByUserUsername(update.getUsername())
                 .orElseThrow(() -> new EntityNotFoundException(String.format(PROFILE_NOT_FOUND, update.getUsername())));
 
-        if (profile.getViewed().stream().anyMatch(x -> x.getId().equals(id))) {
-            return;
+        if (profile.getViewed().stream().noneMatch(x -> x.getId().equals(id))) {
+
+            advertisement.setViews(update.getViews());
+            advertisementRepository.save(advertisement);
+
+            profile.getViewed().add(advertisement);
+            userProfileRepository.save(profile);
         }
 
-        advertisement.setViews(update.getViews());
-        advertisementRepository.save(advertisement);
-
-        profile.getViewed().add(advertisement);
-        userProfileRepository.save(profile);
+        return modelMapper.map(advertisement, AdvertisementServiceModel.class);
     }
 
     @Override
-    public void deletePhoto(DeleteAdvImageRequest request) {
+    public AdvertisementServiceModel deletePhoto(DeleteAdvImageRequest request) {
 
         if (!deleteAdvImageRequestValidationService.isValid(request)) {
             throw new DeleteRequestNotValidException(INVALID_DELETE_REQUEST);
@@ -280,16 +291,22 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         Advertisement advertisement = advertisementRepository.findById(request.getAdvertisementId())
                 .orElseThrow(() -> new EntityNotFoundException(ADV_NOT_FOUND));
 
-        if (advertisement.getPhotos().stream().noneMatch(x -> x.getId().equals(request.getPhotoId())) ||
-                !advertisement.getCreator().getUser().getUsername().equals(request.getUsername())) {
+        if (advertisement.getPhotos().stream().noneMatch(x -> x.getId().equals(request.getPhotoId()))) {
+            throw new EntityNotFoundException(ADV_IMG_NOT_PRESENT);
+        }
 
-            throw new EntityNotFoundException(IMAGE_NOT_FOUND);
+        if (!advertisement.getCreator().getUser().getUsername().equals(request.getUsername())) {
+            throw new NotAllowedException(NOT_ALLOWED);
         }
 
         advertisement.getPhotos().remove(advertisement.getPhotos().stream()
                 .filter(x -> x.getId().equals(request.getPhotoId())).findFirst().get());
 
+        photoService.delete(request.getPhotoId());
+
         advertisementRepository.save(advertisement);
+
+        return modelMapper.map(advertisement, AdvertisementServiceModel.class);
     }
 
     private Page<AdvertisementServiceModel> getAllByCategoryTitleContainingPriceBetweenAndCondition(SearchRequest searchRequest, PageRequest pageRequest) {
@@ -304,7 +321,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
         Condition condition = Condition.valueOf(conditionName);
 
-        if (category.equals("All")) {
+        if (category.equals(DEFAULT)) {
             advertisements = advertisementRepository.findAllByTitleContainingAndPriceBetweenAndCondition(search, min, max, condition, pageRequest);
         } else {
             advertisements = advertisementRepository.findAllByTitleContainingAndCategoryNameAndPriceBetweenAndCondition(search, category, min, max, condition, pageRequest);
@@ -319,7 +336,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
         Page<Advertisement> advertisements;
 
-        if (category.equals("All")) {
+        if (category.equals(DEFAULT)) {
             advertisements = advertisementRepository.findAllByPriceBetween(min, max, pageRequest);
         } else {
             advertisements = advertisementRepository.findAllByCategoryNameAndPriceBetween(category, min, max, pageRequest);
@@ -341,7 +358,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
         Page<Advertisement> advertisements;
 
-        if (category.equals("All")) {
+        if (category.equals(DEFAULT)) {
             advertisements = advertisementRepository.findAllByPriceBetweenAndCondition(min, max, condition, pageRequest);
         } else {
             advertisements = advertisementRepository.findAllByCategoryNameAndPriceBetweenAndCondition(category, min, max, condition, pageRequest);
@@ -361,7 +378,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
         Page<Advertisement> advertisements;
 
-        if (categoryName.equals("All")) {
+        if (categoryName.equals(DEFAULT)) {
             advertisements = advertisementRepository.findAllByPriceBetweenAndTitleContaining(min, max, searchText, page);
         } else {
             advertisements = advertisementRepository.findAllByCategoryNameAndTitleContainingAndPriceBetween(categoryName, searchText, min, max, page);
@@ -376,10 +393,10 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
         PageRequest pageRequest = PageRequest.of(pageNumber - 1, 6);
 
-        if (!sortBy.equals("none") && !order.equals("none")) {
+        if (!sortBy.equals(NONE_SORT) && !order.equals(NONE_SORT)) {
 
             Sort sort = Sort.by(sortBy);
-            if (order.equals("ascending")) {
+            if (order.equals(ASCENDING_ORDER)) {
                 sort = sort.ascending();
             } else {
                 sort = sort.descending();
@@ -397,13 +414,13 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         }
 
         Photo photo = new Photo();
-        photo.setUrl("https://res.cloudinary.com/knight-cloud/image/upload/v1586525177/wkgo2xepwqooozuf5lha.png");
-        photo.setIdInCloud("wkgo2xepwqooozuf5lha");
+        photo.setUrl(DEFAULT_CATEGORY_PHOTO_CLOUD_URL);
+        photo.setIdInCloud(DEFAULT_CATEGORY_ID_CLOUD);
 
         photoRepository.save(photo);
 
         Category category = new Category();
-        category.setName("Vehicles");
+        category.setName(DEFAULT_CATEGORY);
         category.setPhoto(photo);
 
         categoryRepository.save(category);

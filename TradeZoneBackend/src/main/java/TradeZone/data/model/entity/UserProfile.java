@@ -68,5 +68,6 @@ public class UserProfile extends BaseEntity {
         this.setFavorites(new ArrayList<>());
         this.setCreatedAdvertisements(new ArrayList<>());
         this.setCreatedCategories(new ArrayList<>());
+        this.setViewed(new ArrayList<>());
     }
 }

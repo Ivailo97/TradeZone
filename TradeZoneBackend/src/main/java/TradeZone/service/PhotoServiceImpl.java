@@ -10,7 +10,7 @@ import TradeZone.data.model.entity.Photo;
 import TradeZone.data.model.rest.ImagesToUploadModel;
 import TradeZone.data.model.rest.message.response.ResponseMessage;
 import TradeZone.data.model.service.PhotoServiceModel;
-import TradeZone.data.model.service.validation.PhotoValidationService;
+import TradeZone.service.validation.PhotoValidationService;
 import TradeZone.data.repository.AdvertisementRepository;
 import TradeZone.data.repository.PhotoRepository;
 

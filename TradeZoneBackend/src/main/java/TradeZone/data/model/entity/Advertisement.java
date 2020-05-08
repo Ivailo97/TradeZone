@@ -7,6 +7,7 @@ import TradeZone.data.model.enums.Condition;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -55,4 +56,11 @@ public class Advertisement extends BaseEntity {
 
     @Column(name = "views")
     private Long views;
+
+    public Advertisement() {
+        this.setProfilesWhichLikedIt(new ArrayList<>());
+        this.setProfilesWhichLikedIt(new ArrayList<>());
+        this.setProfilesWhichViewedIt(new ArrayList<>());
+        this.setPhotos(new ArrayList<>());
+    }
 }

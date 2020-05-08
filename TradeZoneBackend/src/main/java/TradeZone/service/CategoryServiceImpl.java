@@ -9,7 +9,7 @@ import TradeZone.data.model.entity.Category;
 import TradeZone.data.model.entity.UserProfile;
 import TradeZone.data.model.rest.message.response.ResponseMessage;
 import TradeZone.data.model.service.CategoryServiceModel;
-import TradeZone.data.model.service.validation.CategoryValidationService;
+import TradeZone.service.validation.CategoryValidationService;
 import TradeZone.data.repository.CategoryRepository;
 import TradeZone.data.repository.PhotoRepository;
 import TradeZone.data.repository.UserProfileRepository;

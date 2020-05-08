@@ -14,7 +14,7 @@ import TradeZone.data.model.rest.message.response.ResponseMessage;
 import TradeZone.data.model.service.PhotoServiceModel;
 import TradeZone.data.model.service.ProfileServiceModel;
 import TradeZone.data.model.service.RoleServiceModel;
-import TradeZone.data.model.service.validation.ProfileUpdateValidationService;
+import TradeZone.service.validation.ProfileUpdateValidationService;
 import TradeZone.data.repository.AdvertisementRepository;
 import TradeZone.data.repository.UserProfileRepository;
 
