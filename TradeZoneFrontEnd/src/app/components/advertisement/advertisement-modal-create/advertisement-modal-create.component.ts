@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { CategorySelectModel } from 'src/app/core/models/category-select';
 import { AdvertisementService } from 'src/app/core/services/advertisement.service';
 import { TokenStorageService } from 'src/app/core/services/token-storage.service';
+import { AlertService } from '../../alert';
 
 @Component({
   selector: 'app-advertisement-modal-create',
@@ -16,7 +17,6 @@ export class AdvertisementModalCreateComponent implements OnInit {
   images = [];
   form: FormGroup;
   advertisement: AdvertisementBindingModel;
-  errorMessage;
   conditions$: Observable<String[]>;
   deliveries$: Observable<String[]>;
   categories$: Observable<CategorySelectModel[]>
@@ -24,7 +24,8 @@ export class AdvertisementModalCreateComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private advertisementService: AdvertisementService,
-    private tokenService: TokenStorageService) {
+    private tokenService: TokenStorageService,
+    private alertService: AlertService) {
   }
 
   ngOnInit() {
@@ -61,10 +62,11 @@ export class AdvertisementModalCreateComponent implements OnInit {
     this.advertisementService.createAdvertisement(this.advertisement)
       .subscribe(
         data => {
+          this.alertService.success('Created successfully', { autoClose: true })
           console.log(data);
         },
         error => {
-          this.errorMessage = error.error.message;
+          this.alertService.error(error.error.message, { autoClose: true })
         })
   }
 
@@ -95,6 +97,7 @@ export class AdvertisementModalCreateComponent implements OnInit {
       }
     }
   }
+
 
   resetForm() {
     this.images = [];
