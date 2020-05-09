@@ -21,6 +21,7 @@ import TradeZone.data.repository.PhotoRepository;
 import TradeZone.data.repository.UserProfileRepository;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -182,6 +183,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
         Advertisement entity = modelMapper.map(restModel, Advertisement.class);
         entity.setViews(0L);
+        entity.setCreatedOn(LocalDateTime.now());
         entity.setCategory(category);
         entity.setCreator(userProfile);
         entity.setPhotos(Arrays.stream(restModel.getImages()).map(photoService::create)

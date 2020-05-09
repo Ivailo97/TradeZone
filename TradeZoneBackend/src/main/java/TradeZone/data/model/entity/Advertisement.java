@@ -7,6 +7,7 @@ import TradeZone.data.model.enums.Condition;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,6 +57,8 @@ public class Advertisement extends BaseEntity {
 
     @Column(name = "views")
     private Long views;
+
+    private LocalDateTime createdOn;
 
     public Advertisement() {
         this.setProfilesWhichLikedIt(new ArrayList<>());

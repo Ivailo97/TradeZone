@@ -17,6 +17,8 @@ const defaultSortCriterias = ['price', 'views', 'title'];
 })
 export class AdvertisementListComponent implements OnInit {
 
+  noResultsImgUrl = 'https://res.cloudinary.com/knight-cloud/image/upload/v1589058809/aorml5wwdh5s1ymgejnz.png'
+
   @ViewChild(AdvertisementModalEditComponent) editComponent: AdvertisementModalEditComponent;
 
   config: any;

@@ -6,6 +6,7 @@ import lombok.Setter;
 import TradeZone.data.model.enums.Condition;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -23,6 +24,8 @@ public class AdvertisementServiceModel extends BaseServiceModel {
     private Condition condition;
 
     private DeliveryType delivery;
+
+    private LocalDateTime createdOn;
 
     private ProfileServiceModel creator;
 

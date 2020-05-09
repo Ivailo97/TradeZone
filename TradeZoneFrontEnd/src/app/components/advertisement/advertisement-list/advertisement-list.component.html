@@ -62,15 +62,13 @@
     </div>
 </div>
 
-
-
 <div class="row mt-3 d-flex justify-content-center" id="advertisements">
 
     <app-advertisement-info *ngFor="let advertisement of advertisements$ | async | paginate : config " [advertisement]="advertisement" (emitId)="changeAdvertisementToModifyId($event)">
     </app-advertisement-info>
 
-    <div class="col" *ngIf="(advertisements$ | async)?.length === 0">
-        <h2 class="text-center">No results , maybe try new searching ?</h2>
+    <div class="col-mt-4" *ngIf="(advertisements$ | async)?.length === 0">
+        <img src="{{noResultsImgUrl}}" width="auto" alt="No Results">
     </div>
 </div>
 

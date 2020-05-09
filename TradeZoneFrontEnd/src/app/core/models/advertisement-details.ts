@@ -1,7 +1,7 @@
 import { Image } from "./image";
 
 export interface AdvertisementDetails {
-  id:number;
+  id: number;
   title: string;
   images: Image[];
   description: string;
@@ -9,4 +9,5 @@ export interface AdvertisementDetails {
   condition: string;
   views: number;
   creator: string;
+  createdOn: any;
 }
