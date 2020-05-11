@@ -11,7 +11,6 @@
                 <mat-radio-button class="example-radio-button" *ngFor="let criteria of sortCriterias" [value]="criteria">
                     {{criteria |titlecase}}
                 </mat-radio-button>
-
             </mat-radio-group>
 
             <mat-checkbox class="example-margin" (change)="order()" [(ngModel)]="descending">Descending order</mat-checkbox>

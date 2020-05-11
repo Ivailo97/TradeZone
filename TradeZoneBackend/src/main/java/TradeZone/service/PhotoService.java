@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface PhotoService {
 
-    PhotoServiceModel create(String imageContent);
+    PhotoServiceModel upload(String imageContent);
 
-    PhotoServiceModel create(MultipartFile file);
+    PhotoServiceModel upload(MultipartFile file);
 
     ResponseMessage uploadAdvertisementPhotos(ImagesToUploadModel images);
 

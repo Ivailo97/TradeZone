@@ -23,6 +23,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { MatIconModule } from '@angular/material/icon';
 import { CategoryModule } from '../category/category.module';
+import {MatListModule} from '@angular/material/list';
 
 @NgModule({
 
@@ -38,6 +39,7 @@ import { CategoryModule } from '../category/category.module';
     AdvertisementModalEditComponent,
   ],
   imports: [
+    MatListModule,
     MatSelectModule,
     MatInputModule,
     CommonModule,

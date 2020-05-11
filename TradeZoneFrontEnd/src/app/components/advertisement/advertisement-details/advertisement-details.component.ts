@@ -14,6 +14,11 @@ const invalidPhotoId = -1;
 })
 export class AdvertisementDetailsComponent implements OnInit {
 
+  categoryImageUrl = 'https://res.cloudinary.com/knight-cloud/image/upload/v1589234260/zb0rv6r6ecrafkvia7ph.png';
+  conditionImageUlr = 'https://res.cloudinary.com/knight-cloud/image/upload/v1589234279/efhzczebhzn9jdkijokm.png';
+  deliveryImageUrl = 'https://res.cloudinary.com/knight-cloud/image/upload/v1589234299/fscm4lxngph4hqo7b24s.png';
+
+
   images = [];
 
   isOwnedByUser: boolean;
@@ -44,7 +49,7 @@ export class AdvertisementDetailsComponent implements OnInit {
           this.hasNoImages = this.advertisement.images.length === 0;
           this.photoToDeleteId = invalidPhotoId;
           this.defaultImageUrl = noImage;
-          this.isOwnedByUser = this.tokenStorageService.getUsername() === this.advertisement.creator;
+          this.isOwnedByUser = this.tokenStorageService.getUsername() === this.advertisement.creator.userUsername;
           this.advertisementService.updateViews(this.route.snapshot.params.id, this.advertisement.views + 1, this.tokenStorageService.getUsername());
         },
         error => {

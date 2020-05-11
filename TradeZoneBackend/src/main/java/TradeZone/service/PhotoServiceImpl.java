@@ -2,6 +2,7 @@ package TradeZone.service;
 
 import com.cloudinary.Uploader;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.modelmapper.internal.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +27,8 @@ public class PhotoServiceImpl implements PhotoService {
 
     private final PhotoRepository photoRepository;
 
+    private final ModelMapper mapper;
+
     private final AdvertisementRepository advertisementRepository;
 
     private final Uploader uploader;
@@ -33,7 +36,7 @@ public class PhotoServiceImpl implements PhotoService {
     private final PhotoValidationService validationService;
 
     @Override
-    public PhotoServiceModel create(String imageContent) {
+    public PhotoServiceModel upload(String imageContent) {
 
         if (!validationService.isValid(imageContent)) {
             throw new IllegalArgumentException();
@@ -49,7 +52,7 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public PhotoServiceModel create(MultipartFile multipartFile) {
+    public PhotoServiceModel upload(MultipartFile multipartFile) {
 
         Pair<String, String> cloudUploadData = uploadToCloud(multipartFile);
 

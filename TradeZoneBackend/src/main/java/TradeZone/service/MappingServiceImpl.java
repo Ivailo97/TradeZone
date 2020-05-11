@@ -22,7 +22,7 @@ public class MappingServiceImpl implements MappingService {
     }
 
     @Override
-    public List<AdvertisementListViewModel> mapServiceAdvertisementsToView(Page<AdvertisementServiceModel> models) {
+    public List<AdvertisementListViewModel> mapServiceAdvertisementsToView(List<AdvertisementServiceModel> models) {
 
         return models.stream().map(a -> {
 

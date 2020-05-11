@@ -26,7 +26,9 @@ public class AdvertisementDetailsViewModel {
 
     private String delivery;
 
+    private String categoryName;
+
     private Long views;
 
-    private String creator;
+    private ProfileCreatorViewModel creator;
 }

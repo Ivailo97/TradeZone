@@ -1,6 +1,8 @@
 package TradeZone.service;
 
+import TradeZone.data.model.rest.CategoryCreateModel;
 import TradeZone.data.model.service.AdvertisementServiceModel;
+import TradeZone.data.model.service.PhotoServiceModel;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -11,7 +13,6 @@ import TradeZone.data.model.rest.message.response.ResponseMessage;
 import TradeZone.data.model.service.CategoryServiceModel;
 import TradeZone.service.validation.CategoryValidationService;
 import TradeZone.data.repository.CategoryRepository;
-import TradeZone.data.repository.PhotoRepository;
 import TradeZone.data.repository.UserProfileRepository;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final UserProfileRepository profileRepository;
 
-    private final PhotoRepository photoRepository;
+    private final PhotoService photoService;
 
     private final CategoryValidationService validationService;
 
@@ -44,13 +45,17 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public ResponseMessage create(CategoryServiceModel category, String creatorUsername) {
+    public ResponseMessage create(CategoryCreateModel restModel) {
+
+        CategoryServiceModel category = mapper.map(restModel, CategoryServiceModel.class);
+        PhotoServiceModel photo = photoService.upload(restModel.getImage());
+        category.setPhoto(photo);
 
         if (!validationService.isValid(category)) {
             return new ResponseMessage(INVALID_MODEL);
         }
 
-        UserProfile userProfile = profileRepository.findByUserUsername(creatorUsername).orElse(null);
+        UserProfile userProfile = profileRepository.findByUserUsername(restModel.getCreator()).orElse(null);
 
         if (userProfile == null) {
             return new ResponseMessage(INVALID_MODEL);
@@ -58,7 +63,6 @@ public class CategoryServiceImpl implements CategoryService {
 
         Category entity = mapper.map(category, Category.class);
         entity.setCreator(userProfile);
-        photoRepository.save(entity.getPhoto());
         repository.save(entity);
         return new ResponseMessage(SUCCESS);
     }

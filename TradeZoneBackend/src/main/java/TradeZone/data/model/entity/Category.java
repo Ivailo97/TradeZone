@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "categories")
-public class Category extends BaseEntity {
+public class Category extends BaseEntityWithPhoto {
 
     @ManyToOne
     @JoinColumn(name = "creator_id", referencedColumnName = "id")
@@ -18,10 +18,6 @@ public class Category extends BaseEntity {
 
     @Column
     private String name;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "photo_id", referencedColumnName = "id")
-    private Photo photo;
 
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     private List<Advertisement> advertisements;

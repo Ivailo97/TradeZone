@@ -1,4 +1,5 @@
 import { Image } from "./image";
+import { Creator } from "./creator";
 
 export interface AdvertisementDetails {
   id: number;
@@ -8,6 +9,8 @@ export interface AdvertisementDetails {
   price: number;
   condition: string;
   views: number;
-  creator: string;
+  creator: Creator;
+  delivery: string
   createdOn: any;
+  categoryName: string;
 }

@@ -100,7 +100,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         Photo photo = profile.getPhoto();
 
-        PhotoServiceModel photoServiceModel = photoService.create(file);
+        PhotoServiceModel photoServiceModel = photoService.upload(file);
         Photo newPhoto = mapper.map(photoServiceModel, Photo.class);
         profile.setPhoto(newPhoto);
 

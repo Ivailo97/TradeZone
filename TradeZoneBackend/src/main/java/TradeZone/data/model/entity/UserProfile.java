@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 @Table(name = "profiles")
 @NoArgsConstructor
-public class UserProfile extends BaseEntity {
+public class UserProfile extends BaseEntityWithPhoto {
 
     @OneToOne(mappedBy = "profile")
     private User user;
@@ -23,10 +23,6 @@ public class UserProfile extends BaseEntity {
 
     @Column(name = "last_name")
     private String lastName;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "photo_id")
-    private Photo photo;
 
     @Column(name = "about_me", columnDefinition = "TEXT")
     private String aboutMe;

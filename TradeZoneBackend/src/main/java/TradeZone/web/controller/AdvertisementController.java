@@ -5,6 +5,7 @@ import TradeZone.data.model.rest.*;
 import TradeZone.data.model.rest.search.*;
 import TradeZone.service.MappingService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,6 +19,7 @@ import TradeZone.data.model.view.AdvertisementToEditViewModel;
 import TradeZone.data.model.view.PhotoViewModel;
 import TradeZone.service.AdvertisementService;
 import TradeZone.service.PhotoService;
+//import org.springframework.web.reactive.function.client.WebClient;
 
 import java.security.Principal;
 import java.util.Arrays;
@@ -34,9 +36,23 @@ public class AdvertisementController {
     private final PhotoService photoService;
     private final MappingService mappingService;
 
+  //  private final WebClient.Builder builder;
+
     @GetMapping("/search")
     public ResponseEntity<List<AdvertisementListViewModel>> filterByCategoryAndTitle(FullSearchRequest search) {
-        return ResponseEntity.ok(mappingService.mapServiceAdvertisementsToView(advertisementService.getAllByFullSearch(search)));
+
+        // micro service async call done sync;
+        // like async and await in javascript;
+//        Object obj = builder.build()
+//                .get()
+//                .uri("https://{registeredMicroserviceName}/{servicePath}")
+//                .retrieve()
+//                .bodyToMono(Object.class)
+//                .block();
+        //block = await;
+
+        List<AdvertisementServiceModel> advertisements = advertisementService.getAllByFullSearch(search).getContent();
+        return ResponseEntity.ok(mappingService.mapServiceAdvertisementsToView(advertisements));
     }
 
     @GetMapping("/count")
@@ -75,7 +91,7 @@ public class AdvertisementController {
     public ResponseEntity<AdvertisementDetailsViewModel> details(@PathVariable Long id) {
         AdvertisementServiceModel serviceModel = advertisementService.getById(id);
         AdvertisementDetailsViewModel viewModel = mappingService.getMapper().map(serviceModel, AdvertisementDetailsViewModel.class);
-        viewModel.setCreator(serviceModel.getCreator().getUser().getUsername());
+     //   viewModel.setCreator(serviceModel.getCreator().getUser().getUsername());
         viewModel.setImages(mappingService.getMapper().map(serviceModel.getPhotos(), PhotoViewModel[].class));
         return ResponseEntity.ok(viewModel);
     }

@@ -1,5 +1,6 @@
 package TradeZone.service;
 
+import TradeZone.data.model.rest.CategoryCreateModel;
 import TradeZone.data.model.rest.message.response.ResponseMessage;
 import TradeZone.data.model.service.CategoryServiceModel;
 
@@ -9,7 +10,7 @@ public interface CategoryService {
 
     CategoryServiceModel getById(long id);
 
-    ResponseMessage create(CategoryServiceModel advertisement, String creator);
+    ResponseMessage create(CategoryCreateModel createModel);
 
     List<CategoryServiceModel> getTop(Integer count);
 

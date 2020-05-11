@@ -378,7 +378,7 @@ public class AdvertisementServiceTests {
                 .thenAnswer(invocationOnMock ->
                         actualMapper.map(invocationOnMock.getArguments()[0], Advertisement.class));
 
-        when(photoService.create(anyString())).thenReturn(new PhotoServiceModel());
+        when(photoService.upload(anyString())).thenReturn(new PhotoServiceModel());
 
         when(modelMapper.map(any(PhotoServiceModel.class), eq(Photo.class)))
                 .thenAnswer(invocationOnMock ->
@@ -426,7 +426,7 @@ public class AdvertisementServiceTests {
                 .thenAnswer(invocationOnMock ->
                         actualMapper.map(invocationOnMock.getArguments()[0], Advertisement.class));
 
-        when(photoService.create(anyString())).thenReturn(new PhotoServiceModel());
+        when(photoService.upload(anyString())).thenReturn(new PhotoServiceModel());
 
         when(modelMapper.map(any(PhotoServiceModel.class), eq(Photo.class)))
                 .thenAnswer(invocationOnMock ->

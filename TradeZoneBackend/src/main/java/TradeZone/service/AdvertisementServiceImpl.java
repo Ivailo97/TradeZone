@@ -186,7 +186,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         entity.setCreatedOn(LocalDateTime.now());
         entity.setCategory(category);
         entity.setCreator(userProfile);
-        entity.setPhotos(Arrays.stream(restModel.getImages()).map(photoService::create)
+        entity.setPhotos(Arrays.stream(restModel.getImages()).map(photoService::upload)
                 .map(x -> modelMapper.map(x, Photo.class))
                 .collect(Collectors.toList()));
 

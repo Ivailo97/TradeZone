@@ -58,6 +58,7 @@ public class Advertisement extends BaseEntity {
     @Column(name = "views")
     private Long views;
 
+    @Column
     private LocalDateTime createdOn;
 
     public Advertisement() {

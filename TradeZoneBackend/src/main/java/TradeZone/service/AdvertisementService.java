@@ -9,9 +9,9 @@ public interface AdvertisementService {
 
     Page<AdvertisementServiceModel> getAllByFullSearch(FullSearchRequest search);
 
-    AdvertisementServiceModel getById(Long id);
-
     Long getCountBySearch(SearchRequest search);
+
+    AdvertisementServiceModel getById(Long id);
 
     AdvertisementServiceModel create(AdvertisementCreateModel restModel);
 

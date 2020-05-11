@@ -12,6 +12,6 @@ public interface MappingService {
 
     ModelMapper getMapper();
 
-    List<AdvertisementListViewModel> mapServiceAdvertisementsToView(Page<AdvertisementServiceModel> models);
+    List<AdvertisementListViewModel> mapServiceAdvertisementsToView(List<AdvertisementServiceModel> models);
 }
 

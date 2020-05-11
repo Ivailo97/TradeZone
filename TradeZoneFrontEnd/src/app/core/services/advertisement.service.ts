@@ -73,7 +73,6 @@ export class AdvertisementService {
     return this.http.get<String[]>(`${this.baseURL}/deliveries/all`);
   }
 
-
   getAllCategories(): Observable<CategorySelectModel[]> {
     return this.http.get<CategorySelectModel[]>(`${this.baseURL}/category/select`);
   }
