@@ -27,7 +27,7 @@ public class AdvertisementValidationService implements ValidationService<Adverti
             return false;
         }
 
-        if (isCreateModelAndHasNoImages(advertisement)) {
+        if (isCreateModel(advertisement) && hasNoImages(advertisement)) {
             return false;
         }
 
@@ -41,12 +41,16 @@ public class AdvertisementValidationService implements ValidationService<Adverti
         return true;
     }
 
-    private boolean isCreateModelAndHasNoImages(AdvertisementBaseModel advertisement) {
+    private boolean isCreateModel(AdvertisementBaseModel advertisement) {
 
         String className = advertisement.getClass().getSimpleName();
 
-        return className.equals("AdvertisementCreateModel")
-                && ((AdvertisementCreateModel) advertisement).getImages() == null
+        return className.equals("AdvertisementCreateModel");
+    }
+
+    private boolean hasNoImages(AdvertisementBaseModel advertisement) {
+
+        return ((AdvertisementCreateModel) advertisement).getImages() == null
                 || ((AdvertisementCreateModel) advertisement).getImages().length < 1;
     }
 }

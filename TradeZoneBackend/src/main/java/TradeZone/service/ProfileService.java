@@ -15,6 +15,8 @@ public interface ProfileService {
 
     Optional<ProfileServiceModel> getUserProfileByUsername(String username);
 
+    Boolean isCompleted(String username);
+
     String getTopRole(Set<RoleServiceModel> roles);
 
     List<ProfileServiceModel> getAll();

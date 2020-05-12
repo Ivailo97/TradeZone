@@ -18,6 +18,7 @@ import TradeZone.service.validation.ProfileUpdateValidationService;
 import TradeZone.data.repository.AdvertisementRepository;
 import TradeZone.data.repository.UserProfileRepository;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -48,6 +49,14 @@ public class ProfileServiceImpl implements ProfileService {
     public Optional<ProfileServiceModel> getUserProfileByUsername(String username) {
         return userProfileRepository.findByUserUsername(username)
                 .map(x -> mapper.map(x, ProfileServiceModel.class));
+    }
+
+    @Override
+    public Boolean isCompleted(String username) {
+
+        return userProfileRepository.findByUserUsername(username)
+                .orElseThrow((EntityNotFoundException::new))
+                .getIsCompleted();
     }
 
     @Override

@@ -76,6 +76,7 @@ public class AdvertisementController {
 
     @PutMapping("/edit")
     public ResponseEntity<?> editConfirm(@RequestBody AdvertisementEditedModel editedModel) {
+
         advertisementService.edit(editedModel);
         return new ResponseEntity<>(HttpStatus.OK);
     }

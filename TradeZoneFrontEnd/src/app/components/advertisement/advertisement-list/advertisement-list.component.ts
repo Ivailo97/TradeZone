@@ -3,6 +3,8 @@ import { Observable } from 'rxjs';
 import { AdvertisementInfoList } from '../../../core/models/advertisement-info-list';
 import { AdvertisementService } from '../../../core/services/advertisement.service';
 import { AdvertisementModalEditComponent } from '../advertisement-modal-edit/advertisement-modal-edit.component';
+import { ActivatedRoute } from '@angular/router';
+import { ProfileService } from 'src/app/core/services/profile.service';
 
 const initialMinValue = 0;
 const initialMaxValue = 10000;
@@ -22,6 +24,7 @@ export class AdvertisementListComponent implements OnInit {
   @ViewChild(AdvertisementModalEditComponent) editComponent: AdvertisementModalEditComponent;
 
   config: any;
+  isCompletedProfile: boolean;
   descending: boolean;
   sortCriterias: string[];
   selectedCondition: string;
@@ -37,16 +40,26 @@ export class AdvertisementListComponent implements OnInit {
   searchText: string;
   advertisementToModifyId: number;
 
-  constructor(private advertisementService: AdvertisementService) { }
+  constructor(private advertisementService: AdvertisementService,
+    private route: ActivatedRoute,
+    private profileService: ProfileService) { }
 
   ngOnInit() {
+    this.profileService.isCompleted()
+      .subscribe(
+        successData => {
+          this.isCompletedProfile = successData;
+        });
+
     this.config = { id: 'list', itemsPerPage: 6, currentPage: 1 }
     this.conditions$ = this.advertisementService.getAllConditions();
     this.descending = false;
     this.selectedSortCriteria = defaultSelectedCriteria;
     this.selectedCondition = defaultState;
     this.sortCriterias = defaultSortCriterias;
-    this.currentCategory = defaultState;
+
+    this.currentCategory = this.route.snapshot.params.category;
+
     this.minPriceRange = initialMinValue;
     this.maxPriceRange = initialMaxValue;
     this.advertisementToModifyId = null;
@@ -75,6 +88,8 @@ export class AdvertisementListComponent implements OnInit {
       order: sortOrder,
       sortBy: this.selectedSortCriteria
     }
+
+    window.history.replaceState({}, '', `/advertisements/category/${params.category}`);
 
     this.advertisements$ = this.advertisementService.getByFullSearch(params);
   }

@@ -372,7 +372,10 @@ public class AdvertisementServiceTests {
 
         when(categoryRepository.findById(any())).thenReturn(Optional.of(new Category()));
 
-        when(userProfileRepository.findByUserUsername(any())).thenReturn(Optional.of(new UserProfile()));
+        UserProfile userProfile = new UserProfile();
+        userProfile.setIsCompleted(true);
+
+        when(userProfileRepository.findByUserUsername(any())).thenReturn(Optional.of(userProfile));
 
         when(modelMapper.map(any(AdvertisementCreateModel.class), eq(Advertisement.class)))
                 .thenAnswer(invocationOnMock ->
@@ -420,7 +423,10 @@ public class AdvertisementServiceTests {
 
         when(categoryRepository.findById(any())).thenReturn(Optional.of(new Category()));
 
-        when(userProfileRepository.findByUserUsername(any())).thenReturn(Optional.of(new UserProfile()));
+        UserProfile userProfile = new UserProfile();
+        userProfile.setIsCompleted(true);
+
+        when(userProfileRepository.findByUserUsername(any())).thenReturn(Optional.of(userProfile));
 
         when(modelMapper.map(any(AdvertisementCreateModel.class), eq(Advertisement.class)))
                 .thenAnswer(invocationOnMock ->
@@ -458,6 +464,21 @@ public class AdvertisementServiceTests {
     public void create_shouldThrow_whenInvalidArgument() {
 
         when(advertisementValidationService.isValid(any())).thenReturn(false);
+
+        advertisementService.create(new AdvertisementCreateModel());
+    }
+
+    @Test(expected = ProfileNotCompletedException.class)
+    public void create_shouldThrow_whenValidArgument_andProfileNotCompleted() {
+
+        when(advertisementValidationService.isValid(any())).thenReturn(true);
+
+        when(categoryRepository.findById(any())).thenReturn(Optional.of(new Category()));
+
+        UserProfile userProfile = new UserProfile();
+        userProfile.setIsCompleted(false);
+
+        when(userProfileRepository.findByUserUsername(any())).thenReturn(Optional.of(userProfile));
 
         advertisementService.create(new AdvertisementCreateModel());
     }

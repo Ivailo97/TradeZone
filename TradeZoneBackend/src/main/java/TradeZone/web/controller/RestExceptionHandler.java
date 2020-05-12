@@ -55,6 +55,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(ex);
     }
 
+    @ExceptionHandler(ProfileNotCompletedException.class)
+    protected ResponseEntity<Object> handleProfileNotCompleted(ProfileNotCompletedException ex) {
+        return buildResponseEntity(ex);
+    }
+
     @ExceptionHandler(ViewsUpdateNotValidException.class)
     protected ResponseEntity<Object> handleViewsUpdateNotValid(ViewsUpdateNotValidException ex) {
         return buildResponseEntity(ex);

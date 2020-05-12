@@ -9,6 +9,8 @@ public class ProfileCreatorViewModel {
 
     private Long id;
 
+    private String aboutMe;
+
     private String userUsername;
 
     private String firstName;

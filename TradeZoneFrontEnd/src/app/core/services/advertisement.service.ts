@@ -82,6 +82,7 @@ export class AdvertisementService {
       .pipe(
         tap(() => {
           this._refreshNeeded$.next();
+          this.profileService.refreshNeeded$.next();
         })
       );;
   }

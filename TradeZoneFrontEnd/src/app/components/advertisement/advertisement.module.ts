@@ -24,6 +24,8 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { MatIconModule } from '@angular/material/icon';
 import { CategoryModule } from '../category/category.module';
 import {MatListModule} from '@angular/material/list';
+import {MatCardModule} from '@angular/material/card';
+
 
 @NgModule({
 
@@ -38,7 +40,7 @@ import {MatListModule} from '@angular/material/list';
     ImageUploadModalComponent,
     AdvertisementModalEditComponent,
   ],
-  imports: [
+  imports: [MatCardModule,
     MatListModule,
     MatSelectModule,
     MatInputModule,

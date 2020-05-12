@@ -29,11 +29,11 @@ export class ProfileComponent implements OnInit {
 
   defaultProfilePhotoUrl: string;
 
-  emptyCollectionPhotoUrl:string;
+  emptyCollectionPhotoUrl: string;
 
   updateProfileForm: FormGroup;
 
-  topRole:string;
+  topRole: string;
 
   changePasswordForm: FormGroup;
 
@@ -66,7 +66,7 @@ export class ProfileComponent implements OnInit {
     this.advertisementToModifyId = null;
     this.profileService.refreshNeeded$.subscribe(() => this.loadProfile())
     this.loadProfile();
-    
+
   }
 
   private loadProfile() {
@@ -79,8 +79,8 @@ export class ProfileComponent implements OnInit {
     });
   }
 
- private initTopRole(){
-    
+  private initTopRole() {
+
     let roles = this.userProfile.roles;
 
     let adminRole = roles.find(x => x === 'ROLE_ADMIN');

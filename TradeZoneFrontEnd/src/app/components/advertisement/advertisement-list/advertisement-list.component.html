@@ -45,9 +45,21 @@
 
     </div>
 
-    <div class="row offset-5">
+    <div *ngIf="isCompletedProfile;else notCompletedProfile" class="row offset-5">
         <app-advertisement-modal-create></app-advertisement-modal-create>
     </div>
+
+    <ng-template #notCompletedProfile>
+
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                <a mat-flat-button color="warn" routerLink="/user/profile">Complete your profile to create advertisements</a>
+            </div>
+            <div class="col-md-4"></div>
+        </div>
+
+    </ng-template>
 
     <div class="row">
         <app-advertisement-modal-delete [advertisementId]="advertisementToModifyId"></app-advertisement-modal-delete>

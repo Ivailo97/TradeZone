@@ -22,7 +22,7 @@ const routes: Routes = [
     loadChildren: './components/user/user.module#UserModule', canLoad: [AuthGuard]
   },
   {
-    path: 'advertisement',
+    path: 'advertisements',
     loadChildren: './components/advertisement/advertisement.module#AdvertisementModule', canLoad: [AuthGuard]
   },
 

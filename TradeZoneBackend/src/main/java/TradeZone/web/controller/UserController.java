@@ -44,6 +44,13 @@ public class UserController {
                 }));
     }
 
+    @GetMapping("/profile/is-completed")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<Boolean> profileIsCompleted(@RequestParam String username) {
+        return ResponseEntity.ok( profileService.isCompleted(username));
+    }
+
+
     @PatchMapping("/profile/update")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> updateProfile(@RequestBody ProfileUpdate update) {

@@ -38,6 +38,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     private static final String ADV_IMG_NOT_PRESENT = "Photo not belong to the advertisement";
     private static final String INVALID_DELETE_REQUEST = "Invalid delete request";
     private static final String INVALID_VIEWS_UPDATE = "Invalid views update";
+    private static final String PROFILE_NOT_COMPLETED = "Cant do because profile not completed";
     private static final String UNDEFINED = "undefined";
     private static final String NONE_SORT = "none";
     private static final String ASCENDING_ORDER = "ascending";
@@ -180,6 +181,10 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
         UserProfile userProfile = userProfileRepository.findByUserUsername(restModel.getCreator())
                 .orElseThrow(() -> new EntityNotFoundException(String.format(PROFILE_NOT_FOUND, restModel.getCreator())));
+
+        if (!userProfile.getIsCompleted()){
+            throw new ProfileNotCompletedException(PROFILE_NOT_COMPLETED);
+        }
 
         Advertisement entity = modelMapper.map(restModel, Advertisement.class);
         entity.setViews(0L);

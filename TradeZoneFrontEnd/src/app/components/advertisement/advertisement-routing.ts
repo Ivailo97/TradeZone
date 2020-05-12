@@ -10,7 +10,7 @@ const routes: Routes = [
   },
 
   {
-    path: 'all',
+    path: 'category/:category',
     component: AdvertisementListComponent
   },
 

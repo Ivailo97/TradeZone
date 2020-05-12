@@ -1,5 +1,5 @@
 <div class="row">
-    {{advertisement.createdOn | date : 'medium'}}
+
 </div>
 
 <div class="row">
@@ -54,53 +54,85 @@
 
     </div>
     <div class="col">
-        <div class="ml-1 row">
-            <div class="jumbotron">
-                <div class="col"> Uploder: </div>
-                <p>{{advertisement.creator.firstName}} {{advertisement.creator.lastName}}</p>
-                <img src="{{advertisement.creator.photoUrl}}" style="width: 50px;" alt="">
+
+        <mat-card>
+            <mat-card-header>
+                <div mat-card-avatar class="example-header-image">
+                    <img src="{{advertisement.creator.photoUrl}}" class="avatar" alt="creatorAvatar">
+                </div>
+                <mat-card-title>{{advertisement.creator.firstName}} {{advertisement.creator.lastName}}</mat-card-title>
+                <mat-card-subtitle>Creator</mat-card-subtitle>
+            </mat-card-header>
+
+            <mat-card-content>
+                <p>
+                    {{advertisement.creator.aboutMe}}
+                </p>
                 <hr class="my-3">
-                <div *ngIf="isOwnedByUser" class="row">
+            </mat-card-content>
+            <mat-card-actions class="text-center">
+
+                <div *ngIf="isOwnedByUser;else notOwned" class="col">
                     <app-image-upload-modal [advertisementId]="advertisement?.id"></app-image-upload-modal>
                 </div>
-            </div>
-        </div>
-        <div class="ml-1 row">
-            <div class="card" style="width: 13rem;">
+
+                <ng-template #notOwned>
+                    <div class="row">
+                        <button mat-button>SEND MESSAGE</button>
+                        <button mat-button>MORE ADS</button>
+                    </div>
+                </ng-template>
+
+            </mat-card-actions>
+        </mat-card>
+
+        <div class="row mt-2">
+            <mat-card class="ml-3" style="width: 16rem;height: 12rem;">
                 <mat-list>
-                    <mat-list-item>
-                        <img matListAvatar src="{{categoryImageUrl}}" alt="categoryImage">
-                        <h3 matLine>Category:</h3>
-                        <p matLine>
-                            <span class="demo-2">{{advertisement.categoryName}}</span>
-                        </p>
-                    </mat-list-item>
                     <mat-list-item>
                         <img matListAvatar src="{{conditionImageUlr}}" alt="conditionImage">
                         <h3 matLine>Condition:</h3>
                         <p matLine>
-                            <span class="demo-2">{{advertisement.condition}}</span>
+                            <span>{{advertisement.condition}}</span>
                         </p>
                     </mat-list-item>
                     <mat-list-item>
                         <img matListAvatar src="{{deliveryImageUrl}}" alt="deliveryImage">
                         <h3 matLine>Delivery:</h3>
                         <p matLine>
-                            <span class="demo-2">{{advertisement.delivery}}</span>
+                            <span>{{advertisement.delivery}}</span>
                         </p>
                     </mat-list-item>
                 </mat-list>
-            </div>
+            </mat-card>
         </div>
     </div>
 </div>
 
 <div class="row">
+
     <div class="jumbotron container-fluid mt-3">
+
         <div class="row">
+
             <div class="col">
                 <h1>{{advertisement.title}}</h1>
             </div>
+
+            <div class="col">
+                <mat-toolbar>
+                    <div class="row ml-5">
+                        <div class="col ml-5">
+                            <a class="ml-5" [routerLink]="['/advertisements/category',advertisement.categoryName]">
+                                Category - {{advertisement.categoryName}}
+                            </a>
+                        </div>
+
+                    </div>
+
+                </mat-toolbar>
+            </div>
+
         </div>
         <div class="row">
             <div class="col">
@@ -108,9 +140,24 @@
             </div>
         </div>
         <hr class="my-2">
-        <p class="lead">{{advertisement?.description}}</p>
+        <h3>Description</h3>
+        <p class="lead">{{advertisement?.description}} Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque, officiis temporibus dignissimos sint incidunt consequatur, accusamus ad eius architecto corrupti obcaecati quia eligendi nihil iste quibusdam aliquam
+            autem dolore! Quibusdam.
+        </p>
         <hr class="my-2">
-        <span class="badge badge-pill purple "><i class="fas fa-users fa-2x " aria-hidden="true "></i> Views: {{advertisement?.views}}</span>
 
+        <div class="row">
+            <div class="col-md-6">
+                <span class="badge badge-pill purple ">
+                    <i class="fas fa-users fa-2x " aria-hidden="true "></i> Views: {{advertisement?.views}}
+                </span>
+            </div>
+            <div class="col-md-6">
+                <span>
+                    Published:
+                    {{advertisement.createdOn | date : 'medium'}}
+                </span>
+            </div>
+        </div>
     </div>
 </div>

@@ -33,7 +33,11 @@ export class ProfileService {
       tap(() => {
         this._refreshNeeded$.next();
       })
-    );;;;;
+    );
+  }
+
+  isCompleted(): Observable<boolean> {
+    return this.http.get<boolean>(`${baseURL}/is-completed?username=${this.tokenStorageService.getUsername()}`);
   }
 
   removeFavoriteAdvertisement(advertisementId: number): Observable<string> {
