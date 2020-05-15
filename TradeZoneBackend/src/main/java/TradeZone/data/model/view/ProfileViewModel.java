@@ -1,6 +1,5 @@
 package TradeZone.data.model.view;
 
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,6 +32,8 @@ public class ProfileViewModel {
     private List<String> roles;
 
     private List<CategoryListViewModel> createdCategories;
+
+    private List<ConversationViewModel> hostedConversations;
 
     private List<AdvertisementListViewModel> createdAdvertisements;
 

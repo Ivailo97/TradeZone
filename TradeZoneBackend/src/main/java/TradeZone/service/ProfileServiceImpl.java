@@ -1,5 +1,6 @@
 package TradeZone.service;
 
+import TradeZone.data.model.service.ConversationServiceModel;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -30,7 +31,9 @@ public class ProfileServiceImpl implements ProfileService {
 
     private static final String FAIL = "FAIL";
     private static final String WRONG_OLD_PASSWORD = "FAIL -> WRONG OLD PASSWORD";
+    private static final String PROFILE_NOT_FOUND = "PROFILE WITH USERNAME %s not found";
     private static final String CONFIRM_PASSWORD_DOESNT_MATCH = "FAIL -> CONFIRM NEW PASSWORD DOES NOT MATCH";
+
     private static final String SUCCESS = "SUCCESS";
 
     private final ProfileUpdateValidationService profileUpdateValidationService;
@@ -48,7 +51,12 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Optional<ProfileServiceModel> getUserProfileByUsername(String username) {
         return userProfileRepository.findByUserUsername(username)
-                .map(x -> mapper.map(x, ProfileServiceModel.class));
+                .map(x -> {
+                    ProfileServiceModel model = mapper.map(x, ProfileServiceModel.class);
+                    model.setHostedConversations(x.getHostedConversations().stream()
+                            .map(y -> mapper.map(y, ConversationServiceModel.class)).collect(Collectors.toList()));
+                    return model;
+                });
     }
 
     @Override

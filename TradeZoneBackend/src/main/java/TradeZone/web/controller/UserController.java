@@ -1,5 +1,7 @@
 package TradeZone.web.controller;
 
+import TradeZone.data.model.rest.search.MessageToSend;
+import TradeZone.service.MessageService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -28,6 +30,8 @@ public class UserController {
 
     private final ProfileService profileService;
 
+    private final MessageService messageService;
+
     private final ModelMapper mapper;
 
     @GetMapping("/profile")
@@ -47,13 +51,19 @@ public class UserController {
     @GetMapping("/profile/is-completed")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Boolean> profileIsCompleted(@RequestParam String username) {
-        return ResponseEntity.ok( profileService.isCompleted(username));
+
+        return ResponseEntity.ok(profileService.isCompleted(username));
     }
 
+    @PatchMapping("/profile/send-message")
+    public ResponseEntity<HttpStatus> sendMessage(@RequestBody MessageToSend message) {
+        messageService.sendMessage(message);
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
 
     @PatchMapping("/profile/update")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> updateProfile(@RequestBody ProfileUpdate update) {
+    public ResponseEntity<HttpStatus> updateProfile(@RequestBody ProfileUpdate update) {
         String responseMessage = profileService.update(update);
         HttpStatus status = responseMessage.contains("FAIL") ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
         return new ResponseEntity<>(status);

@@ -58,6 +58,9 @@ public class UserProfile extends BaseEntityWithPhoto {
     @OneToMany(mappedBy = "creator")
     private List<Category> createdCategories;
 
+    @OneToMany(mappedBy = "host")
+    private List<Conversation> hostedConversations;
+
     public UserProfile(User user) {
         this.setUser(user);
         this.setIsCompleted(false);

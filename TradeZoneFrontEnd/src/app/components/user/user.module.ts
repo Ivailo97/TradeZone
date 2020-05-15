@@ -12,14 +12,15 @@ import { ReplacePipe } from 'src/app/core/helpers/replace.pipe';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
+import { MessagesModalComponent } from '../messages-modal/messages-modal.component';
 
 
 @NgModule({
   declarations: [
     AdminComponent,
+    MessagesModalComponent,
     ProfileComponent,
     ReplacePipe,
- 
   ],
   imports: [
     CommonModule,

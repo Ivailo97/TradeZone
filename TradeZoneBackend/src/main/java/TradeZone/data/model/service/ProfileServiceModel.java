@@ -25,6 +25,8 @@ public class ProfileServiceModel extends BaseServiceModel {
 
     private PhotoServiceModel photo;
 
+    private List<ConversationServiceModel> hostedConversations;
+
     private List<AdvertisementServiceModel> favorites;
 
     private List<AdvertisementServiceModel> createdAdvertisements;

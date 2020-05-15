@@ -18,7 +18,6 @@ export class AdvertisementDetailsComponent implements OnInit {
   conditionImageUlr = 'https://res.cloudinary.com/knight-cloud/image/upload/v1589234279/efhzczebhzn9jdkijokm.png';
   deliveryImageUrl = 'https://res.cloudinary.com/knight-cloud/image/upload/v1589234299/fscm4lxngph4hqo7b24s.png';
 
-
   images = [];
 
   isOwnedByUser: boolean;

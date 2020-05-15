@@ -6,6 +6,7 @@ import { Observable, Subject } from 'rxjs';
 import { ProfileUpdate } from '../models/profile-update';
 import { tap } from 'rxjs/operators';
 import { PasswordUpdate } from '../models/password-update';
+import { Message } from '../models/message';
 
 const baseURL = 'http://localhost:8080/api/user/profile';
 
@@ -25,6 +26,10 @@ export class ProfileService {
 
   getUserProfile(): Observable<UserProfile> {
     return this.http.get<UserProfile>(`${baseURL}?username=${this.tokenStorageService.getUsername()}`);
+  }
+
+  sendMessage(message: Message): Observable<void> {
+    return this.http.patch<void>(`${baseURL}/send-message`, message);
   }
 
   addFavoriteAdvertisement(advertisementId: number): Observable<string> {

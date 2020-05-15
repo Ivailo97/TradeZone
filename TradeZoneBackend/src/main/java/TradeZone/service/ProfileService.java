@@ -1,5 +1,6 @@
 package TradeZone.service;
 
+import TradeZone.data.model.rest.search.MessageToSend;
 import org.springframework.web.multipart.MultipartFile;
 import TradeZone.data.model.rest.PasswordUpdate;
 import TradeZone.data.model.rest.ProfileUpdate;

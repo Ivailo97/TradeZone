@@ -11,7 +11,7 @@ import javax.persistence.OneToOne;
 @Getter
 @Setter
 @MappedSuperclass
-public class BaseEntityWithPhoto extends BaseEntity {
+public abstract class BaseEntityWithPhoto extends BaseEntity {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "photo_id", referencedColumnName = "id")

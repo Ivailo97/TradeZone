@@ -20,11 +20,13 @@ import { LoaderComponent } from './components/loader/loader.component';
 import { CategoryModule } from './components/category/category.module';
 import { TopCategoryModule } from './components/top-category/top-category.module';
 import { ErrorComponent } from './components/error/error.component';
+import {MatMenuModule} from '@angular/material/menu';
 
 @NgModule({
 
   imports: [
     Ng5SliderModule,
+    MatMenuModule,
     BrowserModule,
     AppRoutingModule,
     MatGridListModule,
@@ -38,6 +40,7 @@ import { ErrorComponent } from './components/error/error.component';
     TopCategoryModule
   ],
   declarations: [
+   
     AppComponent,
     HomeComponent,
     FooterComponent,

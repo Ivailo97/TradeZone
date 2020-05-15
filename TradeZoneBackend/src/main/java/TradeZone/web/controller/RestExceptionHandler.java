@@ -65,6 +65,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(ex);
     }
 
+    @ExceptionHandler(MessageToSendNotValidException.class)
+    protected ResponseEntity<Object> handleMessageNotValid(MessageToSendNotValidException ex) {
+        return buildResponseEntity(ex);
+    }
+
     private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {
         return new ResponseEntity<>(apiError, apiError.getStatus());
     }
