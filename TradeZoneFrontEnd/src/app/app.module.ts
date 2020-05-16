@@ -46,7 +46,7 @@ import {MatMenuModule} from '@angular/material/menu';
     FooterComponent,
     NavbarComponent,
     LoaderComponent,
-    ErrorComponent
+    ErrorComponent,
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     LoaderService, { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true }],

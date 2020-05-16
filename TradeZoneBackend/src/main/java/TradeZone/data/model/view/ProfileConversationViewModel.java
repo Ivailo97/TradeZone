@@ -9,5 +9,11 @@ public class ProfileConversationViewModel {
 
     private Long id;
 
+    private String userUsername;
+
+    private String firstName;
+
+    private String lastName;
+
     private String photoUrl;
 }

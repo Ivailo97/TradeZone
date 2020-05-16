@@ -4,8 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.PriorityQueue;
 
 @Getter
 @Setter
@@ -19,7 +17,5 @@ public class ConversationViewModel {
 
     private Collection<MessageViewModel> messages;
 
-    public ConversationViewModel() {
-        this.messages = new PriorityQueue<>(Comparator.comparing(MessageViewModel::getDateTime));
-    }
+    public ConversationViewModel() { }
 }

@@ -1,6 +1,7 @@
 package TradeZone.web.controller;
 
 import TradeZone.data.model.rest.search.MessageToSend;
+import TradeZone.data.model.view.MessageViewModel;
 import TradeZone.service.MessageService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -18,8 +19,7 @@ import TradeZone.data.model.view.ProfileViewModel;
 import TradeZone.data.model.view.ProfileTableViewModel;
 import TradeZone.service.ProfileService;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
@@ -44,6 +44,12 @@ public class UserController {
                     viewModel.setCreatedAdvertisements(mapServiceAdvertisementsToView(x.getCreatedAdvertisements()));
                     viewModel.setFavorites(mapServiceAdvertisementsToView(x.getFavorites()));
                     viewModel.setRoles(x.getUser().getRoles().stream().map(r -> r.getRoleName().name()).collect(Collectors.toList()));
+
+                    viewModel.setHostedConversations(
+                            viewModel.getHostedConversations().stream()
+                                    .peek(y -> y.setMessages(y.getMessages().stream().sorted().collect(Collectors.toList())))
+                                    .collect(Collectors.toList()));
+
                     return viewModel;
                 }));
     }

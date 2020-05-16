@@ -12,7 +12,8 @@ import { ReplacePipe } from 'src/app/core/helpers/replace.pipe';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
-import { MessagesModalComponent } from '../messages-modal/messages-modal.component';
+import { MessagesModalComponent } from './messages-modal/messages-modal.component';
+import { ConversationModalComponent } from './conversation-modal/conversation-modal.component';
 
 
 @NgModule({
@@ -21,6 +22,7 @@ import { MessagesModalComponent } from '../messages-modal/messages-modal.compone
     MessagesModalComponent,
     ProfileComponent,
     ReplacePipe,
+    ConversationModalComponent
   ],
   imports: [
     CommonModule,

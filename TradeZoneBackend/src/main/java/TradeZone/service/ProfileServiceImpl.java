@@ -1,20 +1,15 @@
 package TradeZone.service;
 
-import TradeZone.data.model.service.ConversationServiceModel;
+import TradeZone.data.model.entity.*;
+import TradeZone.data.model.service.*;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import TradeZone.data.model.entity.Advertisement;
-import TradeZone.data.model.entity.Photo;
-import TradeZone.data.model.entity.UserProfile;
 import TradeZone.data.model.rest.PasswordUpdate;
 import TradeZone.data.model.rest.ProfileUpdate;
 import TradeZone.data.model.rest.message.response.ResponseMessage;
-import TradeZone.data.model.service.PhotoServiceModel;
-import TradeZone.data.model.service.ProfileServiceModel;
-import TradeZone.data.model.service.RoleServiceModel;
 import TradeZone.service.validation.ProfileUpdateValidationService;
 import TradeZone.data.repository.AdvertisementRepository;
 import TradeZone.data.repository.UserProfileRepository;
@@ -53,8 +48,21 @@ public class ProfileServiceImpl implements ProfileService {
         return userProfileRepository.findByUserUsername(username)
                 .map(x -> {
                     ProfileServiceModel model = mapper.map(x, ProfileServiceModel.class);
-                    model.setHostedConversations(x.getHostedConversations().stream()
-                            .map(y -> mapper.map(y, ConversationServiceModel.class)).collect(Collectors.toList()));
+                    List<Conversation> conversations = x.getHostedConversations();
+                    List<ConversationServiceModel> serviceModels = conversations.stream()
+                            .map(y -> {
+                                ConversationServiceModel serviceModel = mapper.map(y, ConversationServiceModel.class);
+                                List<Message> messages = y.getMessages();
+                                for (int i = 0; i < messages.size(); i++) {
+                                    Message realMessage = messages.get(i);
+                                    MessageServiceModel wrongServiceModel = serviceModel.getMessages().get(i);
+                                    wrongServiceModel.setReceiver(mapper.map(realMessage.getReceiver(), ProfileServiceModel.class));
+                                    wrongServiceModel.setSender(mapper.map(realMessage.getSender(), ProfileServiceModel.class));
+                                }
+                                return serviceModel;
+                            })
+                            .collect(Collectors.toList());
+                    model.setHostedConversations(serviceModels);
                     return model;
                 });
     }
