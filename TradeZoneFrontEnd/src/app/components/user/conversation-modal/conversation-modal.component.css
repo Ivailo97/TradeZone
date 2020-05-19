@@ -18,40 +18,43 @@ html {
     border-bottom: 1px solid #9F6905;
 }
 
-.sender-date {
-    float: left;
-}
-
-.receiver-date {
-    float: right;
-}
-
 .container {
     width: 400px;
-    cursor: default;
     margin: 20px auto;
     max-height: 350px;
     overflow-y: scroll;
 }
 
-.container::-webkit-scrollbar {
-    width: 3px;
-    max-width: 3px;
-    height: auto;
-    max-height: 8px;
+.date {
+    float: right;
 }
 
-.container::-webkit-scrollbar-thumb {
-    background: #f0f0f0;
-    border-radius: 5px;
-    max-width: 3px;
+img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #f0f0ff;
 }
 
-.container::-webkit-scrollbar-track {
-    background: #9F6905;
-    border-radius: 5px;
+img:hover {
+    -moz-box-shadow: 0 5px 5px rgba(223, 120, 8, 1);
+    -webkit-box-shadow: 0 5px 5px rgba(223, 120, 8, 1);
+    box-shadow: 0 5px 5px rgba(223, 120, 8, 1);
+    -webkit-transition: all 1.5s;
+    -moz-transition: all 1.5s;
+    transition: all 1.5s;
+    cursor: pointer;
 }
 
+
+/* .sender-date {
+    float: left;
+}
+
+
+
+
+/* 
 .Area {
     margin: 0 auto;
     width: 380px;
@@ -66,23 +69,7 @@ html {
     float: left;
 }
 
-img {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    border: 2px solid #f0f0ff;
-    padding: 5px;
-}
 
-img:hover {
-    -moz-box-shadow: 0 5px 5px rgba(223, 120, 8, 1);
-    -webkit-box-shadow: 0 5px 5px rgba(223, 120, 8, 1);
-    box-shadow: 0 5px 5px rgba(223, 120, 8, 1);
-    -webkit-transition: all 1.5s;
-    -moz-transition: all 1.5s;
-    transition: all 1.5s;
-    cursor: pointer;
-}
 
 .R {
     float: right;
@@ -225,4 +212,4 @@ a {
 br {
     clear: both;
     height: 20px;
-}
+} */

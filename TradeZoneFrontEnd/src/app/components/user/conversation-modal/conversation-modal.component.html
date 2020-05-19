@@ -4,36 +4,21 @@
 
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title w-100 header" id="myModalLabel">{{conversation.interlocutor.userUsername}}</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
+                <h4 class="modal-title w-100 header" id="myModalLabel">Chat</h4>
             </div>
 
-            <div class="container">
+            <div id="random" class="container">
 
-                <div class="Area" *ngFor="let message of conversation.messages">
+                <div style="width: 100%; min-height: 350px;" class="message-col">
 
-                    <div *ngIf="message.senderPhotoUrl == conversation.host.photoUrl;else receiver" class="L">
-                        <img src="{{message.senderPhotoUrl}}" />
-                        <div class="tooltip">Sami Massadeh - 28 Years<br/>Doctor <br/>Jordan</div>
-                        <div class="text R textR">
-                            <p>{{message.content}}</p>
-                            <small class="sender-date">{{message.dateTime | date:'shortTime'}}</small>
-                        </div>
-                    </div>
+                    <mat-list id="msg-container" class="message-container">
 
-                    <ng-template #receiver>
-                        <div class="R">
-                            <img src="{{message.senderPhotoUrl}}" />
-                            <div class="tooltip">Sami Massadeh - 28 Years<br/>Doctor <br/>Jordan</div>
-                        </div>
-                        <div class="text L textL">
-                            <p>{{message.content}}</p>
-                            <small class="receiver-date">{{message.dateTime | date:'shortTime'}}</small>
-                        </div>
+                        <mat-list-item *ngFor="let message of filteredMessages" class="message-item" [style.background]="message.sender === username ? 'rgba(80,150,220, 0.4)':'rgba(150,150,150, 0.3)'">
+                            <mat-icon mat-list-icon><img src="{{message.senderAvatarUrl}}" /></mat-icon>
+                            <h4 mat-line><b>{{message.sender === username ? 'You': message.sender}}</b>: {{message.content}} <b class="date">{{message.timestamp | date: 'shortTime'}}</b> </h4>
+                        </mat-list-item>
 
-                    </ng-template>
+                    </mat-list>
 
                 </div>
 
@@ -41,19 +26,23 @@
 
             <div class="modal-footer justify-content-center">
 
-                <div class="Area">
+                <div style="width:100%; height: 40px;">
 
                     <form [formGroup]="form">
 
-                        <textarea formControlName="content" placeholder="Participate in coversation"></textarea>
-                        <br/><br/>
+                        <mat-form-field style="width: 85%;">
 
-                        <br/>
+                            <input formControlName="message" matInput placeholder="New message" [disabled]="channel === null || channel === undefined" class="message-input" (keyup)="$event.keyCode == 13 ? sendMessage() : null">
+
+                        </mat-form-field>
+
+                        <button mat-raised-button [disabled]="channel === null || channel === undefined" style="width: 13%;" (click)="sendMessage()">Send</button>
+
                     </form>
 
                 </div>
+
                 <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#chatModal">Close</button>
-                <button type="button" class="btn btn-secondary" [disabled]="form.invalid" (click)="send()">SEND </button>
             </div>
         </div>
     </div>

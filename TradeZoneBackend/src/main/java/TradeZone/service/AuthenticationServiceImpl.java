@@ -1,7 +1,9 @@
 package TradeZone.service;
 
+import TradeZone.data.model.view.ProfileConversationViewModel;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -36,6 +38,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserRepository userRepository;
 
     private final UserProfileRepository userProfileRepository;
+
+    private final SimpMessagingTemplate template;
 
     private final PasswordEncoder encoder;
 
@@ -104,7 +108,48 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
+        connectIfNeeded(userDetails);
+
         return new JwtResponse(jwt, userDetails.getUsername(), userDetails.getAuthorities());
+    }
+
+    @Override
+    public void disconnect(String username) {
+
+        UserProfile userProfile = userProfileRepository
+                .findByUserUsername(username)
+                .orElseThrow();
+
+        if (!userProfile.getConnected()) {
+            return;
+        }
+
+        userProfile.setConnected(false);
+
+        userProfile = userProfileRepository.save(userProfile);
+
+        ProfileConversationViewModel viewModel = mapper.map(userProfile,ProfileConversationViewModel.class);
+
+        template.convertAndSend("/channel/logout", viewModel);
+    }
+
+    private void connectIfNeeded(UserDetails user) {
+
+        UserProfile userProfile = userProfileRepository
+                .findByUserUsername(user.getUsername())
+                .orElseThrow();
+
+        if (userProfile.getConnected()) {
+            return;
+        }
+
+        userProfile.setConnected(true);
+
+        userProfileRepository.save(userProfile);
+
+        ProfileConversationViewModel viewModel = mapper.map(userProfile,ProfileConversationViewModel.class);
+
+        template.convertAndSend("/channel/login", viewModel);
     }
 
     @Override

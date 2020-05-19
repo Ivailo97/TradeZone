@@ -33,8 +33,6 @@ public class ProfileViewModel {
 
     private List<CategoryListViewModel> createdCategories;
 
-    private List<ConversationViewModel> hostedConversations;
-
     private List<AdvertisementListViewModel> createdAdvertisements;
 
     private List<AdvertisementListViewModel> favorites;

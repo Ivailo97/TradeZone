@@ -1,8 +1,12 @@
 package TradeZone.web.controller;
 
+import TradeZone.data.model.entity.UserProfile;
+import TradeZone.data.model.view.ProfileConversationViewModel;
+import TradeZone.data.repository.UserProfileRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import TradeZone.data.model.rest.LoginForm;
@@ -13,6 +17,8 @@ import TradeZone.data.model.service.UserServiceModel;
 import TradeZone.service.AuthenticationService;
 
 import javax.validation.Valid;
+import java.security.Principal;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -24,12 +30,14 @@ public class AuthenticationController {
 
     private final AuthenticationService authService;
 
+    private final UserProfileRepository profileRepository;
+
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginForm model) {
 
-        UserServiceModel userServiceModel = mapper.map(model,UserServiceModel.class);
+        UserServiceModel userServiceModel = mapper.map(model, UserServiceModel.class);
 
-        JwtResponse jwtResponse =  authService.login(userServiceModel);
+        JwtResponse jwtResponse = authService.login(userServiceModel);
 
         return ResponseEntity.ok(jwtResponse);
     }
@@ -44,5 +52,19 @@ public class AuthenticationController {
         HttpStatus status = responseMessage.getMessage().contains("Fail") ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
 
         return new ResponseEntity<>(responseMessage, status);
+    }
+
+    @PostMapping(value = "/logout", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void logout(@RequestBody String username) {
+        authService.disconnect(username);
+    }
+
+    @GetMapping(value = "/listUsers", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Iterable<ProfileConversationViewModel> findConnectedUsers(Principal principal) {
+        return profileRepository.findAllByConnectedTrue().stream()
+                .filter(x -> !x.getUser().getUsername().equals(principal.getName()))
+                .map(x -> mapper.map(x, ProfileConversationViewModel.class))
+                .collect(Collectors.toList());
     }
 }

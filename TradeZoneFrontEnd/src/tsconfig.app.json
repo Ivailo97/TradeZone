@@ -8,5 +8,10 @@
   "exclude": [
     "src/test.ts",
     "**/*.spec.ts"
+  ],
+  "include":[
+    "../src/**/*",
+    "../node_modules/ng2-stomp-service/dist/stomp.service.ts"
   ]
+ 
 }

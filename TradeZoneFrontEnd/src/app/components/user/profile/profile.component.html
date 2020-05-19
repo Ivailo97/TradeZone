@@ -3,7 +3,8 @@
         <div class="row">
             <app-advertisement-modal-delete [advertisementId]="advertisementToModifyId"></app-advertisement-modal-delete>
             <app-advertisement-modal-edit [id]="advertisementToModifyId"></app-advertisement-modal-edit>
-            <app-messages-modal [conversations]="userProfile?.hostedConversations"></app-messages-modal>
+            <app-messages-modal [username]="userProfile?.userUsername" (receiverUpdated)="changeReceiver($event)"></app-messages-modal>
+
         </div>
         <div class="row">
             <div class="col-md-8">

@@ -17,6 +17,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import TradeZone.config.security.jwt.JwtAuthEntryPoint;
 import TradeZone.config.security.jwt.JwtAuthTokenFilter;
 import TradeZone.service.AuthenticationService;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -32,6 +34,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         this.authService = authService;
         this.unauthorizedHandler = unauthorizedHandler;
     }
+
+
 
     @Bean
     public JwtAuthTokenFilter authenticationJwtTokenFilter() {
@@ -62,6 +66,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/api/auth/**").permitAll()
+                .antMatchers("/wechat/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()

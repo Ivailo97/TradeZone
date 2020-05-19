@@ -1,14 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Conversation } from 'src/app/core/models/conversation';
+import { StompService } from 'ng2-stomp-service';
+import { MessageService } from 'src/app/core/services/message.service';
+import { ChanelService } from 'src/app/core/services/chanel.service';
+import { Message } from '../messages-modal/messages-modal.component';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ProfileService } from 'src/app/core/services/profile.service';
-import { AlertService } from '../../alert';
-import { Message } from 'src/app/core/models/message';
-
-const alertConfig = {
-  autoClose: true
-}
-const messageSent = 'Message sent!';
 
 @Component({
   selector: 'app-conversation-modal',
@@ -17,53 +12,58 @@ const messageSent = 'Message sent!';
 })
 export class ConversationModalComponent implements OnInit {
 
-  @Input() conversation: Conversation
+  form: FormGroup;
 
-  form: FormGroup
+  filteredMessages: Array<Message> = [];
 
-  constructor(private formBuilder: FormBuilder,
-    private profileService: ProfileService,
-    private alertService: AlertService) { }
+  channel: string;
 
-  ngOnInit(): void {
+  @Input()
+  username: string;
 
-    this.form = this.formBuilder.group({
-      content: ['', Validators.required],
-      sender: ['', Validators.required],
-      receiver: ['', Validators.required]
+  constructor(private stompService: StompService,
+    private messageService: MessageService,
+    private channelService: ChanelService,
+    private fb: FormBuilder) { }
+
+  ngOnInit() {
+    this.form = this.fb.group({
+      message: ['', [Validators.required]],
     })
 
-    this.patchForm();
+    this.channelService.getChannel().subscribe(channel => {
+      this.channel = channel;
+      this.filterMessages();
+    });
+
+    this.messageService.getMessages().subscribe(messages => {
+      this.filteredMessages = messages;
+    });
   }
 
-  send(): void {
-
-    const message = new Message(
-      this.f.content.value,
-      this.f.sender.value,
-      this.f.receiver.value
-    )
-
-    this.profileService.sendMessage(message)
-      .subscribe(
-        success => {
-          this.alertService.success(messageSent, alertConfig)
-        },
-        fail => {
-          this.alertService.error(fail.error.message, alertConfig);
-        });
-
-    this.form.reset();
-    this.patchForm();
+  sendMessage() {
+    if (this.f.message.value) {
+      this.stompService.send('/app/messages', {
+        'channel': this.channel,
+        'sender': this.username,
+        'content': this.f.message.value
+      });
+      this.f.message.setValue('');
+      this.scrollToBottom();
+    }
   }
 
-  private patchForm(): void {
-    this.form.patchValue({ sender: this.conversation.host.userUsername });
-    this.form.patchValue({ receiver: this.conversation.interlocutor.userUsername });
+  filterMessages() {
+    this.messageService.filterMessages(this.channel);
+    this.scrollToBottom();
   }
 
-  private get f(): any {
+  scrollToBottom() {
+    const msgContainer = document.getElementById('msg-container');
+    msgContainer.scrollTop =msgContainer.scrollHeight - msgContainer.clientHeight;
+  }
+
+  get f() {
     return this.form.controls;
   }
-
 }

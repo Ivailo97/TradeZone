@@ -15,5 +15,7 @@ public class ProfileConversationViewModel {
 
     private String lastName;
 
+    private Boolean connected;
+
     private String photoUrl;
 }

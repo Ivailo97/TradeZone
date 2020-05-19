@@ -18,6 +18,9 @@ public class UserProfile extends BaseEntityWithPhoto {
     @OneToOne(mappedBy = "profile")
     private User user;
 
+    @Column(name = "connected", nullable = false)
+    private Boolean connected;
+
     @Column(name = "first_name")
     private String firstName;
 
@@ -57,9 +60,6 @@ public class UserProfile extends BaseEntityWithPhoto {
 
     @OneToMany(mappedBy = "creator")
     private List<Category> createdCategories;
-
-    @OneToMany(mappedBy = "host")
-    private List<Conversation> hostedConversations;
 
     public UserProfile(User user) {
         this.setUser(user);

@@ -1,8 +1,5 @@
 package TradeZone.web.controller;
 
-import TradeZone.data.model.rest.search.MessageToSend;
-import TradeZone.data.model.view.MessageViewModel;
-import TradeZone.service.MessageService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -30,8 +27,6 @@ public class UserController {
 
     private final ProfileService profileService;
 
-    private final MessageService messageService;
-
     private final ModelMapper mapper;
 
     @GetMapping("/profile")
@@ -44,12 +39,6 @@ public class UserController {
                     viewModel.setCreatedAdvertisements(mapServiceAdvertisementsToView(x.getCreatedAdvertisements()));
                     viewModel.setFavorites(mapServiceAdvertisementsToView(x.getFavorites()));
                     viewModel.setRoles(x.getUser().getRoles().stream().map(r -> r.getRoleName().name()).collect(Collectors.toList()));
-
-                    viewModel.setHostedConversations(
-                            viewModel.getHostedConversations().stream()
-                                    .peek(y -> y.setMessages(y.getMessages().stream().sorted().collect(Collectors.toList())))
-                                    .collect(Collectors.toList()));
-
                     return viewModel;
                 }));
     }
@@ -59,12 +48,6 @@ public class UserController {
     public ResponseEntity<Boolean> profileIsCompleted(@RequestParam String username) {
 
         return ResponseEntity.ok(profileService.isCompleted(username));
-    }
-
-    @PatchMapping("/profile/send-message")
-    public ResponseEntity<HttpStatus> sendMessage(@RequestBody MessageToSend message) {
-        messageService.sendMessage(message);
-        return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @PatchMapping("/profile/update")

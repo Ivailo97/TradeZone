@@ -46,25 +46,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Optional<ProfileServiceModel> getUserProfileByUsername(String username) {
         return userProfileRepository.findByUserUsername(username)
-                .map(x -> {
-                    ProfileServiceModel model = mapper.map(x, ProfileServiceModel.class);
-                    List<Conversation> conversations = x.getHostedConversations();
-                    List<ConversationServiceModel> serviceModels = conversations.stream()
-                            .map(y -> {
-                                ConversationServiceModel serviceModel = mapper.map(y, ConversationServiceModel.class);
-                                List<Message> messages = y.getMessages();
-                                for (int i = 0; i < messages.size(); i++) {
-                                    Message realMessage = messages.get(i);
-                                    MessageServiceModel wrongServiceModel = serviceModel.getMessages().get(i);
-                                    wrongServiceModel.setReceiver(mapper.map(realMessage.getReceiver(), ProfileServiceModel.class));
-                                    wrongServiceModel.setSender(mapper.map(realMessage.getSender(), ProfileServiceModel.class));
-                                }
-                                return serviceModel;
-                            })
-                            .collect(Collectors.toList());
-                    model.setHostedConversations(serviceModels);
-                    return model;
-                });
+                .map(x -> mapper.map(x, ProfileServiceModel.class));
     }
 
     @Override

@@ -21,11 +21,11 @@ public class ProfileServiceModel extends BaseServiceModel {
 
     private Boolean isCompleted;
 
+    private Boolean connected;
+
     private UserServiceModel user;
 
     private PhotoServiceModel photo;
-
-    private List<ConversationServiceModel> hostedConversations;
 
     private List<AdvertisementServiceModel> favorites;
 

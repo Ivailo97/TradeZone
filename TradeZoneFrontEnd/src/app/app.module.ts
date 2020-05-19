@@ -40,7 +40,6 @@ import {MatMenuModule} from '@angular/material/menu';
     TopCategoryModule
   ],
   declarations: [
-   
     AppComponent,
     HomeComponent,
     FooterComponent,
