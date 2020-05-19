@@ -38,6 +38,9 @@ public class MessageController {
 
     @PostMapping("/read")
     public void sendReadReceipt(@RequestBody ReadReceiptRequest request) {
+
+        System.out.println();
+
         messageRepository.sendReadReceipt(request.getChannel(), request.getUsername());
     }
 

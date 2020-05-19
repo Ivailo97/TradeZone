@@ -6,7 +6,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AdvertisementModule } from '../advertisement/advertisement.module';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ReplacePipe } from 'src/app/core/helpers/replace.pipe';
 import { MatTableModule } from '@angular/material/table';
@@ -32,6 +32,7 @@ import { StompService } from 'ng2-stomp-service';
   imports: [
     CommonModule,
     MatSnackBarModule,
+    FormsModule,
     MatProgressBarModule,
     MatGridListModule,
     MatInputModule,

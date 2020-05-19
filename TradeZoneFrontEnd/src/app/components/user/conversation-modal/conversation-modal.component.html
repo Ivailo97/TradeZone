@@ -2,47 +2,83 @@
 
     <div class="modal-dialog modal-side modal-bottom-left" role="document">
 
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title w-100 header" id="myModalLabel">Chat</h4>
-            </div>
+        <div class="modal-content" style="background-color: blueviolet;">
 
-            <div id="random" class="container">
+            <div class="container-fluid">
+                <div class="row justify-content-center">
 
-                <div style="width: 100%; min-height: 350px;" class="message-col">
+                    <div class="card">
+                        <div class="card-header msg_head">
+                            <div class="d-flex bd-highlight">
+                                <div class="img_cont">
+                                    <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img">
+                                    <span class="online_icon"></span>
+                                </div>
+                                <div class="user_info">
+                                    <span>Chat with Khalid</span>
+                                    <p>1767 Messages</p>
+                                </div>
+                            </div>
+                            <span id="action_menu_btn"><i class="fas fa-ellipsis-v"></i></span>
+                            <div class="action_menu">
+                                <ul>
+                                    <li><i class="fas fa-user-circle"></i> View profile</li>
+                                    <li><i class="fas fa-users"></i> Add to close friends</li>
+                                    <li><i class="fas fa-plus"></i> Add to group</li>
+                                    <li><i class="fas fa-ban"></i> Block</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div id="msg-container" class="card-body msg_card_body">
 
-                    <mat-list id="msg-container" class="message-container">
+                            <div class="d-flex mb-4" *ngFor="let message of filteredMessages" [ngClass]="(message.sender==username)?'justify-content-start':'justify-content-end'">
 
-                        <mat-list-item *ngFor="let message of filteredMessages" class="message-item" [style.background]="message.sender === username ? 'rgba(80,150,220, 0.4)':'rgba(150,150,150, 0.3)'">
-                            <mat-icon mat-list-icon><img src="{{message.senderAvatarUrl}}" /></mat-icon>
-                            <h4 mat-line><b>{{message.sender === username ? 'You': message.sender}}</b>: {{message.content}} <b class="date">{{message.timestamp | date: 'shortTime'}}</b> </h4>
-                        </mat-list-item>
+                                <div *ngIf="message.sender === username; then senderTemplate else receiverTemplate">
+                                    Here is never showing
+                                </div>
 
-                    </mat-list>
+                                <ng-template #senderTemplate>
+                                    <div class="img_cont_msg">
+                                        <img src="{{message.senderAvatarUrl}}" class="rounded-circle user_img_msg">
+                                    </div>
+                                    <div class="msg_cotainer">
+                                        {{message.content}}
+                                        <span class="msg_time">{{message.timestamp | date:'shortTime'}}</span>
+                                    </div>
+                                </ng-template>
 
+                                <ng-template #receiverTemplate>
+                                    <div class="d-flex justify-content-end mb-4">
+                                        <div class="msg_cotainer_send">
+                                            {{message.content}}
+                                            <span class="msg_time_send">{{message.timestamp | date:'shortTime'}}</span>
+                                        </div>
+                                        <div class="img_cont_msg">
+                                            <img src="{{message.senderAvatarUrl}}" class="rounded-circle user_img_msg">
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
             </div>
 
             <div class="modal-footer justify-content-center">
 
-                <div style="width:100%; height: 40px;">
+                <div class="input-group">
 
-                    <form [formGroup]="form">
+                    <div class="input-group-append">
+                        <span class="input-group-text attach_btn"><i class="fas fa-paperclip"></i></span>
+                    </div>
 
-                        <mat-form-field style="width: 85%;">
+                    <textarea [(ngModel)]="messageToSend" (keyup)="$event.keyCode == 13 ? sendMessage() : null" class="form-control type_msg" placeholder="Type your message... "></textarea>
 
-                            <input formControlName="message" matInput placeholder="New message" [disabled]="channel === null || channel === undefined" class="message-input" (keyup)="$event.keyCode == 13 ? sendMessage() : null">
-
-                        </mat-form-field>
-
-                        <button mat-raised-button [disabled]="channel === null || channel === undefined" style="width: 13%;" (click)="sendMessage()">Send</button>
-
-                    </form>
+                    <div class="input-group-append">
+                        <span (click)="sendMessage()" class="input-group-text send_btn"><i class="fas fa-location-arrow"></i></span>
+                    </div>
 
                 </div>
-
-                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#chatModal">Close</button>
             </div>
         </div>
     </div>

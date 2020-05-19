@@ -3,7 +3,6 @@ import { StompService } from 'ng2-stomp-service';
 import { MessageService } from 'src/app/core/services/message.service';
 import { ChanelService } from 'src/app/core/services/chanel.service';
 import { Message } from '../messages-modal/messages-modal.component';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-conversation-modal',
@@ -12,9 +11,9 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 })
 export class ConversationModalComponent implements OnInit {
 
-  form: FormGroup;
-
   filteredMessages: Array<Message> = [];
+
+  messageToSend:string;
 
   channel: string;
 
@@ -23,13 +22,9 @@ export class ConversationModalComponent implements OnInit {
 
   constructor(private stompService: StompService,
     private messageService: MessageService,
-    private channelService: ChanelService,
-    private fb: FormBuilder) { }
+    private channelService: ChanelService) { }
 
   ngOnInit() {
-    this.form = this.fb.group({
-      message: ['', [Validators.required]],
-    })
 
     this.channelService.getChannel().subscribe(channel => {
       this.channel = channel;
@@ -42,13 +37,14 @@ export class ConversationModalComponent implements OnInit {
   }
 
   sendMessage() {
-    if (this.f.message.value) {
+    if (this.messageToSend) {
       this.stompService.send('/app/messages', {
         'channel': this.channel,
         'sender': this.username,
-        'content': this.f.message.value
+        'content': this.messageToSend
       });
-      this.f.message.setValue('');
+
+      this.messageToSend = '';
       this.scrollToBottom();
     }
   }
@@ -61,9 +57,5 @@ export class ConversationModalComponent implements OnInit {
   scrollToBottom() {
     const msgContainer = document.getElementById('msg-container');
     msgContainer.scrollTop =msgContainer.scrollHeight - msgContainer.clientHeight;
-  }
-
-  get f() {
-    return this.form.controls;
   }
 }

@@ -40,17 +40,19 @@ export class MessageService {
             .subscribe(
                 data => {
                     this.messages = data['content'].sort(byDateAsc);;
-
-                    console.log(this.messages);
                     this.msgs.next(this.messages);
                 }
             );
     }
 
-    sendReadReceipt(channelId: string, username: string) {
+    sendReadReceipt(channelId: string, sender: string) {
+
         this.http.post(`${settings.baseUrl}/api/messages/read`, {
             channel: channelId,
-            username: username
+            username: sender
+        })
+        .subscribe(data => {
+            console.log(data);
         });
     }
 
