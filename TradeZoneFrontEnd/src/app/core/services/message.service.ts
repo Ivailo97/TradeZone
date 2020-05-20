@@ -39,6 +39,7 @@ export class MessageService {
         this.getMessagesForChanel(channel)
             .subscribe(
                 data => {
+                    console.log("im first here");
                     this.messages = data['content'].sort(byDateAsc);;
                     this.msgs.next(this.messages);
                 }
@@ -56,7 +57,7 @@ export class MessageService {
         });
     }
 
-    getMessages(): Observable<any> {
+    getMessages(): Observable<Array<Message>> {
         return this.msgs.asObservable();
     }
 }

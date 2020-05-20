@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, HostListener } from '@angular/core';
+import { Component, OnInit, Input, HostListener } from '@angular/core';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { StompService } from 'ng2-stomp-service';
 import { ChanelService } from 'src/app/core/services/chanel.service';
@@ -11,7 +11,7 @@ export interface Message {
   content: string;
   timestamp?: number;
   readDate?: number;
-  senderAvatarUrl?:string;
+  senderAvatarUrl?: string;
 }
 
 export interface ConversationUser {
@@ -35,15 +35,11 @@ export class MessagesModalComponent implements OnInit {
   @Input()
   username: string;
 
-  @Output()
-  receiverUpdated = new EventEmitter<string>();
-
   users: Array<ConversationUser> = [];
   highlightedUsers: Array<string> = [];
   newConnectedUsers: Array<string> = [];
   channel: string;
-  receiver: string;
-
+  receiver: ConversationUser;
 
   constructor(private authService: AuthService,
     private stompService: StompService,
@@ -70,23 +66,22 @@ export class MessagesModalComponent implements OnInit {
 
   @HostListener('window:focus', [])
   sendReadReceipt() {
-    if (this.channel != null && this.receiver != null) {
-      this.messageService.sendReadReceipt(this.channel, this.receiver);
+    if (this.channel != null && this.receiver && this.receiver != null) {
+      this.messageService.sendReadReceipt(this.channel, this.receiver.userUsername);
     }
   }
 
-  startChatWithUser(user) {
+  startChatWithUser(user: ConversationUser) {
     const channelId = ChanelService.createChannel(this.username, user.userUsername);
     this.channelService.refreshChannel(channelId);
-    this.receiver = user.userUsername;
+    this.receiver = user
     this.highlightedUsers = this.highlightedUsers.filter(u => u !== user.userUsername);
-    this.receiverUpdated.emit(user.userUsername);
     this.messageService.sendReadReceipt(channelId, user.userUsername);
   }
 
-  getUserItemClass(user): string {
+  getUserItemClass(user: ConversationUser): string {
     let classes: string = 'user-item';
-    if (user.userUsername === this.receiver) {
+    if (this.receiver && user.userUsername === this.receiver.userUsername) {
       classes += ' current-chat-user ';
     }
 
@@ -108,7 +103,6 @@ export class MessagesModalComponent implements OnInit {
   initUserEvents() {
 
     this.stompService.configure({ host: "http://localhost:8080/wechat", queue: { init: false } })
-
 
     this.stompService.startConnect().then(
       () => {
@@ -132,7 +126,6 @@ export class MessagesModalComponent implements OnInit {
           this.users.push(res);
           const channelId = ChanelService.createChannel(this.username, res.userUsername);
           if (this.channel === channelId) {
-            this.receiverUpdated.emit('');
             this.channelService.removeChannel();
           }
         });
@@ -159,7 +152,7 @@ export class MessagesModalComponent implements OnInit {
         this.showNotification(res);
       } else {
         // send read receipt for the channel
-        this.messageService.sendReadReceipt(this.channel, otherUser.username);
+        this.messageService.sendReadReceipt(this.channel, otherUser.userUsername);
       }
     });
 
@@ -170,8 +163,7 @@ export class MessagesModalComponent implements OnInit {
     const snackBarRef = this.snackBar.open('New message from ' + message.sender, 'Show', { duration: 3000 });
     this.highlightedUsers.push(message.sender);
     snackBarRef.onAction().subscribe(() => {
-      this.receiver = message.sender;
-      this.receiverUpdated.emit(message.sender);
+      this.receiver = this.users.find(x => x.userUsername === message.sender);
       this.channel = ChanelService.createChannel(this.username, message.sender);
       this.channelService.refreshChannel(this.channel);
     });

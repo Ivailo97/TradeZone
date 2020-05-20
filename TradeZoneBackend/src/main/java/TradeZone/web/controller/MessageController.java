@@ -23,9 +23,7 @@ public class MessageController {
     @GetMapping(value = "/{channelId}")
     public Page<ChatRestModel> findMessages(Pageable pageable, @PathVariable("channelId") String channelId) {
 
-
         Page<ChatMessage> messages = messageRepository.findAllByChannelOrderByTimestampDesc(channelId, pageable);
-
 
         return messages
                 .map(x -> {
@@ -38,9 +36,6 @@ public class MessageController {
 
     @PostMapping("/read")
     public void sendReadReceipt(@RequestBody ReadReceiptRequest request) {
-
-        System.out.println();
-
         messageRepository.sendReadReceipt(request.getChannel(), request.getUsername());
     }
 

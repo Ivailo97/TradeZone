@@ -19,8 +19,6 @@ const emptyCollectionUrl = 'https://res.cloudinary.com/knight-cloud/image/upload
 })
 export class ProfileComponent implements OnInit {
 
-  receiver: string;
-
   selectedFile: File = null;
 
   advertisementToModifyId: number;
@@ -69,10 +67,6 @@ export class ProfileComponent implements OnInit {
     this.profileService.refreshNeeded$.subscribe(() => this.loadProfile())
     this.loadProfile();
 
-  }
-
-  changeReceiver(event) {
-    this.receiver = event;
   }
 
   private loadProfile() {

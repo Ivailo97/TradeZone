@@ -4,58 +4,7 @@ html {
     line-height: 30px;
     padding: 0px;
     margin: 0px;
-}
-
-.header {
-    font-size: 26px;
-    margin: 0 auto;
-    text-align: center;
-    color: #9F6905;
-    font-weight: lighter;
-    background-color: #f0f0f0;
-    height: 50px;
-    line-height: 50px;
-    border-bottom: 1px solid #9F6905;
-}
-
-.container {
-    width: 450px;
-    cursor: default;
-    margin: 20px auto;
-    max-height: 350px;
-    overflow-y: scroll;
-}
-
-.container::-webkit-scrollbar {
-    width: 3px;
-    max-width: 3px;
-    height: auto;
-    max-height: 8px;
-}
-
-.container::-webkit-scrollbar-thumb {
-    background: #f0f0f0;
-    border-radius: 5px;
-    max-width: 3px;
-}
-
-.container::-webkit-scrollbar-track {
-    background: #9F6905;
-    border-radius: 5px;
-}
-
-.Area {
-    margin: 0 auto;
-    width: 400px;
-    background-color: rgba(240, 240, 240, 0.2);
-    display: table;
-    padding: 5px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-}
-
-.L {
-    float: left;
+    height: 100%;
 }
 
 img {
@@ -76,10 +25,6 @@ img:hover {
     cursor: pointer;
 }
 
-.R {
-    float: right;
-}
-
 .text {
     color: #a4a4a4;
     font-family: tahoma;
@@ -94,132 +39,109 @@ img:hover {
     padding: 5px;
 }
 
-.Area textarea {
-    font-size: 12px;
-    width: 90%;
-    max-width: 90%;
-    min-width: 90%;
-    padding: 5%;
-    border-radius: 5px;
-    border: 1px solid #f0f0f1;
-    max-height: 50px;
-    height: 50px;
-    min-height: 50px;
-    background-color: #333;
-    color: #fff;
-    outline: none;
-    border: 1px solid transparent;
-    resize: none;
+.card {
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4) !important;
 }
 
-.Area textarea:focus {
-    color: #333;
-    border: 1px solid #ccc;
-    -webkit-transition: all 1.5s;
-    -moz-transition: all 1.5s;
-    transition: all 1.5s;
-    background-color: #fff;
+.contacts_body {
+    padding: 0.75rem 0 !important;
+    overflow-y: auto;
+    white-space: nowrap;
 }
 
-.Area .note {
-    color: #9F6905;
+.msg_card_body {
+    overflow-y: auto;
+}
+
+.card-header {
+    border-bottom: 0 !important;
+}
+
+.card-footer {
+    border-top: 0 !important;
+}
+
+.search {
+    border-radius: 15px 0 0 15px !important;
+    background-color: rgba(0, 0, 0, 0.3) !important;
+    border: 0 !important;
+    color: white !important;
+}
+
+.search:focus {
+    box-shadow: none !important;
+    outline: 0px !important;
+}
+
+.search_btn {
+    border-radius: 0 15px 15px 0 !important;
+    background-color: rgba(0, 0, 0, 0.3) !important;
+    border: 0 !important;
+    color: white !important;
+    cursor: pointer;
+}
+
+.contacts {
+    list-style: none;
+    padding: 0;
+}
+
+.contacts li {
+    width: 100% !important;
+    padding: 5px 10px;
+    margin-bottom: 15px !important;
+}
+
+.active {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.user_img {
+    height: 70px;
+    width: 70px;
+    border: 1.5px solid #f5f6fa;
+}
+
+.img_cont {
+    position: relative;
+    height: 70px;
+    width: 70px;
+}
+
+.online_icon {
+    position: absolute;
+    height: 15px;
+    width: 15px;
+    background-color: #4cd137;
+    border-radius: 50%;
+    bottom: 0.2em;
+    right: 0.4em;
+    border: 1.5px solid white;
+}
+
+.offline {
+    background-color: #c23616 !important;
+}
+
+.user_info {
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 15px;
+}
+
+.user_info span {
+    font-size: 20px;
+    color: white;
+}
+
+.user_info p {
     font-size: 10px;
+    color: rgba(255, 255, 255, 0.6);
 }
 
-.R .tooltip {
-    font-size: 10px;
-    position: absolute;
-    background-color: #fff;
-    padding: 5px;
-    border-radius: 5px;
-    border: 2px solid #9F6905;
-    margin-left: 70px;
-    margin-top: -70px;
-    display: none;
-    color: #545454;
-}
-
-.R .tooltip:before {
-    content: '';
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    border: 5px solid transparent;
-    border-right-color: #9F6905;
-    margin-top: 10px;
-    margin-left: -17px;
-}
-
-.R:hover .tooltip {
-    display: block;
-}
-
-.L .tooltip {
-    font-size: 10px;
-    position: absolute;
-    background-color: #fff;
-    padding: 5px;
-    border-radius: 5px;
-    border: 2px solid #9F6905;
-    margin-left: 70px;
-    margin-top: -70px;
-    display: none;
-    color: #545454;
-}
-
-.L .tooltip:before {
-    content: '';
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    border: 5px solid transparent;
-    border-right-color: #9F6905;
-    margin-top: 10px;
-    margin-left: -17px;
-}
-
-.L:hover .tooltip {
-    display: block;
-}
-
-a {
-    text-decoration: none;
-}
-
-.Area input[type=button] {
-    font-size: 12px;
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid #f0f0f1;
-    background-color: #333;
-    color: #fff;
-    outline: none;
-    border: 1px solid transparent;
-    float: left;
-}
-
-.Area input[type=button]:hover {
-    color: #fff;
-    border: 1px solid #ccc;
-    -webkit-transition: all 1.5s;
-    -moz-transition: all 1.5s;
-    transition: all 1.5s;
-    background-color: #9F6905;
-}
-
-.validation {
-    float: left;
-    background-color: #ccc;
-    border-radius: 5px;
-    padding: 5px;
-    font-size: 12px;
-    line-height: 14px;
-    height: 0px;
-    margin-left: 5px;
-    display: none;
-}
-
-br {
-    clear: both;
-    height: 20px;
+@media(max-width: 576px) {
+    .contacts_card {
+        margin-bottom: 15px !important;
+    }
 }

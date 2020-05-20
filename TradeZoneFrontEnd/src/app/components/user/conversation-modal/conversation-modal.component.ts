@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { StompService } from 'ng2-stomp-service';
 import { MessageService } from 'src/app/core/services/message.service';
 import { ChanelService } from 'src/app/core/services/chanel.service';
-import { Message } from '../messages-modal/messages-modal.component';
+import { Message, ConversationUser } from '../messages-modal/messages-modal.component';
 
 @Component({
   selector: 'app-conversation-modal',
@@ -13,12 +13,15 @@ export class ConversationModalComponent implements OnInit {
 
   filteredMessages: Array<Message> = [];
 
-  messageToSend:string;
+  messageToSend: string;
 
   channel: string;
 
   @Input()
   username: string;
+
+  @Input()
+  receiver: ConversationUser;
 
   constructor(private stompService: StompService,
     private messageService: MessageService,
@@ -32,7 +35,7 @@ export class ConversationModalComponent implements OnInit {
     });
 
     this.messageService.getMessages().subscribe(messages => {
-      this.filteredMessages = messages;
+      this.filteredMessages = Array.from(messages).filter(x => x.channel === this.channel);
     });
   }
 
@@ -56,6 +59,6 @@ export class ConversationModalComponent implements OnInit {
 
   scrollToBottom() {
     const msgContainer = document.getElementById('msg-container');
-    msgContainer.scrollTop =msgContainer.scrollHeight - msgContainer.clientHeight;
+    msgContainer.scrollTop = msgContainer.scrollHeight - msgContainer.clientHeight;
   }
 }
