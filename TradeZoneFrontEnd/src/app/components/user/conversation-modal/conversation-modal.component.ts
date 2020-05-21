@@ -13,6 +13,8 @@ export class ConversationModalComponent implements OnInit {
 
   filteredMessages: Array<Message> = [];
 
+  showMenu: boolean = false;
+
   messageToSend: string;
 
   channel: string;
@@ -28,7 +30,6 @@ export class ConversationModalComponent implements OnInit {
     private channelService: ChanelService) { }
 
   ngOnInit() {
-
     this.channelService.getChannel().subscribe(channel => {
       this.channel = channel;
       this.filterMessages();
@@ -50,6 +51,10 @@ export class ConversationModalComponent implements OnInit {
       this.messageToSend = '';
       this.scrollToBottom();
     }
+  }
+
+  toggleMenu() {
+    this.showMenu = !this.showMenu;
   }
 
   filterMessages() {

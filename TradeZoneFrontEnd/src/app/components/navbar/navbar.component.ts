@@ -3,7 +3,7 @@ import { LoginService } from 'src/app/core/services/login.service';
 import { TokenStorageService } from 'src/app/core/services/token-storage.service';
 import { Router } from '@angular/router';
 import { NavigationLink } from 'src/app/core/models/nav-link';
-import { AuthService } from 'src/app/core/services/auth.service';
+import { ProfileService } from 'src/app/core/services/profile.service';
 
 const navLinks = [new NavigationLink('/advertisement/all', 'Advertisements'),
 new NavigationLink('/home', 'Home'),
@@ -25,7 +25,7 @@ export class NavbarComponent implements OnInit {
   constructor(private tokenStorage: TokenStorageService,
     private loginService: LoginService,
     private router: Router,
-    private authService: AuthService) {
+    private profileService: ProfileService) {
 
     this.loginService.getRoles().subscribe(data => {
 
@@ -46,9 +46,9 @@ export class NavbarComponent implements OnInit {
   }
 
   logout() {
+    this.profileService.disconnect().subscribe(res => console.log(res));
     this.tokenStorage.signOut();
     this.loginService.clearRoles();
-    this.authService.logout();
     this.router.navigate(['auth/signin'])
   }
 }

@@ -120,6 +120,18 @@ img:hover {
     border: 1.5px solid white;
 }
 
+.current-chat-user {
+    background-color: khaki;
+}
+
+.new-message {
+    background-color: mediumspringgreen
+}
+
+li:hover:not(.current-chat-user) {
+    background-color: lightsteelblue
+}
+
 .offline {
     background-color: #c23616 !important;
 }

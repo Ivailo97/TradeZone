@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-
 import { AuthLoginInfo } from '../../../core/models/login-info';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { TokenStorageService } from 'src/app/core/services/token-storage.service';
@@ -42,13 +41,10 @@ export class LoginComponent implements OnInit {
         this.tokenStorage.saveToken(data['token']);
         this.tokenStorage.saveUsername(data.username);
         this.tokenStorage.saveAuthorities(data.authorities);
-
         this.logingService.sendRoles(data.authorities);
         this.router.navigate(['/home']);
-
       },
       error => {
-        console.log(error);
         this.errorMessage = error.error.message;
       }
     );

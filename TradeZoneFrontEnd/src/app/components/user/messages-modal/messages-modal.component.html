@@ -9,9 +9,9 @@
             <div class="card mb-sm-3 mb-md-0 contacts_card">
                 <div class="card-header">
                     <div class="input-group">
-                        <input type="text" placeholder="Search..." name="" class="form-control search">
+                        <input type="text" [(ngModel)]="searchedUser" placeholder="Search..." (keyup)="$event.keyCode == 13 ? searchUser() : null" name="" class="form-control search">
                         <div class="input-group-prepend">
-                            <span class="input-group-text search_btn"><i class="fas fa-search"></i></span>
+                            <span (click)="searchUser()" class="input-group-text search_btn"><i class="fas fa-search"></i></span>
                         </div>
                     </div>
                 </div>
@@ -21,13 +21,16 @@
                             <div class="d-flex bd-highlight">
                                 <div class="img_cont">
                                     <img src="{{user.photoUrl}}" class="rounded-circle user_img">
-                                    <span class="online_icon"></span>
+                                    <span class="online_icon" [ngClass]="user.connected ? '':'offline'"></span>
                                 </div>
                                 <div class="user_info">
                                     <span>{{user.firstName}} {{user.lastName}}</span>
-                                    <p>online</p>
+                                    <p>{{user.connected ? 'Online':'Offline'}}</p>
                                 </div>
                             </div>
+                        </li>
+                        <li *ngIf="getOtherUsers().length === 0">
+                            <h2 class="text-center">No results</h2>
                         </li>
                     </ul>
                 </div>

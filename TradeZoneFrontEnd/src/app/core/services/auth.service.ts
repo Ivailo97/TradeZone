@@ -20,7 +20,6 @@ export class AuthService {
 
   private loginUrl = apiBaseUrl + '/api/auth/signin';
   private signupUrl = apiBaseUrl + '/api/auth/signup';
-  private logoutUrl = apiBaseUrl + '/api/auth/logout';
   private getUsersUrl = apiBaseUrl + '/api/auth/listUsers'
 
   constructor(
@@ -44,7 +43,5 @@ export class AuthService {
     return this.http.get<Array<ConversationUser>>(this.getUsersUrl);
   }
 
-  logout() {
-    return this.http.post<void>(this.logoutUrl, this.tokenService.getUsername(), httpOptions);
-  }
+
 }

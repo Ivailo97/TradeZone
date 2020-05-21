@@ -11,6 +11,4 @@ public interface AuthenticationService extends UserDetailsService {
     ResponseMessage register(UserServiceModel user);
 
     JwtResponse login(UserServiceModel user);
-
-    void disconnect(String username);
 }

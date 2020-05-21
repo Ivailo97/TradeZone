@@ -1,9 +1,10 @@
-import { Component, OnInit, Input, HostListener } from '@angular/core';
+import { Component, OnInit, Input, HostListener, ViewChild } from '@angular/core';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { StompService } from 'ng2-stomp-service';
 import { ChanelService } from 'src/app/core/services/chanel.service';
 import { MessageService } from 'src/app/core/services/message.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ConversationModalComponent } from '../conversation-modal/conversation-modal.component';
 
 export interface Message {
   channel: string;
@@ -30,7 +31,11 @@ export interface ConversationUser {
 })
 export class MessagesModalComponent implements OnInit {
 
+  @ViewChild(ConversationModalComponent) conversation: ConversationModalComponent
+
   NEW_USER_LIFETIME: number = 1000 * 5;
+
+  searchedUser: string;
 
   @Input()
   username: string;
@@ -48,7 +53,11 @@ export class MessagesModalComponent implements OnInit {
     private messageService: MessageService) { }
 
   ngOnInit(): void {
+    this.initUsers();
+    this.channelService.getChannel().subscribe(channel => this.channel = channel);
+  }
 
+  private initUsers(): void {
     this.authService.findUsers()
       .subscribe(
         res => {
@@ -56,8 +65,16 @@ export class MessagesModalComponent implements OnInit {
           this.initUserEvents();
         }
       );
+  }
 
-    this.channelService.getChannel().subscribe(channel => this.channel = channel);
+  private initFilteredUsers(): void {
+    this.authService.findUsers()
+      .subscribe(
+        res => {
+          this.users = res.filter(x => this.fullNameIncludes(x));;
+          this.initUserEvents();
+        }
+      );
   }
 
   getOtherUsers(): Array<ConversationUser> {
@@ -82,7 +99,7 @@ export class MessagesModalComponent implements OnInit {
   getUserItemClass(user: ConversationUser): string {
     let classes: string = 'user-item';
     if (this.receiver && user.userUsername === this.receiver.userUsername) {
-      classes += ' current-chat-user ';
+      classes += ' current-chat-user';
     }
 
     if (this.highlightedUsers.indexOf(user.userUsername) >= 0) {
@@ -91,10 +108,6 @@ export class MessagesModalComponent implements OnInit {
 
     if (this.newConnectedUsers.indexOf(user.userUsername) >= 0) {
       classes += ' new-user';
-    }
-
-    if (!user.connected) {
-      classes += ' disconnected-user';
     }
 
     return classes;
@@ -117,6 +130,7 @@ export class MessagesModalComponent implements OnInit {
             ).bind(this), this.NEW_USER_LIFETIME);
             this.users = this.users.filter(item => item.userUsername !== res.userUsername);
             this.users.push(res);
+            this.updateConversationReceiver()
             this.subscribeToOtherUser(res);
           }
         });
@@ -124,14 +138,19 @@ export class MessagesModalComponent implements OnInit {
         this.stompService.subscribe('/channel/logout', res => {
           this.users = this.users.filter(item => item.userUsername !== res.userUsername);
           this.users.push(res);
-          const channelId = ChanelService.createChannel(this.username, res.userUsername);
-          if (this.channel === channelId) {
-            this.channelService.removeChannel();
-          }
+          this.updateConversationReceiver()
+          // const channelId = ChanelService.createChannel(this.username, res.userUsername);
+          // if (this.channel === channelId) {
+          //   this.channelService.removeChannel();
+          // }
         });
 
         this.subscribeToOtherUsers(this.users, this.username);
       });
+  }
+
+  private updateConversationReceiver(){
+    this.conversation.receiver = this.users.find(x => x.userUsername === this.conversation.receiver.userUsername)
   }
 
   removeNewUserBackground(username) {
@@ -168,4 +187,18 @@ export class MessagesModalComponent implements OnInit {
       this.channelService.refreshChannel(this.channel);
     });
   }
+
+  searchUser(): void {
+
+    if (this.searchedUser) {
+      this.initFilteredUsers()
+    } else {
+      this.initUsers();
+    }
+  }
+
+  private fullNameIncludes(user: ConversationUser): boolean {
+    return user.firstName.concat(` ${user.lastName}`).toLocaleLowerCase().includes(this.searchedUser.toLocaleLowerCase().trim())
+  }
+
 }

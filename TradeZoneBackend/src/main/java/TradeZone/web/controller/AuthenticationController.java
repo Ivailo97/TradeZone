@@ -1,6 +1,5 @@
 package TradeZone.web.controller;
 
-import TradeZone.data.model.entity.UserProfile;
 import TradeZone.data.model.view.ProfileConversationViewModel;
 import TradeZone.data.repository.UserProfileRepository;
 import lombok.AllArgsConstructor;
@@ -54,15 +53,10 @@ public class AuthenticationController {
         return new ResponseEntity<>(responseMessage, status);
     }
 
-    @PostMapping(value = "/logout", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void logout(@RequestBody String username) {
-        authService.disconnect(username);
-    }
-
     @GetMapping(value = "/listUsers", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Iterable<ProfileConversationViewModel> findConnectedUsers(Principal principal) {
-        return profileRepository.findAllByConnectedTrue().stream()
+    public Iterable<ProfileConversationViewModel> findUsers(Principal principal) {
+        return profileRepository.findAll()
+                .stream()
                 .filter(x -> !x.getUser().getUsername().equals(principal.getName()))
                 .map(x -> mapper.map(x, ProfileConversationViewModel.class))
                 .collect(Collectors.toList());

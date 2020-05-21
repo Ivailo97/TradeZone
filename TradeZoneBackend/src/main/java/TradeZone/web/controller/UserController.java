@@ -46,7 +46,6 @@ public class UserController {
     @GetMapping("/profile/is-completed")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Boolean> profileIsCompleted(@RequestParam String username) {
-
         return ResponseEntity.ok(profileService.isCompleted(username));
     }
 
@@ -113,6 +112,12 @@ public class UserController {
                     return viewModel;
                 })
                 .collect(Collectors.toList()), HttpStatus.ACCEPTED);
+    }
+
+    @PostMapping("/profile/disconnect")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void logout(@RequestBody String username) {
+        profileService.disconnect(username);
     }
 
     private List<AdvertisementListViewModel> mapServiceAdvertisementsToView(List<AdvertisementServiceModel> models) {

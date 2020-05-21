@@ -2,8 +2,10 @@ package TradeZone.service;
 
 import TradeZone.data.model.entity.*;
 import TradeZone.data.model.service.*;
+import TradeZone.data.model.view.ProfileConversationViewModel;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +33,8 @@ public class ProfileServiceImpl implements ProfileService {
 
     private static final String SUCCESS = "SUCCESS";
 
+    private final SimpMessagingTemplate template;
+
     private final ProfileUpdateValidationService profileUpdateValidationService;
 
     private final PhotoService photoService;
@@ -47,6 +51,29 @@ public class ProfileServiceImpl implements ProfileService {
     public Optional<ProfileServiceModel> getUserProfileByUsername(String username) {
         return userProfileRepository.findByUserUsername(username)
                 .map(x -> mapper.map(x, ProfileServiceModel.class));
+    }
+
+
+    @Override
+    public ProfileServiceModel disconnect(String username) {
+
+        UserProfile userProfile = userProfileRepository
+                .findByUserUsername(username)
+                .orElseThrow();
+
+        if (!userProfile.getConnected()) {
+            return null;
+        }
+
+        userProfile.setConnected(false);
+
+        userProfile = userProfileRepository.save(userProfile);
+
+        ProfileConversationViewModel viewModel = mapper.map(userProfile, ProfileConversationViewModel.class);
+
+        template.convertAndSend("/channel/logout", viewModel);
+
+        return mapper.map(userProfile, ProfileServiceModel.class);
     }
 
     @Override

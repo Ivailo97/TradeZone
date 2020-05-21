@@ -5,7 +5,6 @@ import TradeZone.data.model.rest.*;
 import TradeZone.data.model.rest.search.*;
 import TradeZone.service.MappingService;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -43,12 +42,14 @@ public class AdvertisementController {
 
         // micro service async call done sync;
         // like async and await in javascript;
+
 //        Object obj = builder.build()
 //                .get()
 //                .uri("https://{registeredMicroserviceName}/{servicePath}")
 //                .retrieve()
 //                .bodyToMono(Object.class)
 //                .block();
+
         //block = await;
 
         List<AdvertisementServiceModel> advertisements = advertisementService.getAllByFullSearch(search).getContent();
@@ -76,7 +77,6 @@ public class AdvertisementController {
 
     @PutMapping("/edit")
     public ResponseEntity<?> editConfirm(@RequestBody AdvertisementEditedModel editedModel) {
-
         advertisementService.edit(editedModel);
         return new ResponseEntity<>(HttpStatus.OK);
     }

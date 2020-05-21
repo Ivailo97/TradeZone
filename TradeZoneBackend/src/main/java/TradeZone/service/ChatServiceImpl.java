@@ -3,7 +3,6 @@ package TradeZone.service;
 import TradeZone.data.model.entity.ChatMessage;
 import TradeZone.data.model.entity.UserProfile;
 import TradeZone.data.model.rest.chat.ChatRestModel;
-import TradeZone.data.model.service.ChatMessageServiceModel;
 import TradeZone.data.repository.ChatMessageRepository;
 import TradeZone.data.repository.UserProfileRepository;
 import lombok.AllArgsConstructor;

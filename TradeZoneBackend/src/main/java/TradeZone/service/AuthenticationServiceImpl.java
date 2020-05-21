@@ -113,25 +113,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return new JwtResponse(jwt, userDetails.getUsername(), userDetails.getAuthorities());
     }
 
-    @Override
-    public void disconnect(String username) {
 
-        UserProfile userProfile = userProfileRepository
-                .findByUserUsername(username)
-                .orElseThrow();
-
-        if (!userProfile.getConnected()) {
-            return;
-        }
-
-        userProfile.setConnected(false);
-
-        userProfile = userProfileRepository.save(userProfile);
-
-        ProfileConversationViewModel viewModel = mapper.map(userProfile,ProfileConversationViewModel.class);
-
-        template.convertAndSend("/channel/logout", viewModel);
-    }
 
     private void connectIfNeeded(UserDetails user) {
 

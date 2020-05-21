@@ -9,6 +9,11 @@ import { PasswordUpdate } from '../models/password-update';
 import { Message } from '../models/message';
 
 const baseURL = 'http://localhost:8080/api/user/profile';
+const disconnectUrl = baseURL + '/disconnect';
+
+const httpOptions = {
+  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+};
 
 const httpFileOptions = {
   headers: new HttpHeaders({ 'enctype': 'multipart/form-data' })
@@ -74,6 +79,11 @@ export class ProfileService {
           this._refreshNeeded$.next();
         })
       );;;;
+  }
+
+  disconnect() {
+    const username = this.tokenStorageService.getUsername();
+    return this.http.post<void>(disconnectUrl, username);
   }
 
   get refreshNeeded$() {
