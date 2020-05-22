@@ -41,7 +41,9 @@ export class ConversationModalComponent implements OnInit {
   }
 
   sendMessage() {
-    if (this.messageToSend) {
+
+    if (this.messageToSend !== undefined && this.messageToSend !== null && this.messageToSend !== '') {
+
       this.stompService.send('/app/messages', {
         'channel': this.channel,
         'sender': this.username,

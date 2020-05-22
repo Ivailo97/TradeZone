@@ -20,6 +20,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { StompService } from 'ng2-stomp-service';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { StompService } from 'ng2-stomp-service';
   imports: [
     CommonModule,
     MatSnackBarModule,
+    MatTooltipModule,
     FormsModule,
     MatProgressBarModule,
     MatGridListModule,
