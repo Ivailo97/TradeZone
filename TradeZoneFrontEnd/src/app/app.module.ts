@@ -20,7 +20,7 @@ import { LoaderComponent } from './components/loader/loader.component';
 import { CategoryModule } from './components/category/category.module';
 import { TopCategoryModule } from './components/top-category/top-category.module';
 import { ErrorComponent } from './components/error/error.component';
-import {MatMenuModule} from '@angular/material/menu';
+import { MatMenuModule } from '@angular/material/menu';
 
 @NgModule({
 
@@ -37,7 +37,7 @@ import {MatMenuModule} from '@angular/material/menu';
     MatCardModule,
     MatTabsModule,
     CategoryModule,
-    TopCategoryModule
+    TopCategoryModule,
   ],
   declarations: [
     AppComponent,

@@ -19,6 +19,7 @@ new NavigationLink('auth/signin', 'Login'),
 })
 export class NavbarComponent implements OnInit {
 
+
   roles: string[];
   links: NavigationLink[];
 
@@ -46,9 +47,9 @@ export class NavbarComponent implements OnInit {
   }
 
   logout() {
+    this.loginService.clearRoles();
     this.profileService.disconnect().subscribe(res => console.log(res));
     this.tokenStorage.signOut();
-    this.loginService.clearRoles();
     this.router.navigate(['auth/signin'])
   }
 }

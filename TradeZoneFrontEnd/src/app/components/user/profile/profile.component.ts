@@ -19,6 +19,9 @@ const emptyCollectionUrl = 'https://res.cloudinary.com/knight-cloud/image/upload
 })
 export class ProfileComponent implements OnInit {
 
+  createdPaginationConfig = { id: 1, itemsPerPage: 2, currentPage: 1 };
+  likedPaginationConfig = { id: 2, itemsPerPage: 2, currentPage: 1 }
+
   selectedFile: File = null;
 
   advertisementToModifyId: number;
@@ -171,5 +174,13 @@ export class ProfileComponent implements OnInit {
 
   get p() {
     return this.changePasswordForm.controls;
+  }
+
+  changeCreatedPage(event) {
+    this.createdPaginationConfig.currentPage = event;
+  }
+
+  changeLikedPage(event) {
+    this.likedPaginationConfig.currentPage = event;
   }
 }

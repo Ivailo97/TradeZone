@@ -4,7 +4,6 @@
             <app-advertisement-modal-delete [advertisementId]="advertisementToModifyId"></app-advertisement-modal-delete>
             <app-advertisement-modal-edit [id]="advertisementToModifyId"></app-advertisement-modal-edit>
             <app-messages-modal [username]="userProfile?.userUsername"></app-messages-modal>
-
         </div>
         <div class="row">
             <div class="col-md-8">
@@ -52,12 +51,6 @@
                                                     <textarea formControlName="aboutMe" #aboutMe matInput placeholder="Lamborghini Mercy, Your chick she so thirsty, I 'm in that two seat Lambo."></textarea>
                                                     <mat-hint>{{aboutMe.value.length}} / 100</mat-hint>
                                                 </mat-form-field>
-                                                <!-- <div class="form-group">
-                                                        <div class="form-group">
-                                                            <label class="bmd-label-floating"> Lamborghini Mercy, Your chick she so thirsty, I'm in that two seat Lambo.</label>
-                                            <textarea class="form-control" rows="5"></textarea>
-                                    </div>
-                                </div> -->
                                             </div>
                                         </div>
                                         <div class="row">
@@ -114,17 +107,19 @@
                     </mat-tab>
                     <mat-tab label="Created">
                         <ng-template matTabContent>
-                            <div *ngIf="userProfile.createdAdvertisements.length != 0;else emptyCollection" class="row">
-                                <app-advertisement-info *ngFor="let advertisement of userProfile.createdAdvertisements" [advertisement]="advertisement" (emitId)="changeAdvertisementToModifyId($event)">
+                            <div *ngIf="userProfile.createdAdvertisements.length != 0;else emptyCollection" class="row d-flex justify-content-center">
+                                <app-advertisement-info *ngFor="let advertisement of userProfile.createdAdvertisements | paginate : createdPaginationConfig" [advertisement]="advertisement" (emitId)="changeAdvertisementToModifyId($event)">
                                 </app-advertisement-info>
+                                <pagination-controls id="{{createdPaginationConfig.id}}" (pageChange)="changeCreatedPage($event)"></pagination-controls>
                             </div>
                         </ng-template>
                     </mat-tab>
-                    <mat-tab label=" Favorites ">
+                    <mat-tab label="Favorites">
                         <ng-template matTabContent>
-                            <div *ngIf="userProfile.favorites.length != 0;else emptyCollection" class="row ">
-                                <app-advertisement-info *ngFor="let advertisement of userProfile.favorites " [advertisement]="advertisement ">
+                            <div *ngIf="userProfile.favorites.length != 0;else emptyCollection" class="row d-flex justify-content-center">
+                                <app-advertisement-info *ngFor="let advertisement of userProfile.favorites | paginate : likedPaginationConfig " [advertisement]="advertisement">
                                 </app-advertisement-info>
+                                <pagination-controls id="{{likedPaginationConfig.id}}" (pageChange)="changeLikedPage($event)"></pagination-controls>
                             </div>
                         </ng-template>
                     </mat-tab>
@@ -298,13 +293,10 @@
                 </div>
             </div>
         </div>
-
         <div data-toggle="modal" data-target="#fullHeightModalRight" class="btn-chat" id="livechat-compact-container" style="visibility: visible; opacity: 1;">
             <div class="btn-holder">
                 <button>Live chat</button>
             </div>
         </div>
-
-
     </div>
 </div>
