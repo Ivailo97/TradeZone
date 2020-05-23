@@ -35,8 +35,12 @@ export class AuthService {
     return this.http.post<string>(this.signupUrl, info, httpOptions);
   }
 
-  isAuthenticated() {
+  isAuthenticated(): boolean {
     return this.tokenService.getToken() !== null;
+  }
+
+  isAdmin(): boolean {
+    return this.tokenService.getAuthorities().includes('ROLE_ADMIN');
   }
 
   findUsers(): Observable<Array<ConversationUser>> {

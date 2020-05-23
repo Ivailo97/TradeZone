@@ -23,9 +23,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { MatIconModule } from '@angular/material/icon';
 import { CategoryModule } from '../category/category.module';
-import {MatListModule} from '@angular/material/list';
-import {MatCardModule} from '@angular/material/card';
-import { SendMessageModalComponent } from './send-message-modal/send-message-modal.component';
+import { MatListModule } from '@angular/material/list';
+import { MatCardModule } from '@angular/material/card';
 
 
 @NgModule({
@@ -40,7 +39,6 @@ import { SendMessageModalComponent } from './send-message-modal/send-message-mod
     ImageDeleteModalComponent,
     ImageUploadModalComponent,
     AdvertisementModalEditComponent,
-    SendMessageModalComponent,
   ],
   imports: [MatCardModule,
     MatListModule,
@@ -59,7 +57,7 @@ import { SendMessageModalComponent } from './send-message-modal/send-message-mod
     NgxPaginationModule,
     MatTooltipModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   exports: [
     AdvertisementListInfoComponent,

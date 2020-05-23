@@ -1,17 +1,19 @@
 import { RouterModule, Routes } from '@angular/router';
 import { AdminComponent } from './admin/admin.component';
 import { ProfileComponent } from './profile/profile.component';
+import { AdminGuard } from 'src/app/core/guards/admin.guard';
 
 const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'tank'
+    redirectTo: 'home'
   },
 
   {
     path: 'admin',
-    component: AdminComponent
+    component: AdminComponent,
+    canActivate: [AdminGuard]
   },
 
   {
