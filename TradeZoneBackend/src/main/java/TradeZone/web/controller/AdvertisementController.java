@@ -35,7 +35,7 @@ public class AdvertisementController {
     private final PhotoService photoService;
     private final MappingService mappingService;
 
-  //  private final WebClient.Builder builder;
+    //  private final WebClient.Builder builder;
 
     @GetMapping("/search")
     public ResponseEntity<List<AdvertisementListViewModel>> filterByCategoryAndTitle(FullSearchRequest search) {
@@ -59,6 +59,11 @@ public class AdvertisementController {
     @GetMapping("/count")
     public ResponseEntity<Long> countByAll(SearchRequest params) {
         return ResponseEntity.ok(advertisementService.getCountBySearch(params));
+    }
+
+    @GetMapping("/created-by/{username}")
+    public ResponseEntity<List<AdvertisementListViewModel>> getByCreator(SpecificSearch specificSearch, @PathVariable String username) {
+        return ResponseEntity.ok(mappingService.mapServiceAdvertisementsToView(advertisementService.findByCreatorUsernameExcept(specificSearch, username)));
     }
 
     @PostMapping("/create")
@@ -92,7 +97,7 @@ public class AdvertisementController {
     public ResponseEntity<AdvertisementDetailsViewModel> details(@PathVariable Long id) {
         AdvertisementServiceModel serviceModel = advertisementService.getById(id);
         AdvertisementDetailsViewModel viewModel = mappingService.getMapper().map(serviceModel, AdvertisementDetailsViewModel.class);
-     //   viewModel.setCreator(serviceModel.getCreator().getUser().getUsername());
+        //   viewModel.setCreator(serviceModel.getCreator().getUser().getUsername());
         viewModel.setImages(mappingService.getMapper().map(serviceModel.getPhotos(), PhotoViewModel[].class));
         return ResponseEntity.ok(viewModel);
     }

@@ -1,4 +1,4 @@
-<nav mat-tab-nav-bar class="site-header">
+<!-- <nav mat-tab-nav-bar class="site-header">
 
     <div class="container d-flex flex-column flex-md-row justify-content-between">
         <a mat-tab-link routerLink="/home" routerLinkActive #rla="routerLinkActive" [active]="rla.isActive">
@@ -23,4 +23,89 @@
           </a>
     </div>
 
-</nav>
+</nav> -->
+
+<header class="header">
+    <div class="container">
+        <nav mat-tab-nav-bar class="navbar">
+            <div class="wrapper">
+                <span> <a mat-tab-link class="logo" routerLink="/home" routerLinkActive #rla="routerLinkActive">
+                  TradeZone
+                </a></span>
+                <ul class="menu">
+                    <li>
+                        <a mat-tab-link class="menu-link" routerLink="/home" routerLinkActive #rla="routerLinkActive" [active]="rla.isActive">
+                        Home
+                      </a>
+                    </li>
+                    <li>
+                        <a mat-tab-link class="menu-link" [routerLink]="['/advertisements/category','All']" *ngIf="roles?.includes('ROLE_USER')" routerLinkActive #rla="routerLinkActive" [active]="rla.isActive">
+                        Advertisements
+                      </a>
+                    </li>
+                    <li>
+                        <a mat-tab-link class="menu-link" routerLink="/user/profile" *ngIf="roles?.includes('ROLE_USER')" routerLinkActive #rla="routerLinkActive" [active]="rla.isActive">
+                        Profile
+                      </a>
+                    </li>
+                    <li>
+                        <a mat-tab-link class="menu-link" routerLink="/user/admin" *ngIf="roles?.includes('ROLE_ADMIN')" routerLinkActive #rla="routerLinkActive" [active]="rla.isActive">
+                        Admin
+                      </a>
+                    </li>
+                    <li>
+                        <a mat-tab-link class="menu-link" *ngIf="roles?.includes('ROLE_USER')" (click)="logout()" routerLinkActive #rla="routerLinkActive" [active]="rla.isActive">
+                        Logout
+                      </a>
+                    </li>
+
+                    <li>
+                        <a mat-tab-link class="menu-link" routerLink="auth/signin" *ngIf="!roles" routerLinkActive #rla="routerLinkActive" [active]="rla.isActive">
+                        Login
+                       </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="toggle" [ngClass]="status ? 'on' : ''" (click)="toggleStatus()">
+                <div class="span span-one"></div>
+                <div class="span span-two"></div>
+                <div class="span span-three"></div>
+            </div>
+        </nav>
+        <div class="mobile" [ngClass]="status ? 'active' : ''" (click)="toggleStatus()">
+            <ul class="menu">
+                <li class="menu-item">
+                    <a class="menu-link" routerLink="/home">
+                    Home
+                  </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" [routerLink]="[ '/advertisements/category', 'All']" *ngIf="roles?.includes( 'ROLE_USER')">
+                    Advertisements
+                  </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" routerLink="/user/profile" *ngIf="roles?.includes( 'ROLE_USER')">
+                    Profile
+                  </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" routerLink="/user/admin" *ngIf="roles?.includes( 'ROLE_ADMIN')">
+                    Admin
+                  </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" *ngIf="roles?.includes( 'ROLE_USER')" (click)="logout()">
+                    Logout
+                  </a>
+                </li>
+
+                <li class="menu-item">
+                    <a class="menu-link" routerLink="auth/signin" *ngIf="!roles">
+                    Login
+                   </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>

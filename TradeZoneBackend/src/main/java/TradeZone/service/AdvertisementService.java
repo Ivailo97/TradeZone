@@ -5,6 +5,8 @@ import TradeZone.data.model.rest.search.*;
 import TradeZone.data.model.service.AdvertisementServiceModel;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface AdvertisementService {
 
     Page<AdvertisementServiceModel> getAllByFullSearch(FullSearchRequest search);
@@ -22,4 +24,6 @@ public interface AdvertisementService {
     AdvertisementServiceModel updateViews(Long id, ViewsUpdate views);
 
     AdvertisementServiceModel deletePhoto(DeleteAdvImageRequest deleteRequest);
+
+    List<AdvertisementServiceModel> findByCreatorUsernameExcept(SpecificSearch specificSearch, String username);
 }

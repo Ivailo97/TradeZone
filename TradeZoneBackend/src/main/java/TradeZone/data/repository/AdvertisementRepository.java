@@ -14,6 +14,8 @@ public interface AdvertisementRepository extends PagingAndSortingRepository<Adve
 
     Page<Advertisement> findAllByPriceBetween(BigDecimal min, BigDecimal max, Pageable pageRequest);
 
+    Page<Advertisement> findAllByCreatorUserUsernameAndIdNot(String name, Pageable pageRequest, Long id);
+
     Page<Advertisement> findAllByPriceBetweenAndCondition(BigDecimal min, BigDecimal max, Condition condition, Pageable pageRequest);
 
     Page<Advertisement> findAllByCategoryNameAndPriceBetweenAndCondition(String category, BigDecimal min, BigDecimal max, Condition condition, Pageable pageable);

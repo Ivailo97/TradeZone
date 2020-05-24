@@ -9,15 +9,6 @@
     /* Footer height */
 }
 
-footer {
-    position: absolute;
-    background-color: rgba(29, 236, 140, 0.774);
-    bottom: 0;
-    width: 100%;
-    height: 2.5rem;
-    /* Footer height */
-}
-
 * {
     font-family: cursive;
 }
@@ -27,7 +18,8 @@ body {
     height: 100%;
     margin: 0;
     font-family: Roboto, "Helvetica Neue", sans-serif;
-    background-color: whitesmoke;
+    background-color: gray;
+    overflow-x: hidden;
 }
 
 .cdk-global-overlay-wrapper,

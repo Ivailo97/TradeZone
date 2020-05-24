@@ -20,6 +20,7 @@ new NavigationLink('auth/signin', 'Login'),
 export class NavbarComponent implements OnInit {
 
 
+  status: boolean = false;
   roles: string[];
   links: NavigationLink[];
 
@@ -37,6 +38,11 @@ export class NavbarComponent implements OnInit {
       }
 
     })
+  }
+
+  toggleStatus(){
+
+    this.status = !this.status;
   }
 
   ngOnInit() {

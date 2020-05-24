@@ -35,6 +35,10 @@ export class AdvertisementService {
     return this._detailsRefreshNeeded$;
   }
 
+  getCreatedByUser(username: string, page: number, excludeId: number): Observable<AdvertisementInfoList[]> {
+    return this.http.get<AdvertisementInfoList[]>(`${this.baseURL}/created-by/${username}?page=${page}&excludeId=${excludeId}`);
+  }
+
   getAdvertisement(id: number): Observable<AdvertisementDetails> {
     return this.http.get<AdvertisementDetails>(`${this.baseURL}/details/${id}`);
   }

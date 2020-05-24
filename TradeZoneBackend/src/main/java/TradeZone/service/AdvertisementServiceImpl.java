@@ -23,6 +23,7 @@ import TradeZone.data.repository.UserProfileRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -182,7 +183,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         UserProfile userProfile = userProfileRepository.findByUserUsername(restModel.getCreator())
                 .orElseThrow(() -> new EntityNotFoundException(String.format(PROFILE_NOT_FOUND, restModel.getCreator())));
 
-        if (!userProfile.getIsCompleted()){
+        if (!userProfile.getIsCompleted()) {
             throw new ProfileNotCompletedException(PROFILE_NOT_COMPLETED);
         }
 
@@ -314,6 +315,18 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         advertisementRepository.save(advertisement);
 
         return modelMapper.map(advertisement, AdvertisementServiceModel.class);
+    }
+
+    //not tested
+    @Override
+    public List<AdvertisementServiceModel> findByCreatorUsernameExcept(SpecificSearch specificSearch, String username) {
+
+        PageRequest pageRequest = PageRequest.of(specificSearch.getPage(), 3, Sort.by("views").descending());
+
+        return advertisementRepository.findAllByCreatorUserUsernameAndIdNot(username, pageRequest, specificSearch.getExcludeId())
+                .stream()
+                .map(x -> modelMapper.map(x, AdvertisementServiceModel.class))
+                .collect(Collectors.toList());
     }
 
     private Page<AdvertisementServiceModel> getAllByCategoryTitleContainingPriceBetweenAndCondition(SearchRequest searchRequest, PageRequest pageRequest) {

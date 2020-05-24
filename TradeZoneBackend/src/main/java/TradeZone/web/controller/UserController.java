@@ -117,6 +117,8 @@ public class UserController {
     @PostMapping("/profile/disconnect")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout(@RequestBody String username) {
+
+        System.out.println();
         profileService.disconnect(username);
     }
 
