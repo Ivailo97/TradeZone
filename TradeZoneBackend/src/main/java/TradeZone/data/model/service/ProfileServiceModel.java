@@ -15,9 +15,7 @@ public class ProfileServiceModel extends BaseServiceModel {
 
     private String aboutMe;
 
-    private String city;
-
-    private String country;
+    private TownServiceModel town;
 
     private Boolean isCompleted;
 

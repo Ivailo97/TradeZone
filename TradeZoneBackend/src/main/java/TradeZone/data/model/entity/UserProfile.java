@@ -30,11 +30,9 @@ public class UserProfile extends BaseEntityWithPhoto {
     @Column(name = "about_me", columnDefinition = "TEXT")
     private String aboutMe;
 
-    @Column
-    private String city;
-
-    @Column
-    private String country;
+    @ManyToOne
+    @JoinColumn(name = "town_id", referencedColumnName = "id")
+    private Town town;
 
     @Column(name = "is_completed")
     private Boolean isCompleted;
@@ -68,5 +66,6 @@ public class UserProfile extends BaseEntityWithPhoto {
         this.setCreatedAdvertisements(new ArrayList<>());
         this.setCreatedCategories(new ArrayList<>());
         this.setViewed(new ArrayList<>());
+        this.connected = false;
     }
 }

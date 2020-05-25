@@ -22,6 +22,8 @@ import { TopCategoryModule } from './components/top-category/top-category.module
 import { ErrorComponent } from './components/error/error.component';
 import { MatMenuModule } from '@angular/material/menu';
 
+const API_KEY = 'd594c4bd77msh4f144ec90d06ee3p16db41jsn397520bf2f0e';
+
 @NgModule({
 
   imports: [
@@ -37,7 +39,7 @@ import { MatMenuModule } from '@angular/material/menu';
     MatCardModule,
     MatTabsModule,
     CategoryModule,
-    TopCategoryModule,
+    TopCategoryModule
   ],
   declarations: [
     AppComponent,

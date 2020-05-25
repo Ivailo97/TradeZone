@@ -1,0 +1,59 @@
+body {
+    margin: 0;
+    background: #eee;
+    height: auto;
+}
+
+h1 {
+    font-weight: 400;
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+h3 {
+    font-weight: 400;
+    font-size: 1.2rem;
+    text-transform: capitalize;
+    margin: 0;
+}
+
+main {
+    margin: 0 auto;
+}
+
+.landing-page {
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: url('https://source.unsplash.com/random');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.landing-text-inner {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 5rem 3rem;
+    color: #fff;
+    display: block;
+    width: 75%
+}
+
+.btn {
+    text-decoration: none;
+    color: #fff;
+    border: 1px solid #eeeeee;
+    padding: 1rem 3rem;
+    display: inline-block;
+    margin: 2rem 0 0;
+    border-radius: 50px;
+    transition: all 700ms ease-out;
+}
+
+.btn:hover {
+    background: #ccc;
+    color: #000;
+}

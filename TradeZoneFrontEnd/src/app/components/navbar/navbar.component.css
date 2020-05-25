@@ -73,7 +73,7 @@ body {
 
 .header .navbar .toggle {
     position: absolute;
-    z-index: 999;
+    z-index: 999999;
     visibility: hidden;
     cursor: pointer;
     opacity: 0;

@@ -3,6 +3,7 @@ package TradeZone.service;
 import TradeZone.data.model.entity.*;
 import TradeZone.data.model.service.*;
 import TradeZone.data.model.view.ProfileConversationViewModel;
+import TradeZone.data.repository.TownRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -37,6 +38,8 @@ public class ProfileServiceImpl implements ProfileService {
 
     private final ProfileUpdateValidationService profileUpdateValidationService;
 
+    private final TownRepository townRepository;
+
     private final PhotoService photoService;
 
     private final UserProfileRepository userProfileRepository;
@@ -52,7 +55,6 @@ public class ProfileServiceImpl implements ProfileService {
         return userProfileRepository.findByUserUsername(username)
                 .map(x -> mapper.map(x, ProfileServiceModel.class));
     }
-
 
     @Override
     public ProfileServiceModel disconnect(String username) {
@@ -107,16 +109,27 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public String update(ProfileUpdate update) {
 
+        System.out.println();
+
         UserProfile profile = userProfileRepository.findById(update.getId()).orElse(null);
 
         if (profile == null || !profileUpdateValidationService.isValid(update)) {
             return FAIL;
         }
 
+        Long townId = Long.valueOf(update.getId());
+
+        Town town = townRepository.findById(townId).orElse(null);
+
+        if (town == null) {
+            return FAIL;
+        }
+
         profile.setFirstName(update.getFirstName());
         profile.setLastName(update.getLastName());
-        profile.setCity(update.getCity());
-        profile.setCountry(update.getCountry());
+
+        profile.setTown(town);
+
         profile.setAboutMe(update.getAboutMe());
         profile.setIsCompleted(true);
         userProfileRepository.save(profile);

@@ -1,4 +1,27 @@
-.categories-heading {
-    padding: 0.875rem 1.25rem;
-    font-size: 1.2rem;
+body {
+    background: #1d1d1d;
+}
+
+.wrap {
+    width: 765px;
+    margin: 0 auto;
+}
+
+h1 {
+    font-size: 7em;
+    font-family: 'IM Fell Great Primer';
+    position: relative;
+    color: #fff;
+}
+
+h1:before {
+    content: attr(data);
+    position: absolute;
+    left: -0.03em;
+    top: 0.03em;
+    color: #ccc;
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAYAAABWKLW/AAAAFUlEQVQIW2NkQAKMIPZ/IGAEAWQZAE5lBATogF4qAAAAAElFTkSuQmCC);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    z-index: -1;
 }

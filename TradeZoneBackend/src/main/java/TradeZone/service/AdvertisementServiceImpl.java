@@ -17,7 +17,6 @@ import TradeZone.data.model.enums.Condition;
 import TradeZone.data.model.service.AdvertisementServiceModel;
 import TradeZone.data.repository.AdvertisementRepository;
 import TradeZone.data.repository.CategoryRepository;
-import TradeZone.data.repository.PhotoRepository;
 import TradeZone.data.repository.UserProfileRepository;
 
 import java.math.BigDecimal;
@@ -43,9 +42,6 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     private static final String UNDEFINED = "undefined";
     private static final String NONE_SORT = "none";
     private static final String ASCENDING_ORDER = "ascending";
-    private static final String DEFAULT_CATEGORY = "Vehicles";
-    private static final String DEFAULT_CATEGORY_ID_CLOUD = "wkgo2xepwqooozuf5lha";
-    private static final String DEFAULT_CATEGORY_PHOTO_CLOUD_URL = "https://res.cloudinary.com/knight-cloud/image/upload/v1586525177/wkgo2xepwqooozuf5lha.png";
     private static final String DEFAULT = "All";
 
     private final AdvertisementRepository advertisementRepository;
@@ -69,8 +65,6 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     private final UserProfileRepository userProfileRepository;
 
     private final CategoryRepository categoryRepository;
-
-    private final PhotoRepository photoRepository;
 
     @Override
     public AdvertisementServiceModel getById(Long id) {
@@ -170,8 +164,6 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
     @Override
     public AdvertisementServiceModel create(AdvertisementCreateModel restModel) {
-
-        this.seedCategories();
 
         if (!validationService.isValid(restModel)) {
             throw new AdvertisementNotValidException(INVALID_MODEL);
@@ -425,24 +417,5 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         }
 
         return pageRequest;
-    }
-
-    private void seedCategories() {
-
-        if (categoryRepository.count() != 0) {
-            return;
-        }
-
-        Photo photo = new Photo();
-        photo.setUrl(DEFAULT_CATEGORY_PHOTO_CLOUD_URL);
-        photo.setIdInCloud(DEFAULT_CATEGORY_ID_CLOUD);
-
-        photoRepository.save(photo);
-
-        Category category = new Category();
-        category.setName(DEFAULT_CATEGORY);
-        category.setPhoto(photo);
-
-        categoryRepository.save(category);
     }
 }

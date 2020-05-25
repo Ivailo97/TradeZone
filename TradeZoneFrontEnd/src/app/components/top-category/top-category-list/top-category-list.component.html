@@ -1,2 +1,14 @@
+<main *ngIf="(topCategories$ | async).length === 0">
+
+    <div class="landing-page">
+        <div class="landing-text-inner">
+            <h1>No advertisements yet</h1>
+            <h3 class="sub-title"> Wanna create the first one ?</h3>
+            <a class='btn' [routerLink]="['/advertisements/category','All']">Create</a>
+        </div>
+    </div>
+
+</main>
+
 <app-top-category *ngFor="let category of topCategories$ | async;let id = index" [category]="category" [config]="{ id:id, itemsPerPage: 3, currentPage: 1}">
 </app-top-category>

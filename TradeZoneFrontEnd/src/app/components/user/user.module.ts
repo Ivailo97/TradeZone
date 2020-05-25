@@ -22,6 +22,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { StompService } from 'ng2-stomp-service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
   ],
   imports: [
     CommonModule,
+    MatSelectModule,
     NgxPaginationModule,
     MatSnackBarModule,
     MatTooltipModule,

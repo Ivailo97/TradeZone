@@ -13,9 +13,7 @@ public class ProfileUpdate {
 
     private String lastName;
 
-    private String city;
-
-    private String country;
+    private int town;
 
     private String aboutMe;
 }

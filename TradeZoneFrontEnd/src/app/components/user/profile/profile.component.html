@@ -30,22 +30,16 @@
                                                 </mat-form-field>
                                             </div>
                                         </div>
-                                        <div class="row ">
-                                            <div class="col-md-6 ">
-                                                <mat-form-field class="example-full-width ">
-                                                    <input formControlName="city" matInput placeholder="City " type="text ">
-                                                    <mat-hint>Must be at least 3 symbols long</mat-hint>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <mat-form-field class="example-full-width">
+                                                    <mat-label>Town</mat-label>
+                                                    <mat-select formControlName="city">
+                                                        <mat-option *ngFor="let town of towns" [value]="town.id">{{town.name}}/{{town.region}}</mat-option>
+                                                    </mat-select>
                                                 </mat-form-field>
                                             </div>
-                                            <div class="col-md-6 ">
-                                                <mat-form-field class="example-full-width ">
-                                                    <input formControlName="country" matInput placeholder="Country" type="text ">
-                                                    <mat-hint>Must be at least 3 symbols long</mat-hint>
-                                                </mat-form-field>
-                                            </div>
-                                        </div>
-                                        <div class="row ">
-                                            <div class="col-md-12 ">
+                                            <div class="col-md-6">
                                                 <mat-form-field class="example-full-width ">
                                                     <mat-label>About me</mat-label>
                                                     <textarea formControlName="aboutMe" #aboutMe matInput placeholder="Lamborghini Mercy, Your chick she so thirsty, I 'm in that two seat Lambo."></textarea>
@@ -280,7 +274,7 @@
                                 </g>
                                     </g>
                                     </g>
-                                    </svg> {{userProfile?.city}},{{userProfile?.country}}
+                                    </svg> {{userProfile?.town.name}},{{userProfile?.town.region}}
                             </div>
                             <div class="col md-4">
                                 <svg viewBox="-42 0 512 512.001" xmlns="http://www.w3.org/2000/svg" width="20px">

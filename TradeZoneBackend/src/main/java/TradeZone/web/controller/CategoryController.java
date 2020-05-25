@@ -29,6 +29,7 @@ public class CategoryController {
     @GetMapping("/all")
     public ResponseEntity<List<CategoryListViewModel>> categories() {
 
+
         return ResponseEntity.ok(categoryService.getAll().stream()
                 .map(x -> mappings.getMapper().map(x, CategoryListViewModel.class))
                 .collect(Collectors.toList()));

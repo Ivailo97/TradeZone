@@ -35,11 +35,10 @@ public class AdvertisementController {
     private final PhotoService photoService;
     private final MappingService mappingService;
 
-    //  private final WebClient.Builder builder;
+    //private final WebClient.Builder builder;
 
     @GetMapping("/search")
     public ResponseEntity<List<AdvertisementListViewModel>> filterByCategoryAndTitle(FullSearchRequest search) {
-
         // micro service async call done sync;
         // like async and await in javascript;
 
@@ -51,7 +50,6 @@ public class AdvertisementController {
 //                .block();
 
         //block = await;
-
         List<AdvertisementServiceModel> advertisements = advertisementService.getAllByFullSearch(search).getContent();
         return ResponseEntity.ok(mappingService.mapServiceAdvertisementsToView(advertisements));
     }

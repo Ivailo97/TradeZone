@@ -25,8 +25,8 @@ export class CategoryInfoComponent implements OnInit {
 
   private setCategoryToActive(event) {
     for (const li of event.currentTarget.parentNode.parentNode.children) {
-      li.children[0].classList.remove('bg-dark');
+      li.children[0].classList.remove('bg-white');
     }
-    event.currentTarget.classList.add('bg-dark');
+    event.currentTarget.classList.add('bg-white');
   }
 }
