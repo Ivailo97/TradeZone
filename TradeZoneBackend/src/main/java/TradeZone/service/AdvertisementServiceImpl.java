@@ -44,6 +44,8 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     private static final String ASCENDING_ORDER = "ascending";
     private static final String DEFAULT = "All";
 
+    private final SpecificSearchValidationService specificSearchValidationService;
+
     private final AdvertisementRepository advertisementRepository;
 
     private final AdvertisementValidationService validationService;
@@ -309,13 +311,17 @@ public class AdvertisementServiceImpl implements AdvertisementService {
         return modelMapper.map(advertisement, AdvertisementServiceModel.class);
     }
 
-    //not tested
     @Override
     public List<AdvertisementServiceModel> findByCreatorUsernameExcept(SpecificSearch specificSearch, String username) {
 
+        if (!specificSearchValidationService.isValid(specificSearch)) {
+            throw new SearchNotValidException(INVALID_SEARCH);
+        }
+
         PageRequest pageRequest = PageRequest.of(specificSearch.getPage(), 3, Sort.by("views").descending());
 
-        return advertisementRepository.findAllByCreatorUserUsernameAndIdNot(username, pageRequest, specificSearch.getExcludeId())
+        return advertisementRepository
+                .findAllByCreatorUserUsernameAndIdNot(username, pageRequest, specificSearch.getExcludeId())
                 .stream()
                 .map(x -> modelMapper.map(x, AdvertisementServiceModel.class))
                 .collect(Collectors.toList());

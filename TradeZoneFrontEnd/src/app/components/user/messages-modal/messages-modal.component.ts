@@ -200,5 +200,4 @@ export class MessagesModalComponent implements OnInit {
   private fullNameIncludes(user: ConversationUser): boolean {
     return user.firstName.concat(` ${user.lastName}`).toLocaleLowerCase().includes(this.searchedUser.toLocaleLowerCase().trim())
   }
-
 }

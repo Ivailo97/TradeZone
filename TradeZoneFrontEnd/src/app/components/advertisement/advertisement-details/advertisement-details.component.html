@@ -1,4 +1,4 @@
-<div class="row">
+<div #top class="row">
     <div id="carouselExampleIndicators" class="carousel slide carousel-fade w-75" data-ride="carousel">
         <ol class="carousel-indicators">
             <li *ngFor="let img of advertisement?.images; let i = index" data-target="#carouselExampleIndicators" [attr.data-slide-to]="i" [ngClass]="i === 0 ? 'active' : ''"> </li>
@@ -67,7 +67,7 @@
                               <span class="circle" aria-hidden="true">
                                 <span class="icon arrow"></span>
                               </span>
-                              <span class="button-text" (click)="goToBottom()">Learn More</span>
+                              <span (click)="scrollTo(moreAds)" class="button-text">Learn More</span>
                             </button>
                         </div>
                     </div>
@@ -140,7 +140,7 @@
         </div>
     </div>
 </div>
-<div id="more-ads" class="row justify-content-center">
+<div #moreAds class="row justify-content-center">
     <div class="container my-4">
         <h1 class="text-center">Other most viewed from {{advertisement.creator.firstName}}</h1>
         <hr class="my-4">
@@ -151,14 +151,12 @@
                     <div class="card-body">
                         <h4 class="card-title">{{add.title}}</h4>
                         <p class="card-text">Views : {{add.views}}</p>
-                        <a [routerLink]="['/advertisements/details',add.id]" class="btn btn-primary" (click)="reloadData(add.id)">Details</a>
+                        <a [routerLink]="['/advertisements/details',add.id]" class="btn btn-primary" (click)="reloadData(add.id,top)">Details</a>
                     </div>
                 </div>
             </div>
         </div>
-
         <div class="row justify-content-center">
-
             <div id="container">
                 <button class="learn-more">
                   <span class="circle" aria-hidden="true">

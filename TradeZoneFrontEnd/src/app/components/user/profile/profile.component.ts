@@ -13,6 +13,9 @@ import { Town } from 'src/app/core/models/town';
 
 const defaultUrl = 'https://res.cloudinary.com/knight-cloud/image/upload/v1586855234/opzt01swy5uezhzexcql.png';
 const emptyCollectionUrl = 'https://res.cloudinary.com/knight-cloud/image/upload/v1587845075/sqj0rmatvhts7hkmhky1.png';
+const alertConfig = { autoClose: true };
+const changedPic = 'Successfully changed picture';
+const updatedProfileInfo = 'Successfully updated profile info';
 
 @Component({
   selector: 'app-profile',
@@ -46,7 +49,7 @@ export class ProfileComponent implements OnInit {
       id: ['', [Validators.required]],
       firstName: ['', [Validators.required, Validators.pattern(/^[A-ZА-Я]+[a-zа-я]{3,11}$/)]],
       lastName: ['', [Validators.required, Validators.pattern(/^[A-ZА-Я]+[a-zа-я]{3,11}$/)]],
-      city: ['', [Validators.required]],
+      town: ['', [Validators.required]],
       aboutMe: ['', [Validators.required, Validators.pattern(/^[A-ZА-Я]+[a-zа-я ]{1,99}$/)]],
     })
 
@@ -70,7 +73,7 @@ export class ProfileComponent implements OnInit {
       this.f.id.value,
       this.f.firstName.value,
       this.f.lastName.value,
-      this.f.city.value,
+      this.f.town.value,
       this.f.aboutMe.value,
     )
 
@@ -78,12 +81,12 @@ export class ProfileComponent implements OnInit {
       .update(updateModel)
       .subscribe(
         (success) => {
-          this.alertService.success('Updated profile successfully!', { autoClose: true })
+          this.alertService.success(updatedProfileInfo, alertConfig)
           const tabCount = this.tabs._tabs.length;
           this.tabs.selectedIndex = (this.tabs.selectedIndex + 2) % tabCount;
         },
         (fail) => {
-          this.alertService.error(`Error: ${fail.error.message}`, { autoClose: true })
+          this.alertService.error(`Error: ${fail.error.message}`, alertConfig)
         })
   }
 
@@ -99,13 +102,13 @@ export class ProfileComponent implements OnInit {
       .updatePassword(passwordUpdate)
       .subscribe(
         (success) => {
-          this.alertService.success('Password updated successfully!', { autoClose: true })
+          this.alertService.success('Password updated successfully!', alertConfig)
           const tabCount = this.tabs._tabs.length;
           this.tabs.selectedIndex = (this.tabs.selectedIndex + 1) % tabCount;
         },
         (fail) => {
           console.log(fail);
-          this.alertService.error(fail.error.message, { autoClose: true })
+          this.alertService.error(fail.error.message, alertConfig)
         })
   }
 
@@ -131,10 +134,10 @@ export class ProfileComponent implements OnInit {
       .uploadPhoto(fd)
       .subscribe(
         (success) => {
-          this.alertService.success(success['message'], { autoClose: true })
+          this.alertService.success(changedPic, alertConfig)
         },
         (fail) => {
-          this.alertService.error(fail.error.message, { autoClose: true })
+          this.alertService.error(fail.error.message, alertConfig)
         })
   }
 

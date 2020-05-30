@@ -3,6 +3,9 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CategoryBindingModel } from 'src/app/core/models/category-create';
 import { CategoryService } from 'src/app/core/services/category.service';
 import { TokenStorageService } from 'src/app/core/services/token-storage.service';
+import { AlertService } from '../../alert';
+
+const created = 'Created successfully!';
 
 @Component({
   selector: 'app-category-modal-create',
@@ -12,16 +15,15 @@ import { TokenStorageService } from 'src/app/core/services/token-storage.service
 export class CategoryModalCreateComponent implements OnInit {
 
   image: string;
-  errorMessage;
   form: FormGroup;
   category: CategoryBindingModel;
 
   constructor(private formBuilder: FormBuilder,
     private categoryService: CategoryService,
-    private tokenService: TokenStorageService) { }
+    private tokenService: TokenStorageService,
+    private alertService: AlertService) { }
 
   ngOnInit(): void {
-
     this.form = this.formBuilder.group({
       name: ['', Validators.required],
       file: ['', Validators.required],
@@ -31,13 +33,13 @@ export class CategoryModalCreateComponent implements OnInit {
 
   submit() {
     this.category = new CategoryBindingModel(this.f.name.value, this.f.fileSource.value, this.tokenService.getUsername());
-
     this.categoryService.createCategory(this.category).subscribe(
       data => {
         console.log(data);
+        this.alertService.success(created, { autoClose: true })
       },
       error => {
-        this.errorMessage = error.error.message;
+        this.alertService.error(error.error.message, { autoClose: true })
       })
   }
 
@@ -46,16 +48,12 @@ export class CategoryModalCreateComponent implements OnInit {
   }
 
   onFileChange(event) {
-
     if (event.target.files && event.target.files[0]) {
-
       var reader = new FileReader();
-
       reader.onload = (event: any) => {
         this.image = event.target.result;
         this.form.patchValue({ fileSource: this.image });
       }
-
       reader.readAsDataURL(event.target.files[0]);
     }
   }

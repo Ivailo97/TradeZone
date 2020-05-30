@@ -1,5 +1,8 @@
 package TradeZone.service;
 
+import TradeZone.data.error.exception.NotAllowedException;
+import TradeZone.data.error.exception.PasswordUpdateNotValidException;
+import TradeZone.data.error.exception.ProfileUpdateNotValidException;
 import TradeZone.data.model.entity.*;
 import TradeZone.data.model.service.*;
 import TradeZone.data.model.view.ProfileConversationViewModel;
@@ -28,10 +31,15 @@ import java.util.stream.Collectors;
 public class ProfileServiceImpl implements ProfileService {
 
     private static final String FAIL = "FAIL";
+    private static final String IMPOSSIBLE = "You dont have this in favorites";
     private static final String WRONG_OLD_PASSWORD = "FAIL -> WRONG OLD PASSWORD";
+    private static final String CANT_LIKE = "ADVERTISEMENT ALREADY LIKED";
     private static final String PROFILE_NOT_FOUND = "PROFILE WITH USERNAME %s not found";
-    private static final String CONFIRM_PASSWORD_DOESNT_MATCH = "FAIL -> CONFIRM NEW PASSWORD DOES NOT MATCH";
-
+    private static final String ADD_NOT_FOUND = "ADD WITH ID %s not found";
+    private static final String TOWN_NOT_FOUND = "TOWN WITH ID %s not found";
+    private static final String INVALID_UPDATE = "INVALID UPDATE";
+    private static final String PROFILE_NOT_FOUND_ID = "PROFILE WITH ID %s not found";
+    private static final String PASSWORDS_DOESNT_MATCH = "FAIL -> PASSWORDS DOES NOT MATCH";
     private static final String SUCCESS = "SUCCESS";
 
     private final SimpMessagingTemplate template;
@@ -51,9 +59,12 @@ public class ProfileServiceImpl implements ProfileService {
     private final ModelMapper mapper;
 
     @Override
-    public Optional<ProfileServiceModel> getUserProfileByUsername(String username) {
-        return userProfileRepository.findByUserUsername(username)
-                .map(x -> mapper.map(x, ProfileServiceModel.class));
+    public ProfileServiceModel getUserProfileByUsername(String username) {
+
+        UserProfile profile = userProfileRepository.findByUserUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(PROFILE_NOT_FOUND, username)));
+
+        return mapper.map(profile, ProfileServiceModel.class);
     }
 
     @Override
@@ -107,43 +118,36 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public String update(ProfileUpdate update) {
+    public ProfileServiceModel update(ProfileUpdate update) {
 
-        System.out.println();
-
-        UserProfile profile = userProfileRepository.findById(update.getId()).orElse(null);
-
-        if (profile == null || !profileUpdateValidationService.isValid(update)) {
-            return FAIL;
+        if (!profileUpdateValidationService.isValid(update)) {
+            throw new ProfileUpdateNotValidException(INVALID_UPDATE);
         }
 
-        Long townId = Long.valueOf(update.getId());
+        UserProfile profile = userProfileRepository.findById(update.getId())
+                .orElseThrow(() -> new EntityNotFoundException(String.format(PROFILE_NOT_FOUND_ID, update.getId())));
 
-        Town town = townRepository.findById(townId).orElse(null);
+        Long townId = update.getTown();
 
-        if (town == null) {
-            return FAIL;
-        }
+        Town town = townRepository.findById(townId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(TOWN_NOT_FOUND, townId)));
 
         profile.setFirstName(update.getFirstName());
         profile.setLastName(update.getLastName());
-
         profile.setTown(town);
-
         profile.setAboutMe(update.getAboutMe());
         profile.setIsCompleted(true);
-        userProfileRepository.save(profile);
-        return SUCCESS;
+
+        profile = userProfileRepository.save(profile);
+
+        return mapper.map(profile, ProfileServiceModel.class);
     }
 
     @Override
-    public ResponseMessage updatePicture(String username, MultipartFile file) {
+    public ProfileServiceModel updatePicture(String username, MultipartFile file) {
 
-        UserProfile profile = userProfileRepository.findByUserUsername(username).orElse(null);
-
-        if (profile == null) {
-            return new ResponseMessage(FAIL);
-        }
+        UserProfile profile = userProfileRepository.findByUserUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(PROFILE_NOT_FOUND, username)));
 
         Photo photo = profile.getPhoto();
 
@@ -151,62 +155,72 @@ public class ProfileServiceImpl implements ProfileService {
         Photo newPhoto = mapper.map(photoServiceModel, Photo.class);
         profile.setPhoto(newPhoto);
 
-        userProfileRepository.save(profile);
+        profile = userProfileRepository.save(profile);
 
         if (photo != null) {
             photoService.delete(photo.getId());
         }
 
-
-        return new ResponseMessage(SUCCESS);
+        return mapper.map(profile, ProfileServiceModel.class);
     }
 
     @Override
-    public ResponseMessage addFavorite(String username, Long addId) {
-        UserProfile userProfile = userProfileRepository.findByUserUsername(username).orElse(null);
-        Advertisement advertisement = advertisementRepository.findById(addId).orElse(null);
-        if (userProfile == null || advertisement == null || profileAlreadyLikedTheAdvertisement(userProfile, advertisement)) {
-            return new ResponseMessage(FAIL);
+    public ProfileServiceModel addFavorite(String username, Long addId) {
+
+        UserProfile userProfile = userProfileRepository.findByUserUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(PROFILE_NOT_FOUND, username)));
+
+        Advertisement advertisement = advertisementRepository.findById(addId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ADD_NOT_FOUND, addId)));
+
+        if (profileAlreadyLikedTheAdvertisement(userProfile, advertisement)) {
+            throw new NotAllowedException(CANT_LIKE);
         }
+
         userProfile.getFavorites().add(advertisement);
-        userProfileRepository.save(userProfile);
-        return new ResponseMessage(SUCCESS);
+        userProfile = userProfileRepository.save(userProfile);
+
+        return mapper.map(userProfile, ProfileServiceModel.class);
     }
 
     @Override
-    public ResponseMessage removeFavorite(String username, Long addId) {
-        UserProfile userProfile = userProfileRepository.findByUserUsername(username).orElse(null);
-        Advertisement advertisement = advertisementRepository.findById(addId).orElse(null);
+    public ProfileServiceModel removeFavorite(String username, Long addId) {
 
-        if (userProfile == null || advertisement == null || profileFavoritesDoesntContainTheAdvertisement(userProfile, advertisement)) {
-            return new ResponseMessage(FAIL);
+        UserProfile profile = userProfileRepository.findByUserUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(PROFILE_NOT_FOUND, username)));
+
+        Advertisement advertisement = advertisementRepository.findById(addId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ADD_NOT_FOUND, addId)));
+
+        if (profileFavoritesDoesntContainTheAdvertisement(profile, advertisement)) {
+            throw new NotAllowedException(IMPOSSIBLE);
         }
-        userProfile.getFavorites().remove(advertisement);
-        userProfileRepository.save(userProfile);
-        return new ResponseMessage(SUCCESS);
+
+        profile.getFavorites().remove(advertisement);
+        profile = userProfileRepository.save(profile);
+
+        return mapper.map(profile, ProfileServiceModel.class);
     }
 
     @Override
-    public ResponseMessage updatePassword(PasswordUpdate update) {
+    public ProfileServiceModel updatePassword(PasswordUpdate update) {
 
-        UserProfile profile = userProfileRepository.findById(update.getId()).orElse(null);
+        UserProfile profile = userProfileRepository.findById(update.getId())
+                .orElseThrow(() -> new EntityNotFoundException(String.format(PROFILE_NOT_FOUND_ID, update.getId())));
 
-        if (profile == null) {
-            return new ResponseMessage(FAIL);
+        if (!update.getNewPassword().equals(update.getConfirmNewPassword())) {
+            throw new PasswordUpdateNotValidException(PASSWORDS_DOESNT_MATCH);
         }
 
         if (!encoder.matches(update.getOldPassword(), profile.getUser().getPassword())) {
-            return new ResponseMessage(WRONG_OLD_PASSWORD);
-        }
-
-        if (!update.getNewPassword().equals(update.getConfirmNewPassword())) {
-            return new ResponseMessage(CONFIRM_PASSWORD_DOESNT_MATCH);
+            throw new NotAllowedException(WRONG_OLD_PASSWORD);
         }
 
         profile.getUser().setPassword(encoder.encode(update.getNewPassword()));
 
-        userProfileRepository.save(profile);
-        return new ResponseMessage(SUCCESS);
+        profile = userProfileRepository.save(profile);
+
+        return mapper.map(profile, ProfileServiceModel.class);
     }
 
     private boolean profileAlreadyLikedTheAdvertisement(UserProfile profile, Advertisement advertisement) {

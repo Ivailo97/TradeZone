@@ -1,5 +1,6 @@
 package TradeZone.service;
 
+import TradeZone.data.error.exception.CategoryNotValidException;
 import TradeZone.data.model.entity.Photo;
 import TradeZone.data.model.rest.CategoryCreateModel;
 import TradeZone.data.model.service.AdvertisementServiceModel;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import TradeZone.data.model.entity.Category;
 import TradeZone.data.model.entity.UserProfile;
-import TradeZone.data.model.rest.message.response.ResponseMessage;
 import TradeZone.data.model.service.CategoryServiceModel;
 import TradeZone.service.validation.CategoryValidationService;
 import TradeZone.data.repository.CategoryRepository;
@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 public class CategoryServiceImpl implements CategoryService {
 
     private static final String INVALID_MODEL = "FAIL -> INVALID DATA";
-    private static final String SUCCESS = "SUCCESS -> CREATED NEW DATA";
     private static final String DEFAULT_CATEGORY = "Vehicles";
     private static final String DEFAULT_CATEGORY_ID_CLOUD = "wkgo2xepwqooozuf5lha";
     private static final String DEFAULT_CATEGORY_PHOTO_CLOUD_URL = "https://res.cloudinary.com/knight-cloud/image/upload/v1586525177/wkgo2xepwqooozuf5lha.png";
@@ -43,35 +42,28 @@ public class CategoryServiceImpl implements CategoryService {
     private final ModelMapper mapper;
 
     @Override
-    public CategoryServiceModel getById(long id) {
-
-        return this.repository.findById(id)
-                .map(x -> this.mapper.map(x, CategoryServiceModel.class))
-                .orElseThrow(IllegalArgumentException::new);
-    }
-
-    @Override
     @Transactional
-    public ResponseMessage create(CategoryCreateModel restModel) {
+    public CategoryServiceModel create(CategoryCreateModel restModel) {
 
         CategoryServiceModel category = mapper.map(restModel, CategoryServiceModel.class);
         PhotoServiceModel photo = photoService.upload(restModel.getImage());
         category.setPhoto(photo);
 
         if (!validationService.isValid(category)) {
-            return new ResponseMessage(INVALID_MODEL);
+            throw new CategoryNotValidException(INVALID_MODEL);
         }
 
         UserProfile userProfile = profileRepository.findByUserUsername(restModel.getCreator()).orElse(null);
 
         if (userProfile == null) {
-            return new ResponseMessage(INVALID_MODEL);
+            throw new CategoryNotValidException(INVALID_MODEL);
         }
 
         Category entity = mapper.map(category, Category.class);
         entity.setCreator(userProfile);
-        repository.save(entity);
-        return new ResponseMessage(SUCCESS);
+        entity = repository.save(entity);
+
+        return mapper.map(entity, CategoryServiceModel.class);
     }
 
     @Override
@@ -88,17 +80,15 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryServiceModel> getAll() {
-
         if (repository.count() == 0) {
             seedCategories();
         }
-
-        return repository.findAll().stream().map(x -> mapper.map(x, CategoryServiceModel.class))
+        return repository.findAll().stream()
+                .map(x -> mapper.map(x, CategoryServiceModel.class))
                 .collect(Collectors.toList());
     }
 
     private void seedCategories() {
-
         Photo photo = new Photo();
         photo.setUrl(DEFAULT_CATEGORY_PHOTO_CLOUD_URL);
         photo.setIdInCloud(DEFAULT_CATEGORY_ID_CLOUD);

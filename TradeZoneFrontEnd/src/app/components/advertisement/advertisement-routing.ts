@@ -20,4 +20,5 @@ const routes: Routes = [
   },
 ];
 
+
 export const AdvertisementRoutingModule = RouterModule.forChild(routes);

@@ -8,9 +8,7 @@ import java.util.List;
 
 public interface CategoryService {
 
-    CategoryServiceModel getById(long id);
-
-    ResponseMessage create(CategoryCreateModel createModel);
+    CategoryServiceModel create(CategoryCreateModel createModel);
 
     List<CategoryServiceModel> getTop(Integer count);
 

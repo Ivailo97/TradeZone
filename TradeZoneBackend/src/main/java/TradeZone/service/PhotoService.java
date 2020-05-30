@@ -13,7 +13,7 @@ public interface PhotoService {
 
     PhotoServiceModel upload(MultipartFile file);
 
-    ResponseMessage uploadAdvertisementPhotos(ImagesToUploadModel images);
+    List<PhotoServiceModel> uploadAdvertisementPhotos(ImagesToUploadModel images);
 
     ResponseMessage delete(Long id);
 

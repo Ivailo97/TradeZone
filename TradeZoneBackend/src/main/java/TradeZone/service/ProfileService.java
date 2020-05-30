@@ -1,6 +1,5 @@
 package TradeZone.service;
 
-import TradeZone.data.model.rest.search.MessageToSend;
 import org.springframework.web.multipart.MultipartFile;
 import TradeZone.data.model.rest.PasswordUpdate;
 import TradeZone.data.model.rest.ProfileUpdate;
@@ -9,12 +8,11 @@ import TradeZone.data.model.service.ProfileServiceModel;
 import TradeZone.data.model.service.RoleServiceModel;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 public interface ProfileService {
 
-    Optional<ProfileServiceModel> getUserProfileByUsername(String username);
+    ProfileServiceModel getUserProfileByUsername(String username);
 
     ProfileServiceModel disconnect(String username);
 
@@ -24,13 +22,13 @@ public interface ProfileService {
 
     List<ProfileServiceModel> getAll();
 
-    String update(ProfileUpdate update);
+    ProfileServiceModel update(ProfileUpdate update);
 
-    ResponseMessage updatePicture(String username, MultipartFile file);
+    ProfileServiceModel updatePicture(String username, MultipartFile file);
 
-    ResponseMessage addFavorite(String username, Long addId);
+    ProfileServiceModel addFavorite(String username, Long addId);
 
-    ResponseMessage removeFavorite(String username, Long addId);
+    ProfileServiceModel removeFavorite(String username, Long addId);
 
-    ResponseMessage updatePassword(PasswordUpdate update);
+    ProfileServiceModel updatePassword(PasswordUpdate update);
 }

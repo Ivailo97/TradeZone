@@ -6,6 +6,7 @@ import TradeZone.data.model.rest.*;
 import TradeZone.data.model.rest.message.response.ResponseMessage;
 import TradeZone.data.model.rest.search.FullSearchRequest;
 import TradeZone.data.model.rest.search.SearchRequest;
+import TradeZone.data.model.rest.search.SpecificSearch;
 import TradeZone.data.model.service.AdvertisementServiceModel;
 import TradeZone.data.model.service.PhotoServiceModel;
 import TradeZone.service.validation.*;
@@ -21,8 +22,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -57,9 +61,6 @@ public class AdvertisementServiceTests {
     UserProfileRepository userProfileRepository;
 
     @Mock
-    PhotoRepository photoRepository;
-
-    @Mock
     AdvertisementValidationService advertisementValidationService;
 
     @Mock
@@ -70,6 +71,9 @@ public class AdvertisementServiceTests {
 
     @Mock
     ModelMapper modelMapper;
+
+    @Mock
+    SpecificSearchValidationService specificSearchValidationService;
 
     ModelMapper actualMapper = new ModelMapper();
 
@@ -366,9 +370,7 @@ public class AdvertisementServiceTests {
     }
 
     @Test
-    public void create_shouldWorkCorrectly_whenValidArgument_andCategoryRepositoryNotEmpty() {
-
-        when(categoryRepository.count()).thenReturn(1L);
+    public void create_shouldWorkCorrectly_whenValidArguments() {
 
         when(categoryRepository.findById(any())).thenReturn(Optional.of(new Category()));
 
@@ -402,58 +404,6 @@ public class AdvertisementServiceTests {
         long expectedViews = 0;
 
         //Assert
-        assertEquals(model.getTitle(), result.getTitle());
-        assertEquals(model.getImages().length, result.getPhotos().size());
-        assertEquals(expectedViews, actualViews);
-        verify(advertisementRepository).save(any());
-    }
-
-    @Test
-    public void create_shouldWorkCorrectly_whenValidArgument_andCategoryRepositoryEmpty() {
-
-        when(photoRepository.save(any())).thenReturn(null);
-
-        Category[] firstSeeded = new Category[1];
-
-        when(categoryRepository.save(any())).thenAnswer(invocation -> {
-            Category seeded = actualMapper.map(invocation.getArguments()[0], Category.class);
-            firstSeeded[0] = seeded;
-            return seeded;
-        });
-
-        when(categoryRepository.findById(any())).thenReturn(Optional.of(new Category()));
-
-        UserProfile userProfile = new UserProfile();
-        userProfile.setIsCompleted(true);
-
-        when(userProfileRepository.findByUserUsername(any())).thenReturn(Optional.of(userProfile));
-
-        when(modelMapper.map(any(AdvertisementCreateModel.class), eq(Advertisement.class)))
-                .thenAnswer(invocationOnMock ->
-                        actualMapper.map(invocationOnMock.getArguments()[0], Advertisement.class));
-
-        when(photoService.upload(anyString())).thenReturn(new PhotoServiceModel());
-
-        when(modelMapper.map(any(PhotoServiceModel.class), eq(Photo.class)))
-                .thenAnswer(invocationOnMock ->
-                        actualMapper.map(invocationOnMock.getArguments()[0], Photo.class));
-
-
-        AdvertisementCreateModel model = new AdvertisementCreateModel();
-        model.setImages(new String[]{"image1", "image2"});
-        model.setTitle("myTitle");
-
-        when(advertisementRepository.save(any(Advertisement.class)))
-                .thenAnswer(invocation ->
-                        actualMapper.map(invocation.getArguments()[0], Advertisement.class));
-
-        //Act
-        AdvertisementServiceModel result = advertisementService.create(model);
-        long actualViews = result.getViews();
-        long expectedViews = 0;
-
-        //Assert
-        assertEquals("Vehicles", firstSeeded[0].getName());
         assertEquals(model.getTitle(), result.getTitle());
         assertEquals(model.getImages().length, result.getPhotos().size());
         assertEquals(expectedViews, actualViews);
@@ -894,5 +844,33 @@ public class AdvertisementServiceTests {
         advertisement.setCreator(new UserProfile(user));
 
         advertisementService.deletePhoto(request);
+    }
+
+    @Test
+    public void findByCreatorUsernameExcept_shouldWorkCorrect_whenValidSearchArgument() {
+
+        when(specificSearchValidationService.isValid(any())).thenReturn(true);
+        List<Advertisement> fakeData = List.of(advertisement);
+
+        when(advertisementRepository.findAllByCreatorUserUsernameAndIdNot(any(), any(), any()))
+                .thenReturn(new PageImpl<>(fakeData));
+
+        SpecificSearch specificSearch = new SpecificSearch();
+
+        List<AdvertisementServiceModel> result = advertisementService.findByCreatorUsernameExcept(specificSearch, "");
+
+        verify(advertisementRepository).findAllByCreatorUserUsernameAndIdNot(any(), any(), any());
+        assertEquals(fakeData.size(), result.size());
+        assertEquals(fakeData.get(0).getTitle(), result.get(0).getTitle());
+    }
+
+    @Test(expected = SearchNotValidException.class)
+    public void findByCreatorUsernameExcept_shouldThrow_whenInvalid() {
+
+        when(specificSearchValidationService.isValid(any())).thenReturn(false);
+
+        SpecificSearch specificSearch = new SpecificSearch();
+
+        advertisementService.findByCreatorUsernameExcept(specificSearch,"");
     }
 }

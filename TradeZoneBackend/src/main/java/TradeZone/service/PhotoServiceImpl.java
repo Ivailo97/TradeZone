@@ -1,5 +1,8 @@
 package TradeZone.service;
 
+import TradeZone.data.error.exception.EntityNotFoundException;
+import TradeZone.data.error.exception.NotAllowedException;
+import TradeZone.data.error.exception.PhotoNotValidException;
 import com.cloudinary.Uploader;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -17,11 +20,14 @@ import TradeZone.data.repository.PhotoRepository;
 
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 public class PhotoServiceImpl implements PhotoService {
 
+    private static final String NOT_ALLOWED = "You are not allowed to perform this action";
+    private static final String PHOTO_NOT_FOUND = "Photo with id %d not found";
     private static final String FAIL = "FAIL";
     private static final String SUCCESS = "SUCCESS";
 
@@ -53,27 +59,27 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     public PhotoServiceModel upload(MultipartFile multipartFile) {
-
         Pair<String, String> cloudUploadData = uploadToCloud(multipartFile);
-
         PhotoServiceModel photoServiceModel = new PhotoServiceModel();
         photoServiceModel.setUrl(cloudUploadData.getLeft());
         photoServiceModel.setIdInCloud(cloudUploadData.getRight());
-
         return photoServiceModel;
     }
 
     @Override
-    public ResponseMessage uploadAdvertisementPhotos(ImagesToUploadModel model) {
+    public List<PhotoServiceModel> uploadAdvertisementPhotos(ImagesToUploadModel model) {
 
         if (Arrays.stream(model.getImages()).anyMatch(x -> !validationService.isValid(x))) {
-            return new ResponseMessage(FAIL);
+            throw new PhotoNotValidException(FAIL);
         }
 
-        Advertisement advertisement = advertisementRepository.findById(model.getAdvertisementId()).orElse(null);
+        Long id = model.getAdvertisementId();
 
-        if (advertisement == null || !advertisement.getCreator().getUser().getUsername().equals(model.getUsername())) {
-            return new ResponseMessage(FAIL);
+        Advertisement advertisement = advertisementRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(PHOTO_NOT_FOUND, id)));
+
+        if (!advertisement.getCreator().getUser().getUsername().equals(model.getUsername())) {
+            throw new NotAllowedException(NOT_ALLOWED);
         }
 
         List<Photo> photos = new ArrayList<>();
@@ -88,9 +94,11 @@ public class PhotoServiceImpl implements PhotoService {
 
         advertisement.getPhotos().addAll(photos);
 
-        advertisementRepository.save(advertisement);
+        advertisement = advertisementRepository.save(advertisement);
 
-        return new ResponseMessage(SUCCESS);
+        return advertisement.getPhotos().stream()
+                .map(x -> mapper.map(x, PhotoServiceModel.class))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -110,15 +118,12 @@ public class PhotoServiceImpl implements PhotoService {
     public void deleteAll(List<Long> ids) {
 
         try {
-
             List<Photo> photos = photoRepository.findAllById(ids);
             for (Photo photo : photos) {
                 uploader.destroy(photo.getIdInCloud(), new HashMap<>());
             }
             photoRepository.deleteAll(photos);
-
         } catch (Exception ignored) {
-
         }
     }
 

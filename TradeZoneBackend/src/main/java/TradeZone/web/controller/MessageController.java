@@ -25,8 +25,7 @@ public class MessageController {
 
         Page<ChatMessage> messages = messageRepository.findAllByChannelOrderByTimestampDesc(channelId, pageable);
 
-        return messages
-                .map(x -> {
+        return messages.map(x -> {
                     ChatRestModel model = mapper.map(x, ChatRestModel.class);
                     model.setSender(x.getSender().getUser().getUsername());
                     model.setSenderAvatarUrl(x.getSender().getPhoto().getUrl());
@@ -38,5 +37,4 @@ public class MessageController {
     public void sendReadReceipt(@RequestBody ReadReceiptRequest request) {
         messageRepository.sendReadReceipt(request.getChannel(), request.getUsername());
     }
-
 }

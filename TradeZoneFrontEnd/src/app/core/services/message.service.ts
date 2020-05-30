@@ -26,6 +26,7 @@ export class MessageService {
     constructor(private http: HttpClient) { }
 
     pushMessage(message: Message) {
+        console.log(message)
         this.messages.push(message);
         this.msgs.next(this.messages);
     }

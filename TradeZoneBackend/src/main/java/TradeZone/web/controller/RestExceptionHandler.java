@@ -45,6 +45,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(ex);
     }
 
+    @ExceptionHandler(CategoryNotValidException.class)
+    protected ResponseEntity<Object> handleCategoryNotValid(CategoryNotValidException ex) {
+        return buildResponseEntity(ex);
+    }
+
+    @ExceptionHandler(PhotoNotValidException.class)
+    protected ResponseEntity<Object> handlePhotoNotValid(PhotoNotValidException ex) {
+        return buildResponseEntity(ex);
+    }
+
     @ExceptionHandler(SearchNotValidException.class)
     protected ResponseEntity<Object> handleSearchNotValid(SearchNotValidException ex) {
         return buildResponseEntity(ex);
@@ -57,6 +67,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ProfileNotCompletedException.class)
     protected ResponseEntity<Object> handleProfileNotCompleted(ProfileNotCompletedException ex) {
+        return buildResponseEntity(ex);
+    }
+
+    @ExceptionHandler(ProfileUpdateNotValidException.class)
+    protected ResponseEntity<Object> handleProfileUpdateNotValid(ProfileUpdateNotValidException ex) {
+        return buildResponseEntity(ex);
+    }
+
+    @ExceptionHandler(PasswordUpdateNotValidException.class)
+    protected ResponseEntity<Object> handlePasswordUpdateNotValid(PasswordUpdateNotValidException ex) {
         return buildResponseEntity(ex);
     }
 

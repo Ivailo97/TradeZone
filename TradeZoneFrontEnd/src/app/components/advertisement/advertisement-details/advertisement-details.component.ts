@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { AdvertisementDetails } from 'src/app/core/models/advertisement-details';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdvertisementService } from 'src/app/core/services/advertisement.service';
@@ -41,11 +41,17 @@ export class AdvertisementDetailsComponent implements OnInit {
     private tokenStorageService: TokenStorageService) { }
 
   ngOnInit() {
+
     this.reloadData(this.route.snapshot.params.id);
     this.advertisementService.detailsRefreshNeeded$.subscribe(() => this.reloadData(this.advertisement.id))
   }
 
-  reloadData(id: number) {
+  reloadData(id: number, el?: HTMLElement) {
+
+    if (el) {
+      el.scrollIntoView()
+    }
+
     this.page = 0;
     this.advertisementsCreatedByUser = [];
     this.advertisementService.getAdvertisement(id)
@@ -74,8 +80,8 @@ export class AdvertisementDetailsComponent implements OnInit {
       )
   }
 
-  goToBottom(){
-    window.scrollTo(0,document.body.scrollHeight);
+  public scrollTo(el: HTMLElement): void {
+    el.scrollIntoView();
   }
 
   loadMore() {

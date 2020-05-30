@@ -27,7 +27,7 @@ export class CategoryService {
   }
 
   createCategory(category: CategoryBindingModel): Observable<string> {
-    
+
     return this.http.post<string>(`${baseURL}/api/category/create`, category, httpOptions)
       .pipe(
         tap(() => {
@@ -36,7 +36,7 @@ export class CategoryService {
       );
   }
 
-  getTopCategories(count:number):Observable<TopCategoryListInfo[]>{
+  getTopCategories(count: number): Observable<TopCategoryListInfo[]> {
     return this.http.get<TopCategoryListInfo[]>(`${baseURL}/api/category/top?count=${count}`);
   }
 
