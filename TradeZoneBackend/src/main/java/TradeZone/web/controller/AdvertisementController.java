@@ -5,7 +5,6 @@ import TradeZone.data.model.rest.*;
 import TradeZone.data.model.rest.search.*;
 import TradeZone.service.MappingService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +17,6 @@ import TradeZone.data.model.view.PhotoViewModel;
 import TradeZone.service.AdvertisementService;
 import TradeZone.service.PhotoService;
 
-import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.ResponseEntity.*;
 //import org.springframework.web.reactive.function.client.WebClient;
 
@@ -66,9 +64,9 @@ public class AdvertisementController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<HttpStatus> create(@RequestBody AdvertisementCreateModel restModel) {
+    public ResponseEntity<Void> create(@RequestBody AdvertisementCreateModel restModel) {
         advertisementService.create(restModel);
-        return ok(CREATED);
+        return ok().build();
     }
 
     @GetMapping("/edit/{id}")
@@ -80,16 +78,16 @@ public class AdvertisementController {
     }
 
     @PutMapping("/edit")
-    public ResponseEntity<HttpStatus> editConfirm(@RequestBody AdvertisementEditedModel editedModel) {
+    public ResponseEntity<Void> editConfirm(@RequestBody AdvertisementEditedModel editedModel) {
         advertisementService.edit(editedModel);
-        return ok(OK);
+        return ok().build();
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<HttpStatus> delete(Principal principal, DeleteAdvRequest deleteRequest) {
+    public ResponseEntity<Void> delete(Principal principal, DeleteAdvRequest deleteRequest) {
         String principalName = principal.getName();
         advertisementService.delete(principalName, deleteRequest);
-        return ok(OK);
+        return ok().build();
     }
 
     @GetMapping("/details/{id}")
@@ -111,20 +109,20 @@ public class AdvertisementController {
     }
 
     @PatchMapping("/increase-views/{id}")
-    public ResponseEntity<HttpStatus> updateViews(@PathVariable Long id, @RequestBody ViewsUpdate update) {
+    public ResponseEntity<Void> updateViews(@PathVariable Long id, @RequestBody ViewsUpdate update) {
         advertisementService.updateViews(id, update);
-        return ok(OK);
+        return ok().build();
     }
 
     @DeleteMapping("/delete-image")
-    public ResponseEntity<HttpStatus> deletePhoto(DeleteAdvImageRequest deleteRequest) {
+    public ResponseEntity<Void> deletePhoto(DeleteAdvImageRequest deleteRequest) {
         advertisementService.deletePhoto(deleteRequest);
-        return ok(OK);
+        return ok().build();
     }
 
     @PatchMapping("/upload-images")
-    public ResponseEntity<HttpStatus> uploadPhotos(@RequestBody ImagesToUploadModel images) {
+    public ResponseEntity<Void> uploadPhotos(@RequestBody ImagesToUploadModel images) {
         photoService.uploadAdvertisementPhotos(images);
-        return ok(OK);
+        return ok().build();
     }
 }
