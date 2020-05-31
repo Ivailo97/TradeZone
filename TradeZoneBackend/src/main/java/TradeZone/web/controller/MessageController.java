@@ -4,6 +4,7 @@ import TradeZone.data.model.entity.ChatMessage;
 import TradeZone.data.model.rest.chat.ChatRestModel;
 import TradeZone.data.model.rest.chat.ReadReceiptRequest;
 import TradeZone.data.repository.ChatMessageRepository;
+import TradeZone.service.ChatService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 public class MessageController {
 
     private final ChatMessageRepository messageRepository;
+
+    private final ChatService chatService;
 
     private final ModelMapper mapper;
 

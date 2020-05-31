@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { StompService } from 'ng2-stomp-service';
 import { MessageService } from 'src/app/core/services/message.service';
 import { ChanelService } from 'src/app/core/services/chanel.service';
@@ -10,6 +10,8 @@ import { Message, ConversationUser } from '../messages-modal/messages-modal.comp
   styleUrls: ['./conversation-modal.component.css']
 })
 export class ConversationModalComponent implements OnInit {
+
+  @ViewChild('scrollMe') el: ElementRef
 
   filteredMessages: Array<Message> = [];
 
@@ -34,10 +36,14 @@ export class ConversationModalComponent implements OnInit {
       this.channel = channel;
       this.filterMessages();
     });
-
     this.messageService.getMessages().subscribe(messages => {
       this.filteredMessages = Array.from(messages).filter(x => x.channel === this.channel);
+      this.scrollToBottom()
     });
+  }
+
+  ngAfterViewChecked() {
+    this.scrollToBottom();
   }
 
   sendMessage() {
@@ -61,11 +67,10 @@ export class ConversationModalComponent implements OnInit {
 
   filterMessages() {
     this.messageService.filterMessages(this.channel);
-    this.scrollToBottom();
+    this.scrollToBottom()
   }
 
   scrollToBottom() {
-    const msgContainer = document.getElementById('msg-container');
-    msgContainer.scrollTop = msgContainer.scrollHeight - msgContainer.clientHeight;
+    this.el.nativeElement.scrollTop = this.el.nativeElement.scrollHeight;
   }
 }

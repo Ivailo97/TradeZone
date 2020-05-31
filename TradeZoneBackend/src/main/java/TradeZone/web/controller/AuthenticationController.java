@@ -54,8 +54,8 @@ public class AuthenticationController {
     }
 
     @GetMapping(value = "/listUsers", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Iterable<ProfileConversationViewModel> findUsers(Principal principal) {
-        return profileRepository.findAll()
+    public Iterable<ProfileConversationViewModel> completedProfiles(Principal principal) {
+        return profileRepository.findAllByIsCompletedTrue()
                 .stream()
                 .filter(x -> !x.getUser().getUsername().equals(principal.getName()))
                 .map(x -> mapper.map(x, ProfileConversationViewModel.class))

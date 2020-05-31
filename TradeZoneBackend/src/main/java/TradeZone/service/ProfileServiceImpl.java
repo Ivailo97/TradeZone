@@ -136,7 +136,6 @@ public class ProfileServiceImpl implements ProfileService {
         profile.setLastName(update.getLastName());
         profile.setTown(town);
         profile.setAboutMe(update.getAboutMe());
-        profile.setIsCompleted(true);
 
         profile = userProfileRepository.save(profile);
 
@@ -154,6 +153,13 @@ public class ProfileServiceImpl implements ProfileService {
         PhotoServiceModel photoServiceModel = photoService.upload(file);
         Photo newPhoto = mapper.map(photoServiceModel, Photo.class);
         profile.setPhoto(newPhoto);
+
+        if (!profile.getIsCompleted()) {
+            profile.setIsCompleted(true);
+
+            ProfileConversationViewModel viewModel = mapper.map(profile, ProfileConversationViewModel.class);
+            template.convertAndSend("/channel/login", viewModel);
+        }
 
         profile = userProfileRepository.save(profile);
 

@@ -113,8 +113,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return new JwtResponse(jwt, userDetails.getUsername(), userDetails.getAuthorities());
     }
 
-
-
     private void connectIfNeeded(UserDetails user) {
 
         UserProfile userProfile = userProfileRepository
@@ -129,7 +127,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         userProfileRepository.save(userProfile);
 
-        ProfileConversationViewModel viewModel = mapper.map(userProfile,ProfileConversationViewModel.class);
+        ProfileConversationViewModel viewModel = mapper.map(userProfile, ProfileConversationViewModel.class);
+
+        if (!userProfile.getIsCompleted()) {
+            return;
+        }
 
         template.convertAndSend("/channel/login", viewModel);
     }

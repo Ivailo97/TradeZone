@@ -50,7 +50,9 @@ export class MessagesModalComponent implements OnInit {
     private stompService: StompService,
     private channelService: ChanelService,
     private snackBar: MatSnackBar,
-    private messageService: MessageService) { }
+    private messageService: MessageService) {
+    this.initUserEvents();
+  }
 
   ngOnInit(): void {
     this.initUsers();
@@ -62,17 +64,19 @@ export class MessagesModalComponent implements OnInit {
       .subscribe(
         res => {
           this.users = res;
-          this.initUserEvents();
         }
       );
   }
 
-  private initFilteredUsers(): void {
+  searchUser(): void {
     this.authService.findUsers()
       .subscribe(
         res => {
-          this.users = res.filter(x => this.fullNameIncludes(x));;
-          this.initUserEvents();
+          if (this.searchedUser) {
+            this.users = res.filter(x => this.fullNameIncludes(x));;
+          } else {
+            this.users = res;
+          }
         }
       );
   }
@@ -115,12 +119,17 @@ export class MessagesModalComponent implements OnInit {
 
   initUserEvents() {
 
+    if (this.stompService.status === 'CONNECTED') {
+      return;
+    }
+
     this.stompService.configure({ host: "http://localhost:8080/wechat", queue: { init: false } })
 
     this.stompService.startConnect().then(
       () => {
         this.stompService.done('init');
         this.stompService.subscribe('/channel/login', res => {
+
           if (res.userUsername !== this.username) {
             this.newConnectedUsers.push(res.userUsername);
             setTimeout((
@@ -149,7 +158,7 @@ export class MessagesModalComponent implements OnInit {
       });
   }
 
-  private updateConversationReceiver(){
+  private updateConversationReceiver() {
     this.conversation.receiver = this.users.find(x => x.userUsername === this.conversation.receiver.userUsername)
   }
 
@@ -165,10 +174,12 @@ export class MessagesModalComponent implements OnInit {
   subscribeToOtherUser(otherUser): string {
     const channelId = ChanelService.createChannel(this.username, otherUser.userUsername);
     this.stompService.subscribe('/channel/chat/' + channelId, res => {
+
       this.messageService.pushMessage(res);
 
       if (res.channel !== this.channel) {
         this.showNotification(res);
+
       } else {
         // send read receipt for the channel
         this.messageService.sendReadReceipt(this.channel, otherUser.userUsername);
@@ -186,15 +197,6 @@ export class MessagesModalComponent implements OnInit {
       this.channel = ChanelService.createChannel(this.username, message.sender);
       this.channelService.refreshChannel(this.channel);
     });
-  }
-
-  searchUser(): void {
-
-    if (this.searchedUser) {
-      this.initFilteredUsers()
-    } else {
-      this.initUsers();
-    }
   }
 
   private fullNameIncludes(user: ConversationUser): boolean {

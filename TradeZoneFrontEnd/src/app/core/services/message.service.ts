@@ -3,9 +3,7 @@ import { Message } from 'src/app/components/user/messages-modal/messages-modal.c
 import { Subject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
-export const settings = {
-    baseUrl: 'http://localhost:8080'
-}
+export const settings = { baseUrl: 'http://localhost:8080' }
 
 const byDateAsc = (m1, m2) => {
     if (m1.timestamp > m2.timestamp) {
@@ -53,9 +51,9 @@ export class MessageService {
             channel: channelId,
             username: sender
         })
-        .subscribe(data => {
-            console.log(data);
-        });
+            .subscribe(data => {
+                console.log(data);
+            });
     }
 
     getMessages(): Observable<Array<Message>> {

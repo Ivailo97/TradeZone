@@ -12,5 +12,7 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
 
     Optional<UserProfile> findByUserUsername(String username);
 
+    List<UserProfile> findAllByIsCompletedTrue();
+
     List<UserProfile> findAllByConnectedTrue();
 }
