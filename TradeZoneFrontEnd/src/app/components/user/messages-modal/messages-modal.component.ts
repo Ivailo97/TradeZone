@@ -51,10 +51,10 @@ export class MessagesModalComponent implements OnInit {
     private channelService: ChanelService,
     private snackBar: MatSnackBar,
     private messageService: MessageService) {
-    this.initUserEvents();
   }
 
   ngOnInit(): void {
+    this.initUserEvents();
     this.initUsers();
     this.channelService.getChannel().subscribe(channel => this.channel = channel);
   }
@@ -119,10 +119,6 @@ export class MessagesModalComponent implements OnInit {
 
   initUserEvents() {
 
-    if (this.stompService.status === 'CONNECTED') {
-      return;
-    }
-
     this.stompService.configure({ host: "http://localhost:8080/wechat", queue: { init: false } })
 
     this.stompService.startConnect().then(
@@ -156,10 +152,6 @@ export class MessagesModalComponent implements OnInit {
 
         this.subscribeToOtherUsers(this.users, this.username);
       });
-  }
-
-  private updateConversationReceiver() {
-    this.conversation.receiver = this.users.find(x => x.userUsername === this.conversation.receiver.userUsername)
   }
 
   removeNewUserBackground(username) {
@@ -201,5 +193,9 @@ export class MessagesModalComponent implements OnInit {
 
   private fullNameIncludes(user: ConversationUser): boolean {
     return user.firstName.concat(` ${user.lastName}`).toLocaleLowerCase().includes(this.searchedUser.toLocaleLowerCase().trim())
+  }
+
+  private updateConversationReceiver() {
+    this.conversation.receiver = this.users.find(x => x.userUsername === this.conversation.receiver.userUsername)
   }
 }
