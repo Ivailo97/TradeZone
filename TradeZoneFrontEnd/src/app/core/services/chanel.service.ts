@@ -1,6 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
-import {Md5} from 'ts-md5/dist/md5';
+import { Md5 } from 'ts-md5/dist/md5';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { settings } from './message.service';
+
+const httpOptions = {
+  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+};
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +14,8 @@ import {Md5} from 'ts-md5/dist/md5';
 export class ChanelService {
 
   private channel = new Subject<string>();
+
+  constructor(private http: HttpClient) { }
 
   public static createChannel(user1: string, user2: string): string {
     let combined: string = '';
@@ -31,5 +39,9 @@ export class ChanelService {
 
   getChannel(): Observable<any> {
     return this.channel.asObservable();
+  }
+
+  createChannel(channelId: string): Observable<any> {
+    return this.http.post<any>(`${settings.baseUrl}/api/channel/create`, channelId);
   }
 }

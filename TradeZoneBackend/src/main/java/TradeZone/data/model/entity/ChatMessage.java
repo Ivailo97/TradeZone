@@ -19,8 +19,9 @@ public class ChatMessage extends BaseEntity {
     @JoinColumn(name = "sender_id", referencedColumnName = "id")
     private UserProfile sender;
 
-    @Column(name = "channel", nullable = false)
-    private String channel;
+    @ManyToOne
+    @JoinColumn(name = "channel_id", referencedColumnName = "id")
+    private Channel channel;
 
     @Column(name = "content")
     private String content;

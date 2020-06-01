@@ -24,7 +24,6 @@ export class MessageService {
     constructor(private http: HttpClient) { }
 
     pushMessage(message: Message) {
-        console.log(message)
         this.messages.push(message);
         this.msgs.next(this.messages);
     }
@@ -48,7 +47,7 @@ export class MessageService {
     sendReadReceipt(channelId: string, sender: string) {
 
         this.http.post(`${settings.baseUrl}/api/messages/read`, {
-            channel: channelId,
+            channelId: channelId,
             username: sender
         })
             .subscribe(data => {

@@ -15,7 +15,7 @@ public class ChatRestModel {
 
     private String sender;
 
-    private String channel;
+    private String channelId;
 
     private String content;
 

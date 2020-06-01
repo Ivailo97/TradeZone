@@ -1,8 +1,10 @@
 package TradeZone.service;
 
+import TradeZone.data.model.entity.Channel;
 import TradeZone.data.model.entity.ChatMessage;
 import TradeZone.data.model.entity.UserProfile;
 import TradeZone.data.model.rest.chat.ChatRestModel;
+import TradeZone.data.repository.ChannelRepository;
 import TradeZone.data.repository.ChatMessageRepository;
 import TradeZone.data.repository.UserProfileRepository;
 import lombok.AllArgsConstructor;
@@ -17,6 +19,7 @@ import java.util.Date;
 public class ChatServiceImpl implements ChatService {
 
     private final SimpMessagingTemplate template;
+    private final ChannelRepository channelRepository;
     private final ModelMapper mapper;
     private final ChatMessageRepository messageRepository;
     private final UserProfileRepository profileRepository;
@@ -28,13 +31,16 @@ public class ChatServiceImpl implements ChatService {
                 .findByUserUsername(message.getSender())
                 .orElseThrow();
 
+        Channel channel = channelRepository.findById(message.getChannelId())
+                .orElseThrow();
+
         message.setTimestamp(new Date());
         message.setSenderAvatarUrl(sender.getPhoto().getUrl());
-        ChatMessage entity = mapper.map(message, ChatMessage.class);
 
-        entity.setSender(sender);
+        ChatMessage entity = new ChatMessage(sender,channel,message.getContent(),message.getTimestamp(),message.getReadDate());
         messageRepository.save(entity);
 
-        template.convertAndSend("/channel/chat/" + message.getChannel(), message);
+
+        template.convertAndSend("/channel/chat/" + message.getChannelId(), message);
     }
 }

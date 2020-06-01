@@ -7,7 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConversationModalComponent } from '../conversation-modal/conversation-modal.component';
 
 export interface Message {
-  channel: string;
+  channelId: string;
   sender: string;
   content: string;
   timestamp?: number;
@@ -45,6 +45,8 @@ export class MessagesModalComponent implements OnInit {
   newConnectedUsers: Array<string> = [];
   channel: string;
   receiver: ConversationUser;
+
+  subscribedChannels = new Array<string>();
 
   constructor(private authService: AuthService,
     private stompService: StompService,
@@ -94,7 +96,20 @@ export class MessagesModalComponent implements OnInit {
 
   startChatWithUser(user: ConversationUser) {
     const channelId = ChanelService.createChannel(this.username, user.userUsername);
+
+    if (channelId === this.channel) {
+      return;
+    }
+
     this.channelService.refreshChannel(channelId);
+
+    this.channelService.createChannel(channelId).subscribe(
+      success => {
+        console.log(success)
+      }, error => {
+        console.log(error);
+      })
+
     this.receiver = user
     this.highlightedUsers = this.highlightedUsers.filter(u => u !== user.userUsername);
     this.messageService.sendReadReceipt(channelId, user.userUsername);
@@ -128,15 +143,24 @@ export class MessagesModalComponent implements OnInit {
 
           if (res.userUsername !== this.username) {
             this.newConnectedUsers.push(res.userUsername);
+
             setTimeout((
               function () {
                 this.removeNewUserBackground(res.userUsername);
               }
             ).bind(this), this.NEW_USER_LIFETIME);
+
             this.users = this.users.filter(item => item.userUsername !== res.userUsername);
+
             this.users.push(res);
-            this.updateConversationReceiver()
-            this.subscribeToOtherUser(res);
+
+            this.updateConversationReceiver();
+
+            const channelId = ChanelService.createChannel(this.username, res.userUsername);
+
+            if (channelId !== this.channel) {
+              this.subscribeToOtherUser(res);
+            }
           }
         });
 
@@ -159,21 +183,27 @@ export class MessagesModalComponent implements OnInit {
   }
 
   subscribeToOtherUsers(users, username) {
-    const filteredUsers: Array<any> = users.filter(user => username !== user.userUsername);
+    const filteredUsers: Array<any> = users.filter(
+      user => {
+        const channelId = ChanelService.createChannel(this.username, user.userUsername);
+        return username !== user.userUsername && channelId !== this.channel
+      }
+    );
+
     filteredUsers.forEach(user => this.subscribeToOtherUser(user));
   }
 
   subscribeToOtherUser(otherUser): string {
+
     const channelId = ChanelService.createChannel(this.username, otherUser.userUsername);
+
     this.stompService.subscribe('/channel/chat/' + channelId, res => {
 
       this.messageService.pushMessage(res);
 
-      if (res.channel !== this.channel) {
+      if (res.channelId !== this.channel) {
         this.showNotification(res);
-
       } else {
-        // send read receipt for the channel
         this.messageService.sendReadReceipt(this.channel, otherUser.userUsername);
       }
     });

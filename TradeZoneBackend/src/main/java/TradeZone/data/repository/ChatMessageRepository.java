@@ -12,14 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
 
-    Page<ChatMessage> findAllByChannelOrderByTimestampDesc(String channel, Pageable pageable);
+    Page<ChatMessage> findAllByChannelIdOrderByTimestampDesc(String channelId, Pageable pageable);
 
     @Modifying
     @Transactional
     @Query(value = "update chat_messages " +
             " join profiles p on chat_messages.sender_id = p.id " +
             " join users u on u.profile_id = p.id set read_date = now() "
-            + " where channel = ?1 and u.username = ?2 and read_date is null",
+            + " where channel_id = ?1 and u.username = ?2 and read_date is null",
             nativeQuery = true)
     void sendReadReceipt(String channel, String sender);
 

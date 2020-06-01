@@ -11,7 +11,7 @@ public class ChatMessageServiceModel extends BaseServiceModel {
 
     private ProfileServiceModel sender;
 
-    private String channel;
+    private ChannelServiceModel channel;
 
     private String content;
 

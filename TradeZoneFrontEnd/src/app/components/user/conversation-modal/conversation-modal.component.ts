@@ -37,7 +37,7 @@ export class ConversationModalComponent implements OnInit {
       this.filterMessages();
     });
     this.messageService.getMessages().subscribe(messages => {
-      this.filteredMessages = Array.from(messages).filter(x => x.channel === this.channel);
+      this.filteredMessages = Array.from(messages).filter(x => x.channelId === this.channel);
       this.scrollToBottom()
     });
   }
@@ -50,8 +50,10 @@ export class ConversationModalComponent implements OnInit {
 
     if (this.messageToSend !== undefined && this.messageToSend !== null && this.messageToSend !== '') {
 
+      console.log(this.channel);
+
       this.stompService.send('/app/messages', {
-        'channel': this.channel,
+        'channelId': this.channel,
         'sender': this.username,
         'content': this.messageToSend
       });

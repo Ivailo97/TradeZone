@@ -9,6 +9,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ReadReceiptRequest {
 
-    private String channel;
+    private String channelId;
     private String username;
 }

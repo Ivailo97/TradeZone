@@ -9,7 +9,7 @@ import java.util.Date;
 @Setter
 public class ChatMessageViewModel {
 
-    private String chanel;
+    private String channelId;
 
     private String sender;
 
