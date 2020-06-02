@@ -59,6 +59,14 @@ public class UserProfile extends BaseEntityWithPhoto {
     @OneToMany(mappedBy = "creator")
     private List<Category> createdCategories;
 
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "profiles_channels",
+            joinColumns = @JoinColumn(name = "profile_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "channel_id", referencedColumnName = "id")
+    )
+    private List<Channel> subscribedTo;
+
     public UserProfile(User user) {
         this.setUser(user);
         this.setIsCompleted(false);
@@ -66,6 +74,7 @@ public class UserProfile extends BaseEntityWithPhoto {
         this.setCreatedAdvertisements(new ArrayList<>());
         this.setCreatedCategories(new ArrayList<>());
         this.setViewed(new ArrayList<>());
+        this.setSubscribedTo(new ArrayList<>());
         this.connected = false;
     }
 }

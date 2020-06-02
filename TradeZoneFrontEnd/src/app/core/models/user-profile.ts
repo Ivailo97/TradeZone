@@ -13,6 +13,7 @@ export class UserProfile {
     aboutMe: string;
     photoUrl: string;
     userEmail: string;
+    subscribedTo: Array<string>
     createdCategories: Array<CategoryListInfo>;
     createdAdvertisements: Array<AdvertisementInfoList>;
     favorites: Array<AdvertisementInfoList>;

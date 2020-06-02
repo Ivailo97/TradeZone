@@ -27,6 +27,8 @@ public class ProfileServiceModel extends BaseServiceModel {
 
     private List<AdvertisementServiceModel> favorites;
 
+    private List<ChannelServiceModel> subscribedTo;
+
     private List<AdvertisementServiceModel> createdAdvertisements;
 
     private List<CategoryServiceModel> createdCategories;

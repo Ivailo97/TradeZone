@@ -31,6 +31,8 @@ public class ProfileViewModel {
 
     private List<CategoryListViewModel> createdCategories;
 
+    private List<String> subscribedTo;
+
     private List<AdvertisementListViewModel> createdAdvertisements;
 
     private List<AdvertisementListViewModel> favorites;

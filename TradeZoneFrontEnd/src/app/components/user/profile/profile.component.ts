@@ -41,7 +41,8 @@ export class ProfileComponent implements OnInit {
   constructor(private profileService: ProfileService,
     private formBuilder: FormBuilder,
     private alertService: AlertService,
-    private townService: TownService) { }
+    private townService: TownService) {
+  }
 
   ngOnInit(): void {
 

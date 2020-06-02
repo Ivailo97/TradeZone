@@ -32,14 +32,17 @@ export class ConversationModalComponent implements OnInit {
     private channelService: ChanelService) { }
 
   ngOnInit() {
-    this.channelService.getChannel().subscribe(channel => {
-      this.channel = channel;
-      this.filterMessages();
-    });
-    this.messageService.getMessages().subscribe(messages => {
-      this.filteredMessages = Array.from(messages).filter(x => x.channelId === this.channel);
-      this.scrollToBottom()
-    });
+
+    this.channelService.getChannel()
+      .subscribe(channel => {
+        this.channel = channel;
+        this.filterMessages();
+      });
+    this.messageService.getMessages()
+      .subscribe(messages => {
+        this.filteredMessages = Array.from(messages).filter(x => x.channelId === this.channel);
+        this.scrollToBottom()
+      });
   }
 
   ngAfterViewChecked() {
@@ -49,8 +52,6 @@ export class ConversationModalComponent implements OnInit {
   sendMessage() {
 
     if (this.messageToSend !== undefined && this.messageToSend !== null && this.messageToSend !== '') {
-
-      console.log(this.channel);
 
       this.stompService.send('/app/messages', {
         'channelId': this.channel,

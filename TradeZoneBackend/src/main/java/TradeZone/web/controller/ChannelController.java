@@ -1,5 +1,6 @@
 package TradeZone.web.controller;
 
+import TradeZone.data.model.rest.Subscription;
 import TradeZone.service.ChannelService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,18 @@ public class ChannelController {
     @PostMapping("/create")
     public ResponseEntity<?> createChannel(@RequestBody String channelId) {
         channelService.create(channelId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/subscribe")
+    public ResponseEntity<?> subscribe(@RequestBody Subscription subscription) {
+        channelService.subscribeToChannel(subscription);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/unsubscribe")
+    public ResponseEntity<?> unsubscribe(@RequestBody Subscription subscription) {
+        channelService.unsubscribeFromChannel(subscription);
         return ResponseEntity.ok().build();
     }
 }

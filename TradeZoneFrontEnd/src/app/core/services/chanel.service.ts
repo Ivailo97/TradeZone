@@ -1,12 +1,20 @@
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { Md5 } from 'ts-md5/dist/md5';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { settings } from './message.service';
+import { ProfileService } from './profile.service';
+import { tap } from 'rxjs/operators';
 
-const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-};
+export class Subscription {
+  username: string
+  channelId: string
+
+  constructor(username: string, channelId: string) {
+    this.username = username;
+    this.channelId = channelId;
+  }
+}
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +23,8 @@ export class ChanelService {
 
   private channel = new Subject<string>();
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,
+    private profileService: ProfileService) { }
 
   public static createChannel(user1: string, user2: string): string {
     let combined: string = '';
@@ -43,5 +52,23 @@ export class ChanelService {
 
   createChannel(channelId: string): Observable<any> {
     return this.http.post<any>(`${settings.baseUrl}/api/channel/create`, channelId);
+  }
+
+  public subscribeToChannel(username: string, channelId: string): Observable<any> {
+    return this.http.post<any>(`${settings.baseUrl}/api/channel/subscribe`, new Subscription(username, channelId))
+      .pipe(
+        tap(() => {
+          this.profileService.refreshNeeded$.next();
+        })
+      );;;
+  }
+
+  public unsubscribeFromChannel(username: string, channelId: string): Observable<any> {
+    return this.http.post<any>(`${settings.baseUrl}/api/channel/unsubscribe`, new Subscription(username, channelId))
+    .pipe(
+      tap(() => {
+        this.profileService.refreshNeeded$.next();
+      })
+    );;;
   }
 }

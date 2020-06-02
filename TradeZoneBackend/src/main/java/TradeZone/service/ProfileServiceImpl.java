@@ -21,6 +21,7 @@ import TradeZone.data.repository.AdvertisementRepository;
 import TradeZone.data.repository.UserProfileRepository;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -79,6 +80,7 @@ public class ProfileServiceImpl implements ProfileService {
         }
 
         userProfile.setConnected(false);
+        userProfile.setSubscribedTo(new ArrayList<>());
 
         userProfile = userProfileRepository.save(userProfile);
 

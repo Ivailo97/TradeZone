@@ -2,6 +2,7 @@ package TradeZone.service;
 
 import TradeZone.data.model.service.AdvertisementServiceModel;
 import TradeZone.data.model.service.CategoryServiceModel;
+import TradeZone.data.model.service.ChannelServiceModel;
 import TradeZone.data.model.service.ProfileServiceModel;
 import TradeZone.data.model.view.AdvertisementListViewModel;
 import TradeZone.data.model.view.ProfileTableViewModel;
@@ -30,13 +31,10 @@ public class MappingServiceImpl implements MappingService {
     public List<AdvertisementListViewModel> mapServiceAdvertisementsToView(List<AdvertisementServiceModel> models) {
 
         return models.stream().map(a -> {
-
             AdvertisementListViewModel model = mapper.map(a, AdvertisementListViewModel.class);
-
             if (a.getPhotos().size() != 0) {
                 model.setImageUrl(a.getPhotos().get(0).getUrl());
             }
-
             model.setCreator(a.getCreator().getUser().getUsername());
             model.setProfilesWhichLikedIt(a.getProfilesWhichLikedIt().stream().map(x -> x.getUser().getUsername()).collect(Collectors.toList()));
             return model;
@@ -59,6 +57,7 @@ public class MappingServiceImpl implements MappingService {
         ProfileViewModel viewModel = mapper.map(model, ProfileViewModel.class);
         viewModel.setCreatedAdvertisements(mapServiceAdvertisementsToView(model.getCreatedAdvertisements()));
         viewModel.setFavorites(mapServiceAdvertisementsToView(model.getFavorites()));
+        viewModel.setSubscribedTo(model.getSubscribedTo().stream().map(ChannelServiceModel::getId).collect(Collectors.toList()));
         viewModel.setRoles(model.getUser().getRoles().stream().map(r -> r.getRoleName().name()).collect(Collectors.toList()));
         return viewModel;
     }
