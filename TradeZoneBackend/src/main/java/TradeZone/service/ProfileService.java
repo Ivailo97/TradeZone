@@ -3,7 +3,6 @@ package TradeZone.service;
 import org.springframework.web.multipart.MultipartFile;
 import TradeZone.data.model.rest.PasswordUpdate;
 import TradeZone.data.model.rest.ProfileUpdate;
-import TradeZone.data.model.rest.message.response.ResponseMessage;
 import TradeZone.data.model.service.ProfileServiceModel;
 import TradeZone.data.model.service.RoleServiceModel;
 

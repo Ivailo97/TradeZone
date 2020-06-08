@@ -1,5 +1,7 @@
 package TradeZone.service;
 
+import TradeZone.data.error.exception.NotAllowedException;
+import TradeZone.data.model.rest.RoleChange;
 import TradeZone.data.model.view.ProfileConversationViewModel;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -24,7 +26,9 @@ import TradeZone.data.repository.UserProfileRepository;
 import TradeZone.data.repository.UserRepository;
 import TradeZone.config.security.jwt.JwtProvider;
 
-import java.util.HashSet;
+import javax.persistence.EntityNotFoundException;
+import java.security.Principal;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -33,7 +37,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final String TAKEN_USERNAME = "Fail -> Username is already taken!";
     private final String TAKEN_EMAIL = "Fail -> Email is already in use!";
     private final String REGISTERED_SUCCESSFULLY = "User registered successfully!";
-    private static final String NOT_FOUND_MESSAGE = "User Not Found with -> username or email : ";
+    private static final String NOT_FOUND_USER = "User not found";
+    private static final String MISSING_ROLES = "User doesnt have roles";
+
+    private static final String NOT_FOUND_ROLE = "Role not found";
+    private static final String NOT_ALLOWED = "Invalid operation";
 
     private final UserRepository userRepository;
 
@@ -74,11 +82,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         HashSet<Role> roles = new HashSet<>();
         roles.add(roleRepository.findByName(RoleName.ROLE_USER).orElse(null));
 
-        if (fitsModeratorRole() || fitsAdminRole()) {
-            roles.add(roleRepository.findByName(RoleName.ROLE_MODERATOR).orElse(null));
-        }
-        if (fitsAdminRole()) {
+        if (fitsRootRole()) {
+            roles.add(roleRepository.findByName(RoleName.ROLE_ROOT).orElse(null));
             roles.add(roleRepository.findByName(RoleName.ROLE_ADMIN).orElse(null));
+            roles.add(roleRepository.findByName(RoleName.ROLE_MODERATOR).orElse(null));
+        } else if (fitsAdminRole()) {
+            roles.add(roleRepository.findByName(RoleName.ROLE_ADMIN).orElse(null));
+            roles.add(roleRepository.findByName(RoleName.ROLE_MODERATOR).orElse(null));
+        } else if (fitsModeratorRole()) {
+            roles.add(roleRepository.findByName(RoleName.ROLE_MODERATOR).orElse(null));
         }
 
         user.setRoles(roles);
@@ -113,6 +125,74 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return new JwtResponse(jwt, userDetails.getUsername(), userDetails.getAuthorities());
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(NOT_FOUND_USER));
+    }
+
+    @Override
+    public UserServiceModel changeRole(RoleChange change, Principal principal) {
+
+        UserProfile profile = userProfileRepository.findById(change.getProfileId())
+                .orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_USER));
+
+        Role newRole = roleRepository.findByName(RoleName.valueOf(change.getNewRole()))
+                .orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ROLE));
+
+        User user = profile.getUser();
+
+        Set<Role> roles = user.getRoles();
+
+        Role topRole = getTopRole(roles);
+
+        if (tryChangeRoot(topRole, newRole) || nonRootTriesChangeRoleOfAdmin(principal, topRole)) {
+            throw new NotAllowedException(NOT_ALLOWED);
+        }
+
+        modifyRoles(user, newRole);
+
+        return mapper.map(userRepository.save(user), UserServiceModel.class);
+    }
+
+    private boolean nonRootTriesChangeRoleOfAdmin(Principal principal, Role topRole) {
+        User requester = userRepository.findByUsername(principal.getName()).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_USER));
+        return topRole.getAuthority().equals(RoleName.ROLE_ADMIN.name()) && !getTopRole(requester.getRoles()).getAuthority().equals(RoleName.ROLE_ROOT.name());
+    }
+
+    private Role getTopRole(Set<Role> roles) {
+        return roles.stream().filter(x -> x.getAuthority().equals(RoleName.ROLE_ROOT.name())).findFirst()
+                .orElse(roles.stream().filter(x -> x.getAuthority().equals(RoleName.ROLE_ADMIN.name())).findFirst()
+                        .orElse(roles.stream().filter(x -> x.getAuthority().equals(RoleName.ROLE_MODERATOR.name())).findFirst()
+                                .orElse(roles.stream().filter(x -> x.getAuthority().equals(RoleName.ROLE_USER.name())).findFirst()
+                                        .orElseThrow(() -> new IllegalStateException(MISSING_ROLES)))));
+    }
+
+    private void modifyRoles(User user, Role newRole) {
+
+        Deque<Role> stack = initAllRolesInStack();
+
+        while (!stack.peek().getAuthority().equals(newRole.getAuthority())) {
+            stack.pop();
+        }
+
+        user.setRoles(new HashSet<>(stack));
+    }
+
+    private Deque<Role> initAllRolesInStack() {
+        List<Role> allRoles = roleRepository.findAll();
+        Deque<Role> stack = new ArrayDeque<>();
+        stack.push(allRoles.stream().filter(x -> x.getAuthority().equals(RoleName.ROLE_USER.name())).findFirst().orElse(null));
+        stack.push(allRoles.stream().filter(x -> x.getAuthority().equals(RoleName.ROLE_MODERATOR.name())).findFirst().orElse(null));
+        stack.push(allRoles.stream().filter(x -> x.getAuthority().equals(RoleName.ROLE_ADMIN.name())).findFirst().orElse(null));
+        stack.push(allRoles.stream().filter(x -> x.getAuthority().equals(RoleName.ROLE_ROOT.name())).findFirst().orElse(null));
+        return stack;
+    }
+
+    private boolean tryChangeRoot(Role topRole, Role newRole) {
+        return topRole.getAuthority().equals("ROLE_ROOT") || newRole.getAuthority().equals("ROLE_ROOT");
+    }
+
     private void connectIfNeeded(UserDetails user) {
 
         UserProfile userProfile = userProfileRepository
@@ -136,18 +216,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         template.convertAndSend("/channel/login", viewModel);
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException(NOT_FOUND_MESSAGE + username));
-    }
-
-    private boolean fitsAdminRole() {
+    private boolean fitsRootRole() {
         return userRepository.count() == 0;
     }
 
-    private boolean fitsModeratorRole() {
+    private boolean fitsAdminRole() {
         return userRepository.count() == 1;
+    }
+
+    private boolean fitsModeratorRole() {
+        return userRepository.count() == 2;
     }
 }

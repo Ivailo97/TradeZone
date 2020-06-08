@@ -48,8 +48,7 @@ public class MappingServiceImpl implements MappingService {
                     ProfileTableViewModel viewModel = mapper.map(x, ProfileTableViewModel.class);
                     viewModel.setRole(service.getTopRole(x.getUser().getRoles()));
                     return viewModel;
-                })
-                .collect(Collectors.toList());
+                }).collect(Collectors.toList());
     }
 
     @Override

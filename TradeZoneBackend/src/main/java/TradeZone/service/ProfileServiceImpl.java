@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import TradeZone.data.model.rest.PasswordUpdate;
 import TradeZone.data.model.rest.ProfileUpdate;
-import TradeZone.data.model.rest.message.response.ResponseMessage;
 import TradeZone.service.validation.ProfileUpdateValidationService;
 import TradeZone.data.repository.AdvertisementRepository;
 import TradeZone.data.repository.UserProfileRepository;
@@ -23,7 +22,6 @@ import TradeZone.data.repository.UserProfileRepository;
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,7 +29,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
 
-    private static final String FAIL = "FAIL";
     private static final String IMPOSSIBLE = "You dont have this in favorites";
     private static final String WRONG_OLD_PASSWORD = "FAIL -> WRONG OLD PASSWORD";
     private static final String CANT_LIKE = "ADVERTISEMENT ALREADY LIKED";
@@ -41,7 +38,6 @@ public class ProfileServiceImpl implements ProfileService {
     private static final String INVALID_UPDATE = "INVALID UPDATE";
     private static final String PROFILE_NOT_FOUND_ID = "PROFILE WITH ID %s not found";
     private static final String PASSWORDS_DOESNT_MATCH = "FAIL -> PASSWORDS DOES NOT MATCH";
-    private static final String SUCCESS = "SUCCESS";
 
     private final SimpMessagingTemplate template;
 
@@ -103,7 +99,9 @@ public class ProfileServiceImpl implements ProfileService {
     public String getTopRole(Set<RoleServiceModel> roles) {
         String role = "User";
 
-        if (roles.stream().anyMatch(x -> x.getRoleName().name().equals("ROLE_ADMIN"))) {
+        if (roles.stream().anyMatch(x -> x.getRoleName().name().equals("ROLE_ROOT"))) {
+            role = "ROOT";
+        } else if (roles.stream().anyMatch(x -> x.getRoleName().name().equals("ROLE_ADMIN"))) {
             role = "Admin";
         } else if (roles.stream().anyMatch(x -> x.getRoleName().name().equals("ROLE_MODERATOR"))) {
             role = "Moderator";
@@ -156,7 +154,7 @@ public class ProfileServiceImpl implements ProfileService {
         Photo newPhoto = mapper.map(photoServiceModel, Photo.class);
         profile.setPhoto(newPhoto);
 
-        if (!profile.getIsCompleted()) {
+        if (!profile.getIsCompleted() && profile.getFirstName() != null) {
             profile.setIsCompleted(true);
 
             ProfileConversationViewModel viewModel = mapper.map(profile, ProfileConversationViewModel.class);

@@ -11,3 +11,19 @@ td,
 th {
     width: 25%;
 }
+
+button:focus,
+button:active:focus,
+button.active:focus {
+    outline: none !important;
+    outline-style: none !important;
+}
+
+img {
+    width: 60px;
+    height: 60px;
+}
+
+.user {
+    background-color: greenyellow;
+}

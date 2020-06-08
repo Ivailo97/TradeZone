@@ -27,10 +27,9 @@ export class RegisterComponent implements OnInit {
       email: ['', [Validators.required, Validators.pattern(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)]],
       password: ['', [Validators.required, Validators.pattern(/^[A-Za-z0-9]{3,16}$/)]],
       confirmPassword: ['', Validators.required],
-    }, {
+    }, { validator: MustMatch('password', 'confirmPassword') })
 
-      validator: MustMatch('password', 'confirmPassword')
-    })
+    
   }
   register() {
 
