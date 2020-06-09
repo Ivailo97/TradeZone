@@ -7,6 +7,7 @@ import { ProfileUpdate } from '../models/profile-update';
 import { tap } from 'rxjs/operators';
 import { PasswordUpdate } from '../models/password-update';
 import { Message } from '../models/message';
+import { ConversationUser } from 'src/app/components/user/messages-modal/messages-modal.component';
 
 const baseURL = 'http://localhost:8080/api/user/profile';
 const disconnectUrl = baseURL + '/disconnect';
@@ -25,6 +26,8 @@ const httpFileOptions = {
 export class ProfileService {
 
   private _refreshNeeded$ = new Subject<void>();
+
+  private _subscribedTo: Array<ConversationUser> = [];
 
   constructor(private http: HttpClient,
     private tokenStorageService: TokenStorageService) { }
@@ -88,5 +91,17 @@ export class ProfileService {
 
   get refreshNeeded$() {
     return this._refreshNeeded$;
+  }
+
+  get subscribedTo() {
+    return this._subscribedTo;
+  }
+
+  public addToSubscribed(user: ConversationUser): void {
+    this.subscribedTo.push(user);
+  }
+
+  public isSubscribedTo(user: ConversationUser): boolean {
+    return this.subscribedTo.find(x => x.id === user.id) !== undefined;
   }
 }

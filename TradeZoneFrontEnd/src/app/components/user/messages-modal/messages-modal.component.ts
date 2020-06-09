@@ -47,6 +47,7 @@ export class MessagesModalComponent implements OnInit {
   users: Array<ConversationUser> = [];
   highlightedUsers: Array<string> = [];
   newConnectedUsers: Array<string> = [];
+
   channel: string;
   receiver: ConversationUser;
   profile: UserProfile;
@@ -197,6 +198,12 @@ export class MessagesModalComponent implements OnInit {
 
   subscribeToOtherUser(otherUser) {
 
+    if(this.profileService.isSubscribedTo(otherUser)){
+      return;
+    }
+
+    this.profileService.addToSubscribed(otherUser);
+
     const channelId = ChanelService.createChannel(this.username, otherUser.userUsername);
 
     if (channelId === this.channel) {
@@ -219,7 +226,6 @@ export class MessagesModalComponent implements OnInit {
           });
       }
     });
-
   }
 
   showNotification(message: Message) {

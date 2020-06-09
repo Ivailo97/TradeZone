@@ -7,6 +7,10 @@ html {
     height: 100%;
 }
 
+* {
+    z-index: 99999;
+}
+
 img {
     width: 70px;
     height: 70px;
