@@ -1,14 +1,12 @@
 package TradeZone.web.controller;
 
-import TradeZone.data.model.view.TownViewModel;
-import TradeZone.service.TownService;
+import TradeZone.data.model.view.TownCompleteProfileViewModel;
+import TradeZone.service.RegionService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,14 +17,16 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class TownController {
 
-    private final TownService townService;
+    private final RegionService townService;
 
     private final ModelMapper mapper;
 
     @GetMapping("/all")
-    public ResponseEntity<List<TownViewModel>> allRegions() {
-        return ResponseEntity.ok(townService.getAll().stream()
-                .map(x -> mapper.map(x, TownViewModel.class))
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<List<TownCompleteProfileViewModel>> allRegions() {
+        return ResponseEntity.ok(townService.getAllTowns().stream()
+                .map(x -> mapper.map(x, TownCompleteProfileViewModel.class))
                 .collect(Collectors.toList()));
     }
+
 }

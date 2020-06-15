@@ -17,7 +17,7 @@ public class ProfileViewModel {
 
     private String userUsername;
 
-    private TownViewModel town;
+    private TownCompleteProfileViewModel town;
 
     private String aboutMe;
 

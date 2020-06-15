@@ -41,7 +41,7 @@
                                                 <mat-form-field class="example-full-width">
                                                     <mat-label>Town</mat-label>
                                                     <mat-select formControlName="town">
-                                                        <mat-option *ngFor="let town of towns" [value]="town.id">{{town.name}}/{{town.region}}</mat-option>
+                                                        <mat-option *ngFor="let town of towns" [value]="town.id">{{town.name}}/{{town.regionName}}</mat-option>
                                                     </mat-select>
                                                 </mat-form-field>
                                             </div>
@@ -271,7 +271,7 @@
                                 </g>
                                     </g>
                                     </g>
-                                    </svg> {{userProfile?.town.name}},{{userProfile?.town.region}}
+                                    </svg> {{userProfile?.town.name}},{{userProfile?.town.regionName}}
                             </div>
                             <div class="col md-4">
                                 <svg viewBox="-42 0 512 512.001" xmlns="http://www.w3.org/2000/svg" width="20px">

@@ -30,6 +30,11 @@ const routes: Routes = [
     path: 'auth',
     loadChildren: './components/auth/auth.module#AuthModule', canLoad: [AnonymGuard]
   },
+
+  {
+    path: 'regions',
+    loadChildren: './components/regions/regions.module#RegionsModule',
+  },
   {
     path: 'error/:message',
     component: ErrorComponent

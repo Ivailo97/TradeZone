@@ -30,7 +30,7 @@ public class UserProfile extends BaseEntityWithPhoto {
     @Column(name = "about_me", columnDefinition = "TEXT")
     private String aboutMe;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "town_id", referencedColumnName = "id")
     private Town town;
 

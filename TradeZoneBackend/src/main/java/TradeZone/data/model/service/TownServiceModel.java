@@ -12,7 +12,7 @@ public class TownServiceModel extends BaseServiceModel {
 
     private String name;
 
-    private String region;
+    private String regionName;
 
     private List<ProfileServiceModel> citizen;
 

@@ -1,0 +1,6 @@
+<ul>
+    <li *ngFor="let region of regions$ | async">
+        {{region.name}}
+        <small>{{region.totalAds}}</small>
+    </li>
+</ul>

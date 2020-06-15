@@ -3,13 +3,13 @@ package TradeZone.data.model.view;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
-public class TownViewModel {
+public class TownCompleteProfileViewModel {
+
+    private Long id;
 
     private String name;
 
-    private List<AdvertisementListViewModel> advertisements;
+    private String regionName;
 }

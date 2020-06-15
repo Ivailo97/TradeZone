@@ -1,13 +1,7 @@
 package TradeZone.service;
 
-import TradeZone.data.model.service.AdvertisementServiceModel;
-import TradeZone.data.model.service.CategoryServiceModel;
-import TradeZone.data.model.service.ChannelServiceModel;
-import TradeZone.data.model.service.ProfileServiceModel;
-import TradeZone.data.model.view.AdvertisementListViewModel;
-import TradeZone.data.model.view.ProfileTableViewModel;
-import TradeZone.data.model.view.ProfileViewModel;
-import TradeZone.data.model.view.TopCategoryViewModel;
+import TradeZone.data.model.service.*;
+import TradeZone.data.model.view.*;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -47,6 +41,20 @@ public class MappingServiceImpl implements MappingService {
                 .map(x -> {
                     ProfileTableViewModel viewModel = mapper.map(x, ProfileTableViewModel.class);
                     viewModel.setRole(service.getTopRole(x.getUser().getRoles()));
+                    return viewModel;
+                }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RegionViewModel> mapServiceRegionToView(List<RegionServiceModel> models) {
+        return models.stream()
+                .map(x -> {
+                    RegionViewModel viewModel = mapper.map(x, RegionViewModel.class);
+                    Long count = x.getTowns().stream()
+                            .map(t -> t.getCitizen().stream().map(c -> c.getCreatedAdvertisements().size()).mapToInt(Integer::intValue).sum())
+                            .mapToLong(Integer::longValue)
+                            .sum();
+                    viewModel.setTotalAds(count);
                     return viewModel;
                 }).collect(Collectors.toList());
     }

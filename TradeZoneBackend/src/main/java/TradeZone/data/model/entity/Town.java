@@ -1,6 +1,5 @@
 package TradeZone.data.model.entity;
 
-import com.google.gson.annotations.Expose;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,13 +12,12 @@ import java.util.List;
 @Entity(name = "towns")
 public class Town extends BaseEntity {
 
-    @Expose
     @Column
     private String name;
 
-    @Expose
-    @Column
-    private String region;
+    @ManyToOne
+    @JoinColumn(name = "region_id", referencedColumnName = "id")
+    private Region region;
 
     @OneToMany
     private List<UserProfile> citizen;

@@ -3,16 +3,12 @@ package TradeZone.service;
 import TradeZone.data.model.service.AdvertisementServiceModel;
 import TradeZone.data.model.service.CategoryServiceModel;
 import TradeZone.data.model.service.ProfileServiceModel;
-import TradeZone.data.model.view.AdvertisementListViewModel;
-import TradeZone.data.model.view.ProfileTableViewModel;
-import TradeZone.data.model.view.ProfileViewModel;
-import TradeZone.data.model.view.TopCategoryViewModel;
+import TradeZone.data.model.service.RegionServiceModel;
+import TradeZone.data.model.view.*;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.function.Function;
-
 
 public interface MappingService {
 
@@ -21,6 +17,8 @@ public interface MappingService {
     List<AdvertisementListViewModel> mapServiceAdvertisementsToView(List<AdvertisementServiceModel> models);
 
     List<ProfileTableViewModel> mapServiceToTableViewModel(List<ProfileServiceModel> models, ProfileService service);
+
+    List<RegionViewModel> mapServiceRegionToView(List<RegionServiceModel> models);
 
     ProfileViewModel mapServiceProfileToView(ProfileServiceModel model);
 
