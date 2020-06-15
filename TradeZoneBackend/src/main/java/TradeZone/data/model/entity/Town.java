@@ -19,7 +19,7 @@ public class Town extends BaseEntity {
     @JoinColumn(name = "region_id", referencedColumnName = "id")
     private Region region;
 
-    @OneToMany
+    @OneToMany(mappedBy = "town")
     private List<UserProfile> citizen;
 
     public Town() {

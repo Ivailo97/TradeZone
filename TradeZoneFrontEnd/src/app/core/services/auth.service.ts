@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { AuthLoginInfo } from '../models/login-info';
 import { JwtResponse } from '../models/jwt-response';
 import { SignUpInfo } from '../models/signup-info';
 import { TokenStorageService } from './token-storage.service';
 import { ConversationUser } from 'src/app/components/user/messages-modal/messages-modal.component';
+import { tap } from 'rxjs/operators';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -24,8 +25,7 @@ export class AuthService {
 
   constructor(
     private http: HttpClient,
-    private tokenService: TokenStorageService
-  ) { }
+    private tokenService: TokenStorageService) { }
 
   attemptAuth(credentials: AuthLoginInfo): Observable<JwtResponse> {
     return this.http.post<JwtResponse>(this.loginUrl, credentials, httpOptions);
@@ -36,7 +36,7 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return this.tokenService.getToken() !== null;
+    return this.tokenService.getToken() !== undefined && this.tokenService.getToken() !== null;
   }
 
   isAdmin(): boolean {
@@ -46,6 +46,5 @@ export class AuthService {
   findUsers(): Observable<Array<ConversationUser>> {
     return this.http.get<Array<ConversationUser>>(this.getUsersUrl);
   }
-
-
+ 
 }

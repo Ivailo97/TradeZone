@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { RegionService } from 'src/app/core/services/region.service';
 import { Observable } from 'rxjs';
 import { Region } from 'src/app/core/models/region';
+import { MatAccordion } from '@angular/material/expansion';
 
 @Component({
   selector: 'app-regions-list',
@@ -10,6 +11,8 @@ import { Region } from 'src/app/core/models/region';
 })
 export class RegionsListComponent implements OnInit {
 
+  @ViewChild(MatAccordion) accordion: MatAccordion;
+
   regions$: Observable<Array<Region>>
 
   constructor(private regionService: RegionService) { }
@@ -17,5 +20,4 @@ export class RegionsListComponent implements OnInit {
   ngOnInit(): void {
     this.regions$ = this.regionService.all();
   }
-
 }

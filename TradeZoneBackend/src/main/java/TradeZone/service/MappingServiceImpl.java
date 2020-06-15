@@ -51,7 +51,8 @@ public class MappingServiceImpl implements MappingService {
                 .map(x -> {
                     RegionViewModel viewModel = mapper.map(x, RegionViewModel.class);
                     Long count = x.getTowns().stream()
-                            .map(t -> t.getCitizen().stream().map(c -> c.getCreatedAdvertisements().size()).mapToInt(Integer::intValue).sum())
+                            .map(t -> t.getCitizen().stream().map(c -> c.getCreatedAdvertisements().size())
+                                    .mapToInt(Integer::intValue).sum())
                             .mapToLong(Integer::longValue)
                             .sum();
                     viewModel.setTotalAds(count);
