@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { RegionService } from 'src/app/core/services/region.service';
 import { Region } from 'src/app/core/models/region';
 import { MatAccordion } from '@angular/material/expansion';
-import { Town } from 'src/app/core/models/town';
 
 @Component({
   selector: 'app-regions-list',

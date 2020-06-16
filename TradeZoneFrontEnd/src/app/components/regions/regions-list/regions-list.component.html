@@ -1,24 +1,20 @@
-<div class="example-action-buttons">
-    <button mat-button (click)="accordion.openAll()">Expand All</button>
-    <button mat-button (click)="accordion.closeAll()">Collapse All</button>
-</div>
 <mat-accordion class="example-headers-align" multi>
     <mat-expansion-panel (click)="loadTowns(region.name)" *ngFor="let region of regions">
-
         <mat-expansion-panel-header>
             <mat-panel-title>
-                <h2> {{region.name}}</h2>
+                <h2>{{region.name}}</h2>
             </mat-panel-title>
             <mat-panel-description>
-                {{region.totalAds}}
+                Advertisements: ({{region.totalAds}})
+            </mat-panel-description>
+            <mat-panel-description>
+                Users: ({{region.totalUsers}})
             </mat-panel-description>
         </mat-expansion-panel-header>
-
-        <mat-selection-list #shoes [multiple]="false">
+        <mat-selection-list [multiple]="false">
             <mat-list-option *ngFor="let town of region.towns">
-                {{town.name}}
+                {{town.name}} ({{town.advertisementsCount}})
             </mat-list-option>
         </mat-selection-list>
-
     </mat-expansion-panel>
 </mat-accordion>

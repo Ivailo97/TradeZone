@@ -11,4 +11,6 @@ public class RegionViewModel {
     private String name;
 
     private Long totalAds;
+
+    private Long totalUsers;
 }

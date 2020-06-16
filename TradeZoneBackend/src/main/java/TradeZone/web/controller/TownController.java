@@ -33,7 +33,11 @@ public class TownController {
     public ResponseEntity<List<TownViewModel>> inRegion(@RequestParam String regionName) {
         List<TownServiceModel> serviceModels = townService.getAllInRegion(regionName);
         List<TownViewModel> viewModels = serviceModels.stream()
-                .map(x -> mapper.map(x, TownViewModel.class))
+                .map(x -> {
+                    TownViewModel viewModel = mapper.map(x, TownViewModel.class);
+                    viewModel.setAdvertisementsCount(x.getCitizen().stream().map(c -> c.getCreatedAdvertisements().size()).mapToInt(Integer::intValue).sum());
+                    return viewModel;
+                })
                 .collect(Collectors.toList());
         return ResponseEntity.ok(viewModels);
     }

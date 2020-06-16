@@ -56,6 +56,7 @@ public class MappingServiceImpl implements MappingService {
                             .mapToLong(Integer::longValue)
                             .sum();
                     viewModel.setTotalAds(count);
+                    viewModel.setTotalUsers(x.getTowns().stream().map(t -> t.getCitizen().size()).mapToLong(Integer::longValue).sum());
                     return viewModel;
                 }).collect(Collectors.toList());
     }
