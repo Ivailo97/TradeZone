@@ -1,10 +1,11 @@
 package TradeZone.web.controller;
 
+import TradeZone.data.model.service.TownServiceModel;
 import TradeZone.data.model.view.TownCompleteProfileViewModel;
-import TradeZone.service.RegionService;
+import TradeZone.data.model.view.TownViewModel;
+import TradeZone.service.TownService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,16 +18,23 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class TownController {
 
-    private final RegionService townService;
+    private final TownService townService;
 
     private final ModelMapper mapper;
 
     @GetMapping("/all")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<List<TownCompleteProfileViewModel>> allRegions() {
+    public ResponseEntity<List<TownCompleteProfileViewModel>> all() {
         return ResponseEntity.ok(townService.getAllTowns().stream()
                 .map(x -> mapper.map(x, TownCompleteProfileViewModel.class))
                 .collect(Collectors.toList()));
     }
 
+    @GetMapping("/region")
+    public ResponseEntity<List<TownViewModel>> inRegion(@RequestParam String regionName) {
+        List<TownServiceModel> serviceModels = townService.getAllInRegion(regionName);
+        List<TownViewModel> viewModels = serviceModels.stream()
+                .map(x -> mapper.map(x, TownViewModel.class))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(viewModels);
+    }
 }

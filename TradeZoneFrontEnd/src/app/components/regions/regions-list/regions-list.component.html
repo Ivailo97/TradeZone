@@ -3,7 +3,8 @@
     <button mat-button (click)="accordion.closeAll()">Collapse All</button>
 </div>
 <mat-accordion class="example-headers-align" multi>
-    <mat-expansion-panel *ngFor="let region of regions$ | async">
+    <mat-expansion-panel (click)="loadTowns(region.name)" *ngFor="let region of regions">
+
         <mat-expansion-panel-header>
             <mat-panel-title>
                 <h2> {{region.name}}</h2>
@@ -12,5 +13,12 @@
                 {{region.totalAds}}
             </mat-panel-description>
         </mat-expansion-panel-header>
+
+        <mat-selection-list #shoes [multiple]="false">
+            <mat-list-option *ngFor="let town of region.towns">
+                {{town.name}}
+            </mat-list-option>
+        </mat-selection-list>
+
     </mat-expansion-panel>
 </mat-accordion>
